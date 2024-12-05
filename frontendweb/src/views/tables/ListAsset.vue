@@ -4,7 +4,7 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">List Aset</h4>
+            <h4 class="card-title">List Aset Repo</h4>
           </div>
           <div>
             <button 
