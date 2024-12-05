@@ -1,0 +1,610 @@
+<template>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <div class="header-title">
+            <h4 class="card-title">List Aset</h4>
+          </div>
+          <button class="btn btn-success" @click="showAddModal" data-bs-toggle="modal" data-bs-target="#form-confirmation">Tambah Aset</button>
+        </div>
+        <div class="card-body">
+
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter nama cabang</label>
+              <v-select 
+                :options="branchNames" 
+                v-model="selectedBranches" 
+                multiple 
+                @update:modelValue="onBranchSelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+            <div class="col-sm-6"> 
+              <label for="validationCustomUsername01" class="form-label">Filter nama aset</label>
+              <div class="input-group has-validation">
+                <input type="text" v-model="filterAssetName" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div> 
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter kategori</label>
+              <v-select 
+                :options="assetCategory" 
+                v-model="selectedCategory" 
+                multiple  
+                @update:modelValue="onCategorySelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter kategori alat</label>
+              <v-select 
+                :options="assetToolCategory" 
+                v-model="selectedToolCategory" 
+                multiple  
+                @update:modelValue="onToolCategorySelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter kondisi alat</label>
+              <v-select 
+                :options="assetToolCondition" 
+                v-model="selectedToolCondition" 
+                multiple  
+                @update:modelValue="onToolConditionSelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter satuan</label>
+              <v-select 
+                :options="assetUnit" 
+                v-model="selectedUnit" 
+                multiple  
+                @update:modelValue="onUnitSelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-sm-6"> 
+              <label for="validationCustomUsername01" class="form-label">Filter stok awal</label>
+              <div class="input-group has-validation">
+                <input type="number" v-model="filterInitialStock" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div> 
+            </div>
+             <div class="col-sm-6"> 
+              <label for="validationCustomUsername01" class="form-label">Filter stok saat ini</label>
+              <div class="input-group has-validation">
+                <input type="number" v-model="filterCurrentStock" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div> 
+            </div>
+          </div>
+         
+          <div class="row mb-4">
+            <div class="col-sm-6">
+              <!-- Input Pencarian Global -->
+              <div class="search-container">
+                <label for="global-search" class="form-label">Pencarian</label>
+                <div class="input-group has-validation">
+                  <input
+                    type="text"
+                    id="global-search"
+                    v-model="globalSearch" 
+                    class="form-control filter-style" 
+                  />
+                  <!-- <button
+                    class="btn btn-primary filter-style"
+                    @click="fetchAssetData"
+                    title="Search">
+                    <svg width="18" height="19" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17 17.124L12.0962 12.2202M12.0962 12.2202C13.2725 11.0439 14 9.41895 14 7.62402C14 4.03417 11.0899 1.12402 7.5 1.12402C3.91015 1.12402 1 4.03417 1 7.62402C1 11.2139 3.91015 14.124 7.5 14.124C9.29493 14.124 10.9199 13.3965 12.0962 12.2202Z" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button> -->
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <label for="validationCustomUsername01" class="form-label text-white">I</label>
+              <div class="input-group has-validation">
+                <button
+                  class="btn btn-primary width-button-style filter-style" 
+                  @click="fetchAssetData"
+                  title="Search">
+                  Filter
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive border-bottom">
+            <data-table
+              :data="assetData"
+              :columns="columns"  
+              @edit="showEditModal"
+              @delete="showDeleteModal"
+            />
+            
+            <div class="modal fade" id="form-confirmation" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true" @hide="resetForm">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropPermissionLabel">{{ isEditMode ? 'Perbarui Aset' : 'Tambah Aset' }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form @submit.prevent="submitAsset">
+                      <p>Form yang bertanda <span class="text-primary">*</span> wajib diisi</p> 
+                      <div class="mb-3"> 
+                        <label for="input-205" class="form-label">Dari Cabang<span class="text-primary">*</span></label>
+                        <select id="branch_id" v-model="editForm.branch_id" class="form-select" required>
+                          <option value="" disabled>Silahkan pilih cabang</option>
+                          <option v-for="branch in branches" :key="branch.branch_id" :value="branch.branch_id">
+                            {{ branch.branch_name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="asset_name" class="form-label">Nama Aset<span class="text-primary">*</span></label>
+                        <input v-model="editForm.asset_name" maxlength="100" type="text" class="form-control" id="asset_name" required />
+                      </div>
+                      <div class="mb-3"> 
+                        <label for="category" class="form-label">Kategori<span class="text-primary">*</span></label>
+                        <b-form-select v-model="editForm.category" :options="optionsCategory" id="category" required></b-form-select>
+                      </div>
+                      <!-- <div v-if="!isEditMode"> -->
+                        <div v-if="editForm.category=='Alat'">
+                          <div class="mb-3">
+                            <label for="tool_category" class="form-label">Kategori Alat<span class="text-primary">*</span></label>
+                            <b-form-select v-model="editForm.tool_category" :options="optionsToolCategory" id="tool_category" required></b-form-select> 
+                          </div> 
+                          <div class="mb-3"> 
+                            <label for="tool_condition" class="form-label">Kondisi Alat<span class="text-primary">*</span></label>
+                            <b-form-select v-model="editForm.tool_condition" :options="optionsToolCondition" id="tool_condition" required></b-form-select>
+                          </div>
+                        </div>
+                      <!-- </div> -->
+                      <div class="mb-3">
+                        <label for="unit" class="form-label">Satuan<span class="text-primary">*</span></label>
+                        <b-form-select v-model="editForm.unit" :options="optionsUnit" id="unit" required></b-form-select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="initial_stock" class="form-label">Stok Awal<span class="text-primary">*</span></label>
+                        <input v-model.number="editForm.initial_stock" maxlength="4" type="number" class="form-control" id="initial_stock" @input="syncCurrentStock" required />
+                      </div> 
+                      <div class="mb-3">
+                        <label for="current_stock" class="form-label">Stok Saat Ini<span class="text-primary">*</span></label>
+                        <input v-model.number="editForm.current_stock" @input="handleCurrentStockInput" maxlength="4" type="number" class="form-control" id="current_stock" required />
+                      </div>  
+                      
+                      <!-- Tambahkan field lainnya sesuai dengan struktur data asset -->
+                      <button type="submit" class="btn btn-primary" :data-bs-dismiss="
+                        editForm.category=='Alat'?
+                        editForm.branch_id&&editForm.asset_name&&editForm.category&&editForm.unit&&editForm.initial_stock&&editForm.current_stock&&editForm.tool_category&&editForm.tool_condition ? 'modal' : null :
+                        editForm.branch_id&&editForm.asset_name&&editForm.category&&editForm.unit&&editForm.initial_stock&&editForm.current_stock ? 'modal' : null
+                        ">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Aset' }}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- Modal Konfirmasi Penghapusan -->
+            <div class="modal fade" id="delete-confirmation" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Apa kamu yakin ingin menghapus data Aset <strong>{{ selectedAsset?.asset_name }}</strong>?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="confirmDelete">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Berhasil  Hapus  -->
+            <MessageModal :message="alertMessage" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+  .filter-style {
+    /* max-width: 400px; */
+    height: 35px;
+    /* margin-bottom: 1rem; */
+  }
+
+  .width-button-style {
+    /* max-width: 400px; */
+    width: 85px;
+    font-size: 13px; /* Kecil */
+    /* margin-bottom: 1rem; */
+  }
+</style>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import DataTable from '@/components/DataTable.vue';
+// import Actions from '@/components/TableActions.vue';
+// import { useRouter } from 'vue-router';
+// import { Modal } from 'bootstrap'
+// const router = useRouter();
+import MessageModal from '@/components/ModalAlert.vue'; 
+import { Modal as BootstrapModal } from 'bootstrap';
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
+
+// Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
+// Ambil token dari localStorage
+const token = localStorage.getItem('access_token');
+
+const columns = [
+  { title: 'ID', data: 'asset_id' },
+  { title: 'Dari Cabang', data: 'branch_name' }, 
+  { title: 'Nama Aset', data: 'asset_name' },
+  { title: 'Kategori', data: 'category' },
+  { title: 'Kategori Alat', data: 'tool_category' },
+  { title: 'Kondisi Alat', data: 'tool_condition' },
+  { title: 'Satuan', data: 'unit' },
+  { title: 'Stok Awal', data: 'initial_stock' }, 
+  { title: 'Stok Saat Ini', data: 'current_stock' }, 
+];
+
+// Reactive data untuk menyimpan data asset
+const alertMessage = ref('');
+const assetData = ref([]);
+
+const branchNames = ref([]);
+const selectedBranches = ref([]); 
+const assetCategory = ref([]);
+const selectedCategory = ref([]);
+const assetToolCategory = ref([]);
+const selectedToolCategory = ref([]);
+const assetToolCondition = ref([]);
+const selectedToolCondition = ref([]);
+const assetUnit = ref([]);
+const selectedUnit = ref([]);
+
+const filterAssetName = ref('');
+const filterInitialStock = ref('');
+const filterCurrentStock = ref('');
+const globalSearch = ref('');
+
+const isEditMode = ref(false) 
+
+const editForm = ref({
+  asset_id: null,
+  branch_id: '',
+  asset_name: '',
+  category: '',
+  tool_category: '',
+  tool_condition: '',
+  unit: '', 
+  initial_stock: '',
+  current_stock: '',
+})
+
+// Fungsi untuk reset form saat modal ditutup
+const resetForm = () => {
+  editForm.value = {
+    asset_id: null,
+    branch_id: '',
+    asset_name: '',
+    category: '',
+    tool_category: '',
+    tool_condition: '',
+    unit: '', 
+    initial_stock: '',
+    current_stock: '',
+  }
+}
+
+const syncCurrentStock= () => { 
+  editForm.value.current_stock = editForm.value.initial_stock 
+}
+
+// Fungsi untuk mencegah input `current_stock` melebihi `initial_stock`
+const handleCurrentStockInput = (event) => {
+  const maxStock = editForm.value.initial_stock;
+  if (event.target.value > maxStock) {
+    event.target.value = maxStock; // Batasi nilai ke maksimum
+    editForm.value.current_stock = maxStock;
+  }
+};
+
+const selectedAsset = ref(null) // Menyimpan data asset yang dipilih untuk dihapus
+
+// Fungsi untuk menampilkan modal konfirmasi penghapusan
+const showDeleteModal = (rowData) => {
+  selectedAsset.value = rowData 
+}
+
+// Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
+const showEditModal = (rowData) => {
+  selectedAsset.value = rowData
+  editForm.value = { ...rowData }
+  isEditMode.value = true
+}
+
+// Fungsi untuk membuka modal tambah dengan form kosong
+const showAddModal = () => {
+  resetForm()  
+  isEditMode.value = false 
+}
+
+// Mengambil data asset saat komponen dimuat
+onMounted(async () => { 
+  await fetchAssetCategory();
+  await fetchAssetToolCategory();
+  await fetchAssetToolCondition();
+  await fetchAssetUnit();
+  await fetchBranches();
+  await fetchAssetData();
+});
+
+const onBranchSelect = (selected) => {
+  selectedBranches.value = selected; // Perbarui nilai terpilih
+  // fetchAssetData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onCategorySelect = (selectedCategory) => {
+  selectedCategory.value = selectedCategory; // Perbarui nilai terpilih
+  // fetchAssetData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onToolCategorySelect = (selectedToolCategory) => {
+  selectedToolCategory.value = selectedToolCategory; // Perbarui nilai terpilih
+  // fetchAssetData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onToolConditionSelect = (selectedToolCondition) => {
+  selectedToolCondition.value = selectedToolCondition; // Perbarui nilai terpilih
+  // fetchAssetData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onUnitSelect = (selectedUnit) => {
+  selectedUnit.value = selectedUnit; // Perbarui nilai terpilih
+  // fetchAssetData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+// Fungsi untuk submit tambah/edit
+const submitAsset = async () => {
+  if(editForm.value.category=='Bahan'){
+    editForm.value.tool_category = '';
+    editForm.value.tool_condition = '';
+  }
+  
+  console.log('Edit data submitted:', editForm.value)
+  try {
+    if (isEditMode.value) {
+      // Update data jika dalam mode edit
+      editForm.value.operation = 'Edit';
+      const response = await axios.put(`http://localhost:3000/api/asset/${editForm.value.asset_id}`, editForm.value, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      console.log('Data berhasil diupdate:', response.data)
+      const index = assetData.value.findIndex(asset => asset.asset_id === editForm.value.asset_id)
+      if (index !== -1) {
+        assetData.value[index] = { ...editForm.value }
+      }
+      fetchAssetData()
+    }else {
+      // Tambahkan data baru jika dalam mode tambah
+      editForm.value.operation = 'Tambah';
+      const response = await axios.post('http://localhost:3000/api/asset', editForm.value, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      console.log('Data berhasil ditambahkan:', response.data)
+      fetchAssetData()
+    }
+  } catch (error) {
+    console.error('Gagal mengupdate data:', error)
+    handleAuthError();
+  } 
+  // isEditModalOpen.value = false // Tutup modal setelah submit
+}
+
+// Fungsi untuk mengambil data asset dari backend
+const fetchAssetData = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/asset', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { 
+        branch_name: selectedBranches.value.join(','), 
+        asset_name: filterAssetName.value,
+        category: selectedCategory.value.join(','), 
+        tool_category: selectedToolCategory.value.join(','),
+        tool_condition: selectedToolCondition.value.join(','), 
+        unit: selectedUnit.value.join(','), 
+        initial_stock: filterInitialStock.value,
+        current_stock: filterCurrentStock.value,
+        search: globalSearch.value, 
+        order_by: 'asset_id', // Sorting berdasarkan ID
+        order_direction: 'DESC', // Urutan descending
+      },
+    })
+    assetData.value = response.data.map((asset) => ({
+      ...asset,
+      branch_name: asset.branch?.branch_name || 'N/A' // Ambil nama cabang atau tampilkan "N/A" jika tidak ada
+    }))
+  } catch (error) {
+    console.error('Error fetching asset data:', error)
+    handleAuthError();
+  }
+};
+
+// Daftar cabang
+const branches = ref([]);
+
+// Mengambil data cabang
+const fetchBranches = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/branch', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    branches.value = response.data;
+    branchNames.value = response.data.map(item => item.branch_name);
+  } catch (error) {
+    console.error('Error fetching branches:', error);
+    handleAuthError();
+  }
+};
+
+const fetchAssetCategory = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/asset/getAssetsCategory', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    assetCategory.value = [...new Set(response.data)];
+  } catch (error) {
+    console.error('Error fetching assetCategory:', error);
+    handleAuthError();
+  }
+};
+
+const fetchAssetToolCategory = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/asset/getAssetsToolCategory', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    // Hilangkan null, undefined, dan string kosong
+    const filteredassetToolCategory = response.data.filter(tool_category => tool_category !== null && tool_category !== undefined && tool_category !== "");
+    assetToolCategory.value = [...new Set(filteredassetToolCategory)];
+  } catch (error) {
+    console.error('Error fetching assetToolCategory:', error);
+    handleAuthError();
+  }
+};
+
+const fetchAssetToolCondition = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/asset/getAssetsToolCondition', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    // Hilangkan null, undefined, dan string kosong
+    const filteredassetToolCondition = response.data.filter(tool_condition => tool_condition !== null && tool_condition !== undefined && tool_condition !== "");
+    assetToolCondition.value = [...new Set(filteredassetToolCondition)];
+  } catch (error) {
+    console.error('Error fetching assetToolCondition:', error);
+    handleAuthError();
+  }
+};
+
+const fetchAssetUnit = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/asset/getAssetsUnit', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    // Hilangkan null, undefined, dan string kosong
+    const filteredassetUnit = response.data.filter(unit => unit !== null && unit !== undefined && unit !== "");
+    assetUnit.value = [...new Set(filteredassetUnit)];
+  } catch (error) {
+    console.error('Error fetching assetUnit:', error);
+    handleAuthError();
+  }
+};
+
+const confirmDelete = async () => {
+  try {
+    console.log('Id deleted:', selectedAsset.value.asset_id)
+    await axios.delete(`http://localhost:3000/api/asset/${selectedAsset.value.asset_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }) 
+    alertMessage.value = `Data Aset <strong>${selectedAsset.value.asset_name}</strong> berhasil dihapus.`;
+    const modal = new BootstrapModal(document.getElementById('message-alert'));
+    modal.show();  
+
+    // Refresh data setelah penghapusan
+    fetchAssetData()
+  } catch (error) {
+    console.error('Failed to delete asset data:', error) 
+    handleAuthError();
+  }
+}
+
+const handleAuthError = () => {
+  // router.push({ name: 'auth.login' });
+  alertMessage.value = `Cek koneksi internet Anda.`;
+  const modal = new BootstrapModal(document.getElementById('message-alert'));
+  modal.show();
+};
+
+const optionsCategory = [
+  { value: null, text: 'Silahkan pilih kategori aset' },
+  { value: 'Bahan', text: 'Bahan' }, 
+  { value: 'Alat', text: 'Alat' },   
+]
+
+const optionsToolCategory = [
+  { value: null, text: 'Silahkan pilih kategori alat' },
+  { value: 'Peralatan Fumigasi', text: 'Peralatan Fumigasi' }, 
+  { value: 'Alat Ukur Fumigasi', text: 'Alat Ukur Fumigasi' },   
+  { value: 'Peralatan Pest Control', text: 'Peralatan Pest Control' },   
+  { value: 'Plastic Sheet', text: 'Plastic Sheet' },   
+]
+
+const optionsToolCondition = [
+  { value: null, text: 'Silahkan pilih kondisi alat' },
+  { value: 'Baik', text: 'Baik' }, 
+  { value: 'Cukup', text: 'Cukup' },  
+  { value: 'Kurang', text: 'Kurang' },
+  { value: 'Rusak', text: 'Rusak' },
+]
+
+const optionsUnit = [
+  { value: null, text: 'Silahkan pilih satuan' },
+  { value: 'UNIT', text: 'UNIT' }, 
+  { value: 'PCS', text: 'PCS' },
+  { value: 'TABUNG', text: 'TABUNG' },  
+  { value: 'KG', text: 'KG' },
+  { value: 'GRAM', text: 'GRAM' },
+  { value: 'L', text: 'L' },
+  { value: 'ML', text: 'ML' },
+  { value: 'M', text: 'M' },
+  { value: 'BUTIR', text: 'BUTIR' },
+  { value: 'BAG', text: 'BAG' },
+  { value: 'PACK', text: 'PACK' },
+  { value: 'SHEET', text: 'SHEET' }, 
+]
+
+</script>
