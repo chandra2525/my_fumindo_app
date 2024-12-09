@@ -175,6 +175,8 @@
             <data-table
               :data="assetData"
               :columns="AssetColumns"  
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="asset_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -326,7 +328,7 @@
             </div>
             
             <!-- Modal Berhasil  Hapus  -->
-            <MessageModal :message="alertMessage" />
+            <MessageModal :message="alertMessage" :title="titleMessage"/>
           </div>
         </div>
       </div>
@@ -384,7 +386,7 @@ import 'vue-select/dist/vue-select.css';
 const token = localStorage.getItem('access_token');
 
 const AssetColumns = [
-  { title: 'ID', data: 'asset_log_id', sortable: true },
+  // { title: 'ID', data: 'asset_log_id', sortable: true },
   { title: 'ID Aset', data: 'asset_id', sortable: true },
   { title: 'ID User  ', data: 'user_id', sortable: true }, 
   { title: 'Created At', data: 'created_at', sortable: true },
@@ -613,6 +615,9 @@ const changePage = (page) => {
 
 // Daftar cabang
 const branches = ref([]);
+const toolCategories = ref([]);
+const toolConditions = ref([]);
+const units = ref([]);
 
 // Mengambil data cabang
 const fetchBranches = async () => {
@@ -652,51 +657,67 @@ const fetchAssetCategory = async () => {
 
 const fetchAssetToolCategory = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/asset/getAssetsToolCategory', {
+    const response = await axios.get('http://localhost:3000/api/asset_tool_category', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }); 
-    // Hilangkan null, undefined, dan string kosong
-    const filteredassetToolCategory = response.data.filter(tool_category => tool_category !== null && tool_category !== undefined && tool_category !== "");
-    assetToolCategory.value = [...new Set(filteredassetToolCategory)];
+      params: {  
+        // order_by: currentSort.value.column,
+        // order_direction: currentSort.value.order,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    toolCategories.value = response.data.rows;
+    assetToolCategory.value = response.data.rows.map(item => item.tool_category_name);
   } catch (error) {
-    console.error('Error fetching assetToolCategory:', error);
+    console.error('Error fetching Tool Category:', error);
     handleAuthError();
   }
 };
 
+
 const fetchAssetToolCondition = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/asset/getAssetsToolCondition', {
+    const response = await axios.get('http://localhost:3000/api/asset_tool_condition', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: {  
+        // order_by: currentSort.value.column,
+        // order_direction: currentSort.value.order,
+        page: 1,
+        pageSize: 1000,
+      },
     }); 
-    // Hilangkan null, undefined, dan string kosong
-    const filteredassetToolCondition = response.data.filter(tool_condition => tool_condition !== null && tool_condition !== undefined && tool_condition !== "");
-    assetToolCondition.value = [...new Set(filteredassetToolCondition)];
+    toolConditions.value = response.data.rows;
+    assetToolCondition.value = response.data.rows.map(item => item.tool_condition_name);
   } catch (error) {
-    console.error('Error fetching assetToolCondition:', error);
+    console.error('Error fetching Tool Condition:', error);
     handleAuthError();
   }
 };
 
 const fetchAssetUnit = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/asset/getAssetsUnit', {
+    const response = await axios.get('http://localhost:3000/api/asset_unit', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }); 
-    // Hilangkan null, undefined, dan string kosong
-    const filteredassetUnit = response.data.filter(unit => unit !== null && unit !== undefined && unit !== "");
-    assetUnit.value = [...new Set(filteredassetUnit)];
+      params: {  
+        // order_by: currentSort.value.column,
+        // order_direction: currentSort.value.order,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    units.value = response.data.rows;
+    assetUnit.value = response.data.rows.map(item => item.unit_name);
   } catch (error) {
-    console.error('Error fetching assetUnit:', error);
+    console.error('Error fetching Unit', error);
     handleAuthError();
   }
-};
+}
 
 const exportAssetData = async () => {
   try {

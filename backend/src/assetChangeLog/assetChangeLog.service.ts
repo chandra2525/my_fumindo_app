@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { AssetChangeLog } from './assetChangeLog.model';
 import { Asset } from '../asset/asset.model';
 import { User } from '../users/users.model';
+import { QueryTypes } from 'sequelize';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript'; // Import Sequelize
 @Injectable()
@@ -15,124 +16,113 @@ export class AssetChangeLogService {
   }
 
   async findAll(
-    assetNames?: string[], 
-    userNames?: string[],  
-    assetChangeLogColumnName?: string[],  
+    assetNames?: string[],
+    userNames?: string[],
+    assetChangeLogColumnName?: string[],
     value_before?: string,
     value_after?: string,
-    assetChangeLogOperation?: string[],  
-    orderBy: string = 'asset_log_id',
+    assetChangeLogOperation?: string[],
+    orderBy: string = 'created_at',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
     search?: string,
     page: number = 1,
-    pageSize: number = 10,
-    // distinctByAssetId: boolean = false // Tambahkan parameter baru
+    pageSize: number = 10
   ): Promise<{ rows: AssetChangeLog[]; sp: any }> {
-    const whereClause: any = {};
+    const whereClause: any = [];
   
     if (value_before) {
-      whereClause.value_before = { [Op.iLike]: `%${value_before}%` };  
+      whereClause.push(`value_before ILIKE '%${value_before}%'`);
     }
     if (value_after) {
-      whereClause.value_after = { [Op.iLike]: `%${value_after}%` };  
+      whereClause.push(`value_after ILIKE '%${value_after}%'`);
     }
     if (assetChangeLogColumnName?.length) {
-      whereClause.column_name = { [Op.in]: assetChangeLogColumnName };
+      const columns = assetChangeLogColumnName.map((col) => `'${col}'`).join(', ');
+      whereClause.push(`column_name IN (${columns})`);
     }
     if (assetChangeLogOperation?.length) {
-      whereClause.operation = { [Op.in]: assetChangeLogOperation };
+      const operations = assetChangeLogOperation.map((op) => `'${op}'`).join(', ');
+      whereClause.push(`operation IN (${operations})`);
     }
-  
     if (search) {
-      whereClause[Op.or] = [
-        { column_name: { [Op.iLike]: `%${search}%` } },
-        { value_before: { [Op.iLike]: `%${search}%` } },
-        { value_after: { [Op.iLike]: `%${search}%` } }, 
-        { operation: { [Op.iLike]: `%${search}%` } }, 
-        { '$asset.asset_name$': { [Op.iLike]: `%${search}%` } }, 
-        { '$user.username$': { [Op.iLike]: `%${search}%` } }, 
-      ];
+      whereClause.push(
+        `(column_name ILIKE '%${search}%' OR 
+          value_before ILIKE '%${search}%' OR 
+          value_after ILIKE '%${search}%' OR 
+          operation ILIKE '%${search}%' OR 
+          (SELECT asset_name FROM assets WHERE assets.id = asset_change_log.asset_id) ILIKE '%${search}%' OR 
+          (SELECT username FROM users WHERE users.id = asset_change_log.user_id) ILIKE '%${search}%')`
+      );
+    }
+    if (assetNames?.length) {
+      const assetNamesFilter = assetNames.map((name) => `'${name}'`).join(', ');
+      whereClause.push(
+        `(SELECT asset_name FROM assets WHERE assets.id = asset_change_log.asset_id) IN (${assetNamesFilter})`
+      );
+    }
+    if (userNames?.length) {
+      const userNamesFilter = userNames.map((name) => `'${name}'`).join(', ');
+      whereClause.push(
+        `(SELECT username FROM users WHERE users.id = asset_change_log.user_id) IN (${userNamesFilter})`
+      );
     }
   
-    // if (distinctByAssetId) {
-      const query = `
-        SELECT DISTINCT ON (asset_id)
-            asset_log_id,
-            asset_id, 
-            user_id, 
-            operation,
-            created_at
-        FROM 
-            asset_change_log
-        WHERE 
-            ${Object.keys(whereClause).length > 0 ? JSON.stringify(whereClause).replace(/"/g, '') : 'true'}
-        ORDER BY 
-            asset_id, 
-            created_at ${orderDirection};
-      `;
+    // Buat WHERE clause
+    const whereSQL = whereClause.length > 0 ? `WHERE ${whereClause.join(' AND ')}` : '';
   
-      const rows = await this.sequelize.query<AssetChangeLog>(query, {
-        model: AssetChangeLog,
-        mapToModel: true,
-      });
+    // Pagination
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
   
-      // Hitung jumlah data untuk pagination
-      const count = rows.length;
+    // Query raw dengan DISTINCT ON
+    const query = `
+      SELECT DISTINCT ON (asset_id) 
+        asset_log_id,
+        asset_id,
+        user_id,
+        operation,
+        column_name,
+        value_before,
+        value_after,
+        created_at
+      FROM asset_change_log
+      ${whereSQL}
+      ORDER BY asset_id, ${orderBy} ${orderDirection}
+      LIMIT ${limit} OFFSET ${offset};
+    `;
   
-      const sp = {
-        page,
-        pageSize,
-        pageCount: Math.ceil(count / pageSize),
-        rowCount: count,
-        start: 0,
-        limit: rows.length,
-      };
+    // Jalankan query
+    const rows = await this.sequelize.query<AssetChangeLog>(query, {
+      model: AssetChangeLog,
+      mapToModel: true,
+    });
   
-      return { rows, sp };
-    // } else {
-    //   // Pagination variables
-    //   const offset = (page - 1) * pageSize;
-    //   const limit = pageSize;
+    interface CountResult {
+      count: number;
+    }
+
+    // Hitung jumlah total
+    const countQuery = `
+      SELECT COUNT(DISTINCT asset_id) AS count
+      FROM asset_change_log
+      ${whereSQL};
+    `;
+    const countResult = await this.sequelize.query<CountResult>(countQuery, { type: QueryTypes.SELECT });
+    const count = countResult[0]?.count ?? 0;
   
-    //   const { rows, count } = await this.assetChangeLogModel.findAndCountAll({
-    //     include: [
-    //       {
-    //         model: Asset, // Model asset
-    //         attributes: ['asset_name'], // Hanya mengambil nama cabang
-    //         where: assetNames?.length
-    //           ? { asset_name: { [Op.in]: assetNames } } // Filter asset_name jika diberikan
-    //           : undefined, // Jika tidak ada filter asset_name, jangan tambahkan where
-    //       },
-    //       {
-    //         model: User, // Model user
-    //         attributes: ['username'], // Hanya mengambil nama cabang
-    //         where: userNames?.length
-    //           ? { username: { [Op.in]: userNames } } // Filter username jika diberikan
-    //           : undefined, // Jika tidak ada filter username, jangan tambahkan where
-    //       },
-    //     ],
-    //     where: whereClause, 
-    //     order: orderBy === 'asset_name' // Cek jika sorting berdasarkan asset_name
-    //       ? [[{ model: Asset, as: 'asset' }, 'asset_name', orderDirection]] // Sorting berdasarkan asset_name
-    //       : orderBy === 'username' // Cek jika sorting berdasarkan username
-    //         ? [[{ model: User, as: 'user' }, 'username', orderDirection]] // Sorting berdasarkan asset_name
-    //         : [[orderBy, orderDirection]], // Sorting default (asset_log_id)
-    //     offset,
-    //     limit,
-    //   });
+    // Pagination metadata
+    const sp = {
+      page,
+      pageSize,
+      pageCount: Math.ceil(count / pageSize),
+      rowCount: count,
+      start: offset,
+      limit: rows.length,
+    };
   
-    //   const sp = {
-    //     page,
-    //     pageSize,
-    //     pageCount: Math.ceil(count / pageSize),
-    //     rowCount: count,
-    //     start: offset,
-    //     limit,
-    //   };
-  
-    //   return { rows, sp };
-    // }
+    return { rows, sp };
   }
+  
   
 
   // Method baru untuk query SQL DISTINCT ON (asset_id)

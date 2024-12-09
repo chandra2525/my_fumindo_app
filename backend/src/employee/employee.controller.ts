@@ -129,8 +129,23 @@ export class EmployeeController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
-    return this.employeeService.remove(id);
+  async remove(@Param('id') id: number){
+    // return this.employeeService.remove(id);
+    try {
+      await this.employeeService.remove(id);
+      return { message: 'Branch deleted successfully' };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus karyawan ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the branch.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('mass-upload')

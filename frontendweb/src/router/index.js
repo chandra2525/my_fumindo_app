@@ -4,9 +4,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 const designSystemChildRoutes = (prefix) => [
   {
     path: '',
-    name: prefix + '.main',
-    meta: { auth: true, name: 'Design System' },
-    component: () => import('@/views/design-system/IndexPage.vue')
+    name: prefix + '.login',
+    meta: { auth: false, name: 'Login' },
+    component: () => import('@/views/auth/default/SignIn.vue')
+    // name: prefix + '.main',
+    // meta: { auth: true, name: 'Design System' },
+    // component: () => import('@/views/design-system/IndexPage.vue')
   }
 ]
 // Auth Default Routes

@@ -206,6 +206,8 @@
             <data-table
               :data="employeeData"
               :columns="columns"
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="employee_id"
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -398,7 +400,7 @@
             </div>
 
             <!-- Modal Berhasil  Hapus  -->
-            <MessageModal :message="alertMessage" />
+            <MessageModal :message="alertMessage" :title="titleMessage"/>
           </div>
         </div>
       </div>
@@ -469,7 +471,7 @@ const totalData = ref(0); // Jumlah total data dari API
 const token = localStorage.getItem('access_token');
 
 const columns = [
-  { title: 'ID', data: 'employee_id', sortable: true },
+  // { title: 'ID', data: 'employee_id', sortable: true },
   { title: 'Dari Cabang', data: 'branch_name', sortable: true },
   { title: 'Nama Karyawan', data: 'fullname', sortable: true },
   { title: 'No Telpon', data: 'phone_number', sortable: true },
@@ -884,9 +886,16 @@ const confirmDelete = async () => {
     // Refresh data setelah penghapusan
     fetchEmployeeData()
   } catch (error) {
-    console.error('Failed to delete employee data:', error) 
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 409) {
+        titleMessage.value = `Gagal Menghapus`;
+        alertMessage.value = `Data Karyawan <strong>${selectedEmployee.value.fullname}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Karyawan <strong>${selectedEmployee.value.fullname}</strong>.`;
+        const modal = new BootstrapModal(document.getElementById('message-alert'));
+        modal.show(); 
+    } 
+    else {
+      console.error('Failed to delete employee data:', error) 
+      handleAuthError();
+    }
   }
 }
 

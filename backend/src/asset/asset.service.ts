@@ -442,8 +442,8 @@ export class AssetService {
         }
 
         // Validasi data (sesuaikan dengan model Anda) 
-        if (!rowData.branch_id ||!rowData.asset_name ||!rowData.category ||!rowData.unit ||!rowData.initial_stock ||!rowData.current_stock) {
-          throw new Error('Data tidak valid: kolom "ID Cabang", "Nama Aset", "Kategori", "Kategori Alat", "Kondisi Alat", "Satuan", "Stok Awal", "Stok Saat Ini" diperlukan');
+        if (!rowData.branch_id ||!rowData.asset_name ||!rowData.category ||!rowData.initial_stock ||!rowData.current_stock ||!rowData.tool_category_id ||!rowData.tool_condition_id ||!rowData.unit_id) {
+          throw new Error('Data tidak valid: kolom "ID Cabang", "Nama Aset", "Kategori", "Kategori Alat", "Kondisi Alat", "Satuan", "Stok Awal", "Stok Saat Ini", "ID Kategori Alat", "ID Kondisi Alat", "ID Satuan" diperlukan');
         }
  
         // Simpan data ke database

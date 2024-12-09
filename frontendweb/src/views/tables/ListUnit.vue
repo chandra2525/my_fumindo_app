@@ -81,6 +81,8 @@
             <data-table
               :data="unitData"
               :columns="unitColumns" 
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="unit_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -246,7 +248,7 @@ const totalData = ref(0); // Jumlah total data dari API
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 const unitColumns = [
-  { title: 'ID', data: 'unit_id', sortable: true },
+  // { title: 'ID', data: 'unit_id', sortable: true },
   { title: 'Nama Unit', data: 'unit_name', sortable: true }, 
   { title: 'Aksi', data: 'actions', sortable: false },
 ];

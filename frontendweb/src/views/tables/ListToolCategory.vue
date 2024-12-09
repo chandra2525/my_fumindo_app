@@ -81,6 +81,8 @@
             <data-table
               :data="toolCategoryData"
               :columns="toolCategoryColumns" 
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="tool_category_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -246,7 +248,7 @@ const totalData = ref(0); // Jumlah total data dari API
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 const toolCategoryColumns = [
-  { title: 'ID', data: 'tool_category_id', sortable: true },
+  // { title: 'ID', data: 'tool_category_id', sortable: true },
   { title: 'Nama Kategori Alat', data: 'tool_category_name', sortable: true }, 
   { title: 'Aksi', data: 'actions', sortable: false },
 ];

@@ -162,7 +162,9 @@
           <div class="table-responsive border-bottom">
             <data-table
               :data="branchData"
-              :columns="branchColumns" 
+              :columns="branchColumns"
+              :currentPage="currentPage"
+              :pageSize="pageSize" 
               :idrow="asset_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -386,7 +388,7 @@ const totalData = ref(0); // Jumlah total data dari API
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 const branchColumns = [
-  { title: 'ID', data: 'branch_id', sortable: true },
+  // { title: 'ID', data: 'branch_id', sortable: true },
   { title: 'Nama Cabang', data: 'branch_name', sortable: true },
   { title: 'Alamat', data: 'address', sortable: true },
   { title: 'Aksi', data: 'actions', sortable: false },
@@ -664,8 +666,16 @@ const confirmDelete = async () => {
     modal.show(); 
     fetchBranchData()
   } catch (error) {
-    console.error('Failed to delete branch data:', error) 
-    handleAuthError();
+    if (error.response && error.response.status === 409) {
+        titleMessage.value = `Gagal Menghapus`;
+        alertMessage.value = `Data Cabang <strong>${selectedBranch.value.branch_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Cabang <strong>${selectedBranch.value.branch_name}</strong>.`;
+        const modal = new BootstrapModal(document.getElementById('message-alert'));
+        modal.show(); 
+    } 
+    else {
+      console.error('Failed to delete branch data:', error) 
+      handleAuthError();
+    }
   }
 }
 

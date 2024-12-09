@@ -35,7 +35,12 @@ export class BranchService {
   }
   
   async delete(id: number): Promise<void> {
-    await this.branchModel.destroy({ where: { branch_id: id } });
+    // await this.branchModel.destroy({ where: { branch_id: id } });
+    const branch = await this.branchModel.findByPk(id);
+    if (!branch) {
+      throw new Error('Branch not found');
+    }
+    await branch.destroy();
   }
 
   // async getFilter(branchNames?: string[]): Promise<Branch[]> {

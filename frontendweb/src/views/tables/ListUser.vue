@@ -141,6 +141,8 @@
             <data-table
               :data="userData"
               :columns="columns"
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="user_id"
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -289,7 +291,7 @@
             </div>
 
             <!-- Memanggil Modal  -->
-            <MessageModal :message="alertMessage" />
+            <MessageModal :message="alertMessage" :title="titleMessage"/>
           </div>
         </div>
       </div>
@@ -358,7 +360,7 @@ const totalData = ref(0); // Jumlah total data dari API
 const token = localStorage.getItem('access_token');
 
 const columns = [
-  { title: 'ID', data: 'user_id', sortable: true },
+  // { title: 'ID', data: 'user_id', sortable: true },
   { title: 'Dari Nama', data: 'fullname', sortable: true },
   { title: 'Username', data: 'username', sortable: true },
   { title: 'Role', data: 'role', sortable: true },

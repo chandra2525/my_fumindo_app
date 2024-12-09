@@ -81,6 +81,8 @@
             <data-table
               :data="toolConditionData"
               :columns="toolConditionColumns" 
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="tool_condition_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -246,7 +248,7 @@ const totalData = ref(0); // Jumlah total data dari API
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 const toolConditionColumns = [
-  { title: 'ID', data: 'tool_condition_id', sortable: true },
+  // { title: 'ID', data: 'tool_condition_id', sortable: true },
   { title: 'Nama Kondisi Alat', data: 'tool_condition_name', sortable: true }, 
   { title: 'Aksi', data: 'actions', sortable: false },
 ];

@@ -39,11 +39,11 @@ export class Asset extends Model<Asset> {
   // @Column({ type: DataType.STRING })
   // tool_category: string;
 
-  @Column({ type: DataType.STRING })
-  tool_condition: string;
+  // @Column({ type: DataType.STRING })
+  // tool_condition: string;
 
-  @Column({ type: DataType.STRING })
-  unit: string;
+  // @Column({ type: DataType.STRING })
+  // unit: string;
 
   @Column({ type: DataType.INTEGER })
   initial_stock: number;

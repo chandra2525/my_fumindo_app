@@ -174,7 +174,9 @@
           <div class="table-responsive border-bottom">
             <data-table
               :data="assetData"
-              :columns="AssetColumns"  
+              :columns="AssetColumns" 
+              :currentPage="currentPage"
+              :pageSize="pageSize"  
               :idrow="asset_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
@@ -340,7 +342,7 @@
             </div>
             
             <!-- Modal Berhasil  Hapus  -->
-            <MessageModal :message="alertMessage" />
+            <MessageModal :message="alertMessage" :title="titleMessage"/>
           </div>
         </div>
       </div>
@@ -399,7 +401,7 @@ const token = localStorage.getItem('access_token');
 const user_id = localStorage.getItem('user_id');
 
 const AssetColumns = [
-  { title: 'ID', data: 'asset_id', sortable: true },
+  // { title: 'ID', data: 'asset_id', sortable: true },
   { title: 'Dari Cabang', data: 'branch_name', sortable: true },
   { title: 'Nama Aset', data: 'asset_name', sortable: true },
   { title: 'Kategori', data: 'category', sortable: true },

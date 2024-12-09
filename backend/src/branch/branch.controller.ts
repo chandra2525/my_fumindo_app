@@ -115,8 +115,24 @@ export class BranchController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.branchService.delete(+id);
+  // delete(@Param('id') id: string) {
+  async delete(@Param('id') id: number) {
+    // return this.branchService.delete(+id);
+    try {
+      await this.branchService.delete(id);
+      return { message: 'Branch deleted successfully' };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus cabang ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the branch.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // @Post('import')

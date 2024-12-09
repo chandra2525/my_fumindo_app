@@ -6,6 +6,7 @@
   <table class="table">
     <thead>
       <tr>
+        <th>#</th>
         <th v-for="column in columns" :key="column.data" @click="onSort(column)" class="sortable">
           {{ column.title }}
           <span v-if="sortColumn === column.data && column.sortable">
@@ -15,7 +16,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="row in data" :key="row.idrow">
+      <!-- <tr v-for="row in data" :key="row.idrow"></tr> -->
+      <tr v-for="(row, index) in data" :key="row.idrow">
+        <!-- Nomor urut dihitung berdasarkan indeks dan halaman -->
+        <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
         <td v-for="column in columns" :key="column.data">
           <!-- Tombol khusus untuk kolom "Aksi" -->
           <template v-if="column.data === 'actions'">
@@ -43,6 +47,8 @@ import $ from 'jquery'
 const props = defineProps({
   data: Array,
   columns: Array,
+  currentPage: Number, // Tambahkan prop halaman saat ini
+  pageSize: Number,    // Tambahkan prop ukuran halaman
   idrow: String,
   options: Object,
   className: String,

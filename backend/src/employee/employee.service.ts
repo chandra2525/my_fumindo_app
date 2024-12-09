@@ -227,9 +227,10 @@ export class EmployeeService {
 
   async remove(id: number): Promise<void> {
     const employee = await this.findOne(id);
-    if (employee) {
-      await employee.destroy();
+    if (!employee) {
+      throw new Error('Employee not found');
     }
+    await employee.destroy();
   }
 
   async importEmployes(file: Express.Multer.File): Promise<{ successCount: number; errors: any[] }> {
