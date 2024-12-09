@@ -387,9 +387,10 @@ const token = localStorage.getItem('access_token');
 
 const AssetColumns = [
   // { title: 'ID', data: 'asset_log_id', sortable: true },
-  { title: 'ID Aset', data: 'asset_id', sortable: true },
-  { title: 'ID User  ', data: 'user_id', sortable: true }, 
-  { title: 'Created At', data: 'created_at', sortable: true },
+  // { title: 'ID Aset', data: 'asset_id', sortable: true },
+  { title: 'Nama Aset', data: 'asset_name', sortable: true }, 
+  { title: 'Username', data: 'username', sortable: true }, 
+  { title: 'Dibuat Pada Waktu', data: 'created_at', sortable: true },
   { title: 'Operasi', data: 'operation', sortable: true }, 
   // { title: 'Aksi', data: 'actions', sortable: false },
 ];

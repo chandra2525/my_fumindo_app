@@ -6,6 +6,9 @@ import { User } from '../users/users.model';
 import { QueryTypes } from 'sequelize';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript'; // Import Sequelize
+import * as moment from 'moment-timezone';
+import 'moment/locale/id'; 
+
 @Injectable()
 export class AssetChangeLogService {
   constructor(@InjectModel(AssetChangeLog) private assetChangeLogModel: typeof AssetChangeLog,
@@ -76,18 +79,20 @@ export class AssetChangeLogService {
   
     // Query raw dengan DISTINCT ON
     const query = `
-      SELECT DISTINCT ON (asset_id) 
-        asset_log_id,
-        asset_id,
-        user_id,
-        operation,
-        column_name,
-        value_before,
-        value_after,
-        created_at
-      FROM asset_change_log
+      SELECT DISTINCT ON (DATE_TRUNC('second', acl.created_at))
+          acl.asset_log_id,
+          a.asset_name,
+          u.username,
+          acl.operation,
+          acl.column_name,
+          acl.value_before,
+          acl.value_after,
+          acl.created_at
+      FROM asset_change_log acl
+      FULL JOIN "user" u ON u.user_id = acl.user_id
+      JOIN asset a ON a.asset_id = acl.asset_id
       ${whereSQL}
-      ORDER BY asset_id, ${orderBy} ${orderDirection}
+      ORDER BY DATE_TRUNC('second', acl.created_at) DESC
       LIMIT ${limit} OFFSET ${offset};
     `;
   
@@ -96,14 +101,21 @@ export class AssetChangeLogService {
       model: AssetChangeLog,
       mapToModel: true,
     });
+
+    rows.forEach((row) => {
+      row.created_at = moment(row.created_at)
+        .locale('id') // Atur locale ke bahasa Indonesia
+        .tz('Asia/Jakarta')
+        .format("dddd, DD MMMM YYYY, [Jam] HH:mm:ss [WIB]") as any;
+    });
   
     interface CountResult {
       count: number;
     }
 
     // Hitung jumlah total
-    const countQuery = `
-      SELECT COUNT(DISTINCT asset_id) AS count
+    const countQuery = ` 
+      SELECT COUNT(DISTINCT (DATE_TRUNC('second', created_at))) AS count
       FROM asset_change_log
       ${whereSQL};
     `;
