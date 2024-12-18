@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div ref="elem" :class="`slider slider-${variant}`"></div>
 </template>
 <script>
@@ -26,4 +26,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

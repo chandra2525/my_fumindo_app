@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <section class="login-content">
     <b-row class="m-0 align-items-center bg-white vh-100">
       <b-col md="6 p-0">
@@ -23,4 +23,4 @@
 
 <script setup></script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped></style> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <component :is="tag" :class="classNames" role="tabpanel" :aria-labelledby="areaFor">
     <slot></slot>
   </component>
@@ -47,4 +47,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div :class="`offcanvas offcanvas-bottom share-offcanvas ${showoffcanvas ? 'show' : ''}`" tabindex="-1" id="share-btn" aria-labelledby="shareBottomLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="shareBottomLabel">Share</h5>
@@ -53,4 +53,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

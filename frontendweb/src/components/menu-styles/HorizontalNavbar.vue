@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <default-navbar>
     <button data-trigger="navbar_main" class="d-xl-none btn btn-primary rounded-pill p-1 pt-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
       <svg width="20px" height="20px" viewBox="0 0 24 24">
@@ -38,4 +38,4 @@
 <script setup>
 import DefaultNavbar from '@/components/custom/navbar/DefaultNavbar.vue'
 import HorizontalMenu from '@/components/custom/navbar/HorizontalMenu.vue'
-</script>
+</script> -->

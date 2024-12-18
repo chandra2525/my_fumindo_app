@@ -1,20 +1,13 @@
-<template>
-  <span class="screen-darken"></span>
-  <!-- Main Content Start Here -->
+<!-- <template>
+  <span class="screen-darken"></span> 
   <main class="main-content">
     <dual-compact-navbar></dual-compact-navbar>
-    <main-content-component>
-      <!-- Router View For Pages -->
+    <main-content-component> 
       <router-view></router-view>
     </main-content-component>
-  </main>
-  <!-- Main Content Start Here -->
-  <!-- Footer Component Start Here -->
-  <footer-component></footer-component>
-  <!-- Footer Component End Here -->
-  <!-- Live Customizer Component Start Here -->
-  <setting-offcanvas></setting-offcanvas>
-  <!-- Live Customizer Component End Here-->
+  </main> 
+  <footer-component></footer-component> 
+  <setting-offcanvas></setting-offcanvas> 
 </template>
 
 <script setup>
@@ -35,4 +28,4 @@ onMounted(() => {
 onUnmounted(() => {
   removeClass(document.body, 'dual-compact')
 })
-</script>
+</script> -->

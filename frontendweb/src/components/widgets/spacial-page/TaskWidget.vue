@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <b-card>
     <div class="d-grid grid-flow-col align-items-center justify-content-between mb-2">
       <div class="d-flex align-items-center">
@@ -67,4 +67,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

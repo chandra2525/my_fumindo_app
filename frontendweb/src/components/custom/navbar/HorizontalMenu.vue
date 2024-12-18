@@ -1,5 +1,4 @@
-<template>
-  <!-- Horizontal Menu Start -->
+<!-- <template> 
   <nav id="navbar_main" class="mobile-offcanvas hover-nav horizontal-nav mx-md-auto navbar navbar-expand-xl navbar-light">
     <div class="container-fluid">
       <div class="offcanvas-header px-0">
@@ -24,12 +23,10 @@
           <router-link class="nav-link" :to="{ name: 'boxed-fancy.dashboard' }"> Boxed Fancy</router-link>
         </li>
       </ul>
-    </div>
-    <!-- container-fluid.// -->
-  </nav>
-  <!-- Sidebar Menu End -->
+    </div> 
+  </nav> 
 </template>
 
 <script setup></script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped></style> -->

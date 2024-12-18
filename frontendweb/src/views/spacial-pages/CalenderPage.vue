@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <page-header title="Calender">
     <b-button variant="primary">Back</b-button>
     <b-button variant="primary ms-2" @click="show = true">
@@ -162,7 +162,7 @@ import FlatPicker from 'vue-flatpickr-component'
 
 // Components
 import PageHeader from '@/components/custom/header/PageHeader.vue'
-import FullCalender from '@/components/custom/calender/FullCalender.vue'
+// import FullCalender from '@/components/custom/calender/FullCalender.vue'
 
 // Variables
 const date = ref('')
@@ -323,4 +323,4 @@ const eventSelected = (e) => {
   console.log(e)
   show.value = true
 }
-</script>
+</script> -->

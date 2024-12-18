@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <fieldset>
     <div class="form-card">
       <b-row>
@@ -30,4 +30,4 @@
 export default {
   name: 'FinishComponent'
 }
-</script>
+</script> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="sidebar-profile-card mt-3">
     <div class="sidebar-profile-body">
       <div class="mb-3 d-flex justify-content-center">
@@ -30,4 +30,4 @@
       </div>
     </div>
   </div>
-</template>
+</template> -->

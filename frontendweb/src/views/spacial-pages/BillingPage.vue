@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <b-row>
     <b-col lg="12">
       <b-card body-class="rounded">
@@ -112,4 +112,4 @@
       </b-card>
     </b-col>
   </b-row>
-</template>
+</template> -->

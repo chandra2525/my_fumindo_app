@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <b-row>
     <b-col sm="12">
       <b-card no-body>
@@ -19,4 +19,4 @@ import { ref } from 'vue'
 import LeaFlet from '@/components/custom/vector-map/LeaFlet'
 import { data } from '@/assets/vector-map.js'
 const leafFletOptions = ref(data)
-</script>
+</script> -->

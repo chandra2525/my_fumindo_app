@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="d-flex align-items-center justify-content-between">
     <h6 :class="`text-${variant} mb-0`">{{ title }}</h6>
     <b-dropdown id="dropdown-3" text="" class="dropdown" variant="link text-body p-0" toggle-class="text-decoration-none" no-caret dropleft>
@@ -25,4 +25,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

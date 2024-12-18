@@ -20,41 +20,41 @@ const authChildRoutes = (prefix) => [
     meta: { auth: false, name: 'Login' },
     component: () => import('@/views/auth/default/SignIn.vue')
   },
-  {
-    path: 'register',
-    name: prefix + '.register',
-    meta: { auth: false, name: 'Register' },
-    component: () => import('@/views/auth/default/SignUp.vue')
-  },
-  {
-    path: 'reset-password',
-    name: prefix + '.reset-password',
-    meta: { auth: false, name: 'Reset Password' },
-    component: () => import('@/views/auth/default/ResetPassword.vue')
-  },
-  {
-    path: 'varify-email',
-    name: prefix + '.varify-email',
-    meta: { auth: false, name: 'Varify Email' },
-    component: () => import('@/views/auth/default/VarifyEmail.vue')
-  },
-  {
-    path: 'lock-screen',
-    name: prefix + '.lock-screen',
-    meta: { auth: false, name: 'Lock Screen' },
-    component: () => import('@/views/auth/default/LockScreen.vue')
-  }
+  // {
+  //   path: 'register',
+  //   name: prefix + '.register',
+  //   meta: { auth: false, name: 'Register' },
+  //   component: () => import('@/views/auth/default/SignUp.vue')
+  // },
+  // {
+  //   path: 'reset-password',
+  //   name: prefix + '.reset-password',
+  //   meta: { auth: false, name: 'Reset Password' },
+  //   component: () => import('@/views/auth/default/ResetPassword.vue')
+  // },
+  // {
+  //   path: 'varify-email',
+  //   name: prefix + '.varify-email',
+  //   meta: { auth: false, name: 'Varify Email' },
+  //   component: () => import('@/views/auth/default/VarifyEmail.vue')
+  // },
+  // {
+  //   path: 'lock-screen',
+  //   name: prefix + '.lock-screen',
+  //   meta: { auth: false, name: 'Lock Screen' },
+  //   component: () => import('@/views/auth/default/LockScreen.vue')
+  // }
 ]
 
 // Dashboard routes
-const dashboardRoutes = (prefix) => [
-  {
-    path: '',
-    name: prefix + '.dashboard',
-    meta: { auth: true, name: 'Home', isBanner: false },
-    component: () => import('@/views/dashboards/IndexPage.vue')
-  }
-]
+// const dashboardRoutes = (prefix) => [
+//   {
+//     path: '',
+//     name: prefix + '.dashboard',
+//     meta: { auth: true, name: 'Home', isBanner: false },
+//     component: () => import('@/views/dashboards/IndexPage.vue')
+//   }
+// ]
 // Default routes
 const defaultChildRoutes = (prefix) => [
   {
@@ -64,30 +64,30 @@ const defaultChildRoutes = (prefix) => [
     component: () => import('@/views/dashboards/IndexPage.vue')
   },
   // Spacial Pages
-  {
-    path: '/billing',
-    name: prefix + '.billing',
-    meta: { auth: true, name: 'Billing', isBanner: true },
-    component: () => import('@/views/spacial-pages/BillingPage.vue')
-  },
-  {
-    path: '/calender',
-    name: prefix + '.calender',
-    meta: { auth: true, name: 'Calender', isBanner: true },
-    component: () => import('@/views/spacial-pages/CalenderPage.vue')
-  },
-  {
-    path: '/kanban',
-    name: prefix + '.kanban',
-    meta: { auth: true, name: 'Kanban', isBanner: true },
-    component: () => import('@/views/spacial-pages/KanbanPage.vue')
-  },
-  {
-    path: '/pricing',
-    name: prefix + '.pricing',
-    meta: { auth: true, name: 'Pricing', isBanner: true },
-    component: () => import('@/views/spacial-pages/PricingPage.vue')
-  },
+  // {
+  //   path: '/billing',
+  //   name: prefix + '.billing',
+  //   meta: { auth: true, name: 'Billing', isBanner: true },
+  //   component: () => import('@/views/spacial-pages/BillingPage.vue')
+  // },
+  // {
+  //   path: '/calender',
+  //   name: prefix + '.calender',
+  //   meta: { auth: true, name: 'Calender', isBanner: true },
+  //   component: () => import('@/views/spacial-pages/CalenderPage.vue')
+  // },
+  // {
+  //   path: '/kanban',
+  //   name: prefix + '.kanban',
+  //   meta: { auth: true, name: 'Kanban', isBanner: true },
+  //   component: () => import('@/views/spacial-pages/KanbanPage.vue')
+  // },
+  // {
+  //   path: '/pricing',
+  //   name: prefix + '.pricing',
+  //   meta: { auth: true, name: 'Pricing', isBanner: true },
+  //   component: () => import('@/views/spacial-pages/PricingPage.vue')
+  // },
   {
     path: '/timeline',
     name: prefix + '.timeline',
@@ -151,31 +151,31 @@ const defaultChildRoutes = (prefix) => [
     meta: { auth: true, name: 'Google Map', isBanner: true },
     component: () => import('@/views/maps/GooglePage.vue')
   },
-  {
-    path: '/map-vector',
-    name: prefix + '.map-vector',
-    meta: { auth: true, name: 'Vector Map', isBanner: true },
-    component: () => import('@/views/maps/VectorPage.vue')
-  },
+  // {
+  //   path: '/map-vector',
+  //   name: prefix + '.map-vector',
+  //   meta: { auth: true, name: 'Vector Map', isBanner: true },
+  //   component: () => import('@/views/maps/VectorPage.vue')
+  // },
   // Form Pages
-  {
-    path: '/elements',
-    name: prefix + '.elements',
-    meta: { auth: true, name: 'Elements', isBanner: true },
-    component: () => import('@/views/forms/ElementsPage.vue')
-  },
-  {
-    path: '/validation',
-    name: prefix + '.validation',
-    meta: { auth: true, name: 'Validation', isBanner: true },
-    component: () => import('@/views/forms/ValidationPage.vue')
-  },
-  {
-    path: '/wizard',
-    name: prefix + '.wizard',
-    meta: { auth: true, name: 'Wizard', isBanner: true },
-    component: () => import('@/views/forms/WizardPage.vue')
-  },
+  // {
+  //   path: '/elements',
+  //   name: prefix + '.elements',
+  //   meta: { auth: true, name: 'Elements', isBanner: true },
+  //   component: () => import('@/views/forms/ElementsPage.vue')
+  // },
+  // {
+  //   path: '/validation',
+  //   name: prefix + '.validation',
+  //   meta: { auth: true, name: 'Validation', isBanner: true },
+  //   component: () => import('@/views/forms/ValidationPage.vue')
+  // },
+  // {
+  //   path: '/wizard',
+  //   name: prefix + '.wizard',
+  //   meta: { auth: true, name: 'Wizard', isBanner: true },
+  //   component: () => import('@/views/forms/WizardPage.vue')
+  // },
   // Table Pages
   {
     path: '/bootstrap-table',
@@ -290,12 +290,12 @@ const defaultChildRoutes = (prefix) => [
     meta: { auth: true, name: 'Terms and Conditions', isBanner: true },
     component: () => import('@/views/extra/TermsAndConditions.vue')
   },
-  {
-    path: '/admin-permissions',
-    name: prefix + '.admin-permissions',
-    meta: { auth: true, name: 'Admin Permissions', isBanner: true },
-    component: () => import('@/views/admin/AdminPage.vue')
-  }
+  // {
+  //   path: '/admin-permissions',
+  //   name: prefix + '.admin-permissions',
+  //   meta: { auth: true, name: 'Admin Permissions', isBanner: true },
+  //   component: () => import('@/views/admin/AdminPage.vue')
+  // }
 ]
 
 const errorRoutes = (prefix) => [
@@ -344,36 +344,36 @@ const routes = [
     },
   },
   // Menu Styles
-  {
-    path: '/horizontal',
-    name: 'horizontal',
-    component: () => import('../layouts/menu-styles/HorizontalLayout.vue'),
-    children: dashboardRoutes('horizontal')
-  },
-  {
-    path: '/dual-horizontal',
-    name: 'dual-horizontal',
-    component: () => import('../layouts/menu-styles/DualHorizontalLayout.vue'),
-    children: dashboardRoutes('dual-horizontal')
-  },
-  {
-    path: '/dual-compact',
-    name: 'dual-compact',
-    component: () => import('../layouts/menu-styles/DualCompactLayout.vue'),
-    children: dashboardRoutes('dual-compact')
-  },
-  {
-    path: '/boxed',
-    name: 'boxed',
-    component: () => import('../layouts/menu-styles/BoxedLayout.vue'),
-    children: dashboardRoutes('boxed')
-  },
-  {
-    path: '/boxed-fancy',
-    name: 'boxed-fancy',
-    component: () => import('../layouts/menu-styles/BoxedFancyLayout.vue'),
-    children: dashboardRoutes('boxed-fancy')
-  },
+  // {
+  //   path: '/horizontal',
+  //   name: 'horizontal',
+  //   component: () => import('../layouts/menu-styles/HorizontalLayout.vue'),
+  //   children: dashboardRoutes('horizontal')
+  // },
+  // {
+  //   path: '/dual-horizontal',
+  //   name: 'dual-horizontal',
+  //   component: () => import('../layouts/menu-styles/DualHorizontalLayout.vue'),
+  //   children: dashboardRoutes('dual-horizontal')
+  // },
+  // {
+  //   path: '/dual-compact',
+  //   name: 'dual-compact',
+  //   component: () => import('../layouts/menu-styles/DualCompactLayout.vue'),
+  //   children: dashboardRoutes('dual-compact')
+  // },
+  // {
+  //   path: '/boxed',
+  //   name: 'boxed',
+  //   component: () => import('../layouts/menu-styles/BoxedLayout.vue'),
+  //   children: dashboardRoutes('boxed')
+  // },
+  // {
+  //   path: '/boxed-fancy',
+  //   name: 'boxed-fancy',
+  //   component: () => import('../layouts/menu-styles/BoxedFancyLayout.vue'),
+  //   children: dashboardRoutes('boxed-fancy')
+  // },
 
   // Auth Skins
   {

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <full-calendar :options="options"></full-calendar>
 </template>
 
@@ -66,4 +66,4 @@ export default {
 .fc .fc-button {
   text-transform: capitalize;
 }
-</style>
+</style> -->

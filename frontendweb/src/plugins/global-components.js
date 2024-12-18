@@ -2,8 +2,8 @@
 export default {
   install: (app) => {
     // Tab Components
-    app.component('tab-button', require('@/components/bootstrap/tab/TabButton').default)
-    app.component('tab-pane', require('@/components/bootstrap/tab/TabPane').default)
+    // app.component('tab-button', require('@/components/bootstrap/tab/TabButton').default)
+    // app.component('tab-pane', require('@/components/bootstrap/tab/TabPane').default)
 
     // Brand Components
     app.component('brand-logo', require('@/components/custom/logo/BrandLogo').default)

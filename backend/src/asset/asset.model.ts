@@ -1,8 +1,9 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo  } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany  } from 'sequelize-typescript';
 import { Branch } from '../branch/branch.model';
 import { AssetToolCategory } from '../assetToolCategory/assetToolCategory.model';
 import { AssetToolCondition } from '../assetToolCondition/assetToolCondition.model';
 import { AssetUnit } from '../assetUnit/assetUnit.model';
+import { LoanAsset } from 'src/loanAsset/loanAsset.model';
 
 
 // @Table
@@ -62,6 +63,9 @@ export class Asset extends Model<Asset> {
 
   @BelongsTo(() => AssetUnit)
   assetUnit: AssetUnit;
+
+  @HasMany(() => LoanAsset)
+  loanAsset: LoanAsset[];
 
 }
 

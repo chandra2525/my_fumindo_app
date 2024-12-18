@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <component ref="bsTab" :is="tag" :class="classNames" :id="idName" :data-bs-toggle="toggleType" :data-bs-target="target" role="tab" :aria-controls="target" :aria-selected="active">
     <slot></slot>
   </component>
@@ -64,4 +64,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

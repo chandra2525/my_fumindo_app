@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <default-navbar>
     <button data-trigger="navbar_main" class="d-xl-none btn btn-primary rounded-pill p-1 pt-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
       <svg width="20px" height="20px" viewBox="0 0 24 24">
@@ -13,8 +13,7 @@
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body">
-        <!-- <div class="navbar dual-horizontal"> -->
+      <div class="offcanvas-body"> 
         <ul class="navbar-nav">
           <li class="nav-item"><router-link class="nav-link" :to="{ name: 'horizontal.dashboard' }"> Horizontal </router-link></li>
           <li class="nav-item"><router-link class="nav-link" :to="{ name: 'dual-horizontal.dashboard' }"> Dual Horizontal </router-link></li>
@@ -23,8 +22,7 @@
           </li>
           <li class="nav-item"><router-link class="nav-link" :to="{ name: 'boxed.dashboard' }"> Boxed Horizontal </router-link></li>
           <li class="nav-item"><router-link class="nav-link" :to="{ name: 'boxed-fancy.dashboard' }"> Boxed Fancy</router-link></li>
-        </ul>
-        <!-- </div> -->
+        </ul> 
       </div>
     </div>
     <b-col lg="3 navbar-brand">
@@ -42,4 +40,4 @@
 <script setup>
 import DefaultNavbar from '@/components/custom/navbar/DefaultNavbar.vue'
 import HorizontalMenu from '@/components/custom/navbar/HorizontalMenu.vue'
-</script>
+</script> -->

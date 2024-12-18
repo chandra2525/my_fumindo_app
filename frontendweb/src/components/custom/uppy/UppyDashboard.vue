@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <Dashboard id="drag-drop-area" :uppy="uppy" :open="open" :props="{ onRequestCloseModal: handleClose }" />
   <slot></slot>
 </template>
@@ -25,4 +25,4 @@ export default {
     return { uppy, open, handleClose }
   }
 }
-</script>
+</script> -->

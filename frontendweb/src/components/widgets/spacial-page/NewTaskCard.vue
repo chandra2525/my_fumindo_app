@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="card bg-transparent shadow-none">
     <div class="iq-dashed-border">
       <div class="d-flex align-items-center justify-content-between">
@@ -25,4 +25,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

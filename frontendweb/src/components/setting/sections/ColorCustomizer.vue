@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <div class="d-flex align-items-center justify-content-between">
       <h6 class="mt-4 mb-3">Color Customizer</h6>
@@ -126,4 +126,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <section class="login-content">
     <div class="row m-0 align-items-center bg-white vh-100">
       <div class="col-md-6 d-md-block d-none bg-primary p-0 vh-100 overflow-hidden">
@@ -39,4 +39,4 @@
       </div>
     </div>
   </section>
-</template>
+</template> -->

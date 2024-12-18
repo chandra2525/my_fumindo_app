@@ -1,8 +1,6 @@
-<template>
-  <router-view> </router-view>
-  <!-- Live Customizer Component Start Here -->
-  <setting-offcanvas></setting-offcanvas>
-  <!-- Live Customizer Component End Here-->
+<!-- <template>
+  <router-view> </router-view> 
+  <setting-offcanvas></setting-offcanvas> 
 </template>
 
 <script>
@@ -10,4 +8,4 @@ import SettingOffcanvas from '@/components/setting/SettingOffcanvas.vue'
 export default {
   components: { SettingOffcanvas }
 }
-</script>
+</script> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <h6 class="mt-4 mb-3">Navbar Style</h6>
     <div class="d-grid gap-3 grid-cols-2 mb-4">
@@ -46,4 +46,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

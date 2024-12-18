@@ -52,6 +52,26 @@ export class AssetController {
   @Get('getAssetsCategory')
   async getAssetsCategory() {
     return this.assetService.getAssetsCategory();
+  }  
+
+  @Get('getAssetsName')
+  async getAssetsName( 
+    @Query('category') category?: string,
+    @Query('order_by') orderBy?: string,
+    @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
+    @Query('search') search?: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  // ): Promise<AssetUnit[]> {
+  ) {
+    return this.assetService.getAssetsName(
+      category,
+      orderBy,
+      orderDirection,
+      search,
+      page,
+      pageSize,
+    ); // Panggil logika filter
   }
 
   // @Get('getAssetsToolCategory')

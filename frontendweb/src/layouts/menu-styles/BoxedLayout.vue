@@ -1,22 +1,15 @@
-<template>
+<!-- <template>
   <div class="boxed-inner">
-    <span class="screen-darken"></span>
-    <!-- Main Content Start Here -->
+    <span class="screen-darken"></span> 
     <main class="main-content">
       <horizontal-navbar></horizontal-navbar>
-      <main-content-component>
-        <!-- Router View For Pages -->
+      <main-content-component> 
         <router-view></router-view>
       </main-content-component>
-    </main>
-    <!-- Main Content Start Here -->
-    <!-- Footer Component Start Here -->
-    <footer-component></footer-component>
-    <!-- Footer Component End Here -->
-  </div>
-  <!-- Live Customizer Component Start Here -->
-  <setting-offcanvas></setting-offcanvas>
-  <!-- Live Customizer Component End Here-->
+    </main> 
+    <footer-component></footer-component> 
+  </div> 
+  <setting-offcanvas></setting-offcanvas> 
 </template>
 
 <script setup>
@@ -37,4 +30,4 @@ onMounted(() => {
 onUnmounted(() => {
   removeClass(document.body, 'boxed')
 })
-</script>
+</script> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="card">
     <div class="card-header d-flex justify-content-between">
       <div class="header-title">
@@ -117,4 +117,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

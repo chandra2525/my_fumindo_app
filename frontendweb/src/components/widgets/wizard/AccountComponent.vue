@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <fieldset>
     <div class="form-card text-start">
       <b-row>
@@ -45,4 +45,4 @@ export default {
     return { props, changeTab }
   }
 }
-</script>
+</script> -->

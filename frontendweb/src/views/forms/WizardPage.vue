@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <b-row>
     <b-col sm="12">
       <b-card no-body>
@@ -94,4 +94,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <b-row>
     <b-col sm="12">
       <b-card no-body class="card">
@@ -91,8 +91,7 @@
         </b-card-body>
       </b-card>
     </b-col>
-  </b-row>
-  <!-- New Permission modal -->
+  </b-row> 
   <div class="modal fade" id="new-permission" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -112,8 +111,7 @@
         </div>
       </div>
     </div>
-  </div>
-  <!-- New Role modal -->
+  </div> 
   <div class="modal fade" id="new-role" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropRoleLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -234,4 +232,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

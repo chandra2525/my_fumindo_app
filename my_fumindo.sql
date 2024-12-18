@@ -5,7 +5,7 @@
 -- Dumped from database version 16.6
 -- Dumped by pg_dump version 17.2
 
--- Started on 2024-12-09 13:11:02 WIB
+-- Started on 2024-12-10 12:10:16 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -832,12 +832,12 @@ ALTER TABLE ONLY public.asset
 
 
 --
--- TOC entry 3517 (class 2606 OID 16493)
+-- TOC entry 3517 (class 2606 OID 16508)
 -- Name: asset_change_log fk_asset_change1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.asset_change_log
-    ADD CONSTRAINT fk_asset_change1 FOREIGN KEY (asset_id) REFERENCES public.asset(asset_id) NOT VALID;
+    ADD CONSTRAINT fk_asset_change1 FOREIGN KEY (asset_id) REFERENCES public.asset(asset_id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
 
 
 --
@@ -858,7 +858,7 @@ ALTER TABLE ONLY public."user"
     ADD CONSTRAINT fk_user1 FOREIGN KEY (employee_id) REFERENCES public.employee(employee_id) NOT VALID;
 
 
--- Completed on 2024-12-09 13:11:04 WIB
+-- Completed on 2024-12-10 12:10:17 WIB
 
 --
 -- PostgreSQL database dump complete

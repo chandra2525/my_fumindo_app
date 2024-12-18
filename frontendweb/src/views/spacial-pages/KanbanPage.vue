@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <b-row>
     <b-col md="12">
       <b-card>
@@ -169,4 +169,4 @@ const closedList = reactive([
 .list-group-item i {
   cursor: pointer;
 }
-</style>
+</style> -->

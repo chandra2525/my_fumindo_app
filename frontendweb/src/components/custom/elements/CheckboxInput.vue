@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div :class="className">
     <input type="checkbox" :value="value" class="btn-check" :name="btnName" :id="id" autoComplete="off" :checked="checkboxCheckValue(defaultChecked, value)" @change="$emit('onChange', onCheckboxUpdate(defaultChecked, value), btnName)" />
     <label :class="`btn btn-border  ${labelClass}`" :for="id">
@@ -62,4 +62,4 @@ export default {
     return { checkboxCheckValue, onCheckboxUpdate }
   }
 }
-</script>
+</script> -->

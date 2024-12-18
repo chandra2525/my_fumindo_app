@@ -1,5 +1,4 @@
-<template>
-  <!--Nav Start-->
+<!-- <template> 
   <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark iq-navbar iq-dual-compact">
     <div class="container-fluid navbar-innser">
       <router-link :to="{ name: 'default.dashboard' }" class="navbar-brand d-flex align-items-center ms-0">
@@ -78,4 +77,4 @@
 <script setup>
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped></style> -->

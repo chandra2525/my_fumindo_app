@@ -10,6 +10,8 @@ import { AssetChangeLogModule } from './assetChangeLog/assetChangeLog.module';
 import { AssetToolCategoryModule } from './assetToolCategory/assetToolCategory.module';
 import { AssetToolConditionModule } from './assetToolCondition/assetToolCondition.module';
 import { AssetUnitModule } from './assetUnit/assetUnit.module';
+import { LoanModule } from './loan/loan.module';
+import { LoanAssetModule } from './loanAsset/loanAsset.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -25,6 +27,8 @@ import { databaseConfig } from './config/database.config';
     AssetToolCategoryModule,
     AssetToolConditionModule,
     AssetUnitModule,
+    LoanModule,
+    LoanAssetModule,
   ],
 })
 export class AppModule {}

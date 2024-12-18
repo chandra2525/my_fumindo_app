@@ -149,6 +149,50 @@ export class AssetService {
     return assetsCategory.map(asset => asset.category);
   }
 
+  
+  async getAssetsName( 
+    category?: string,
+    orderBy: string = 'asset_id',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
+    search?: string,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<{ rows: Asset[]; sp: any }> {
+    const whereClause: any = {};
+  
+    if (category) {
+      whereClause.category = { [Op.iLike]: `%${category}%` };  
+    }
+
+    if (search) {
+      whereClause[Op.or] = [
+        { asset_name: { [Op.iLike]: `%${search}%` } },
+      ];
+    }
+
+    // Pagination variables
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
+  
+    const { rows, count } = await this.assetModel.findAndCountAll({
+      attributes: ['asset_id', 'asset_name'],
+      where: whereClause,
+      order: [[orderBy, orderDirection]],
+      offset,
+      limit,
+    });
+
+    const sp = {
+      page,
+      pageSize,
+      pageCount: Math.ceil(count / pageSize),
+      rowCount: count,
+      start: offset,
+      limit,
+    };
+  
+    return { rows, sp };
+  }
   // async getAssetsToolCategory(): Promise<string[]> {
   //   const assetsToolCategory = await this.assetModel.findAll({
   //     attributes: ['tool_category'],

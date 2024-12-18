@@ -1,1 +1,0 @@
-"use strict";(self["webpackChunkhopeui_vue"]=self["webpackChunkhopeui_vue"]||[]).push([[1162],{61162:function(e,u,n){n.r(u),n.d(u,{default:function(){return i}});var r=n(56768);function t(e,u,n,t,a,o){const c=(0,r.g2)("router-view");return(0,r.uX)(),(0,r.Wv)(c)}var a={name:"blank-layout"},o=n(71241);const c=(0,o.A)(a,[["render",t]]);var i=c}}]);

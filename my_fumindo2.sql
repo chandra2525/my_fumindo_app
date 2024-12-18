@@ -5,7 +5,7 @@
 -- Dumped from database version 17.2
 -- Dumped by pg_dump version 17.2
 
--- Started on 2024-12-09 13:11:25 WIB
+-- Started on 2024-12-10 10:23:21 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -502,6 +502,14 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 221	7	3	tool_category_id	\N	39	Edit	2024-12-04 16:08:48.534388+07
 224	8	3	tool_category_id	\N	40	Edit	2024-12-04 16:09:25.149492+07
 235	16	3	tool_category_id	0	38	Edit	2024-12-04 16:13:24.87217+07
+98	12	10	asset_id	12	\N	Tambah	2024-11-29 09:17:59.343436+07
+99	12	10	branch_id	4	4	Tambah	2024-11-29 09:17:59.34472+07
+100	12	10	asset_name	SARUNG TANGAN KATUN	SARUNG TANGAN KATUN	Tambah	2024-11-29 09:17:59.345425+07
+101	12	10	category	Bahan	Bahan	Tambah	2024-11-29 09:17:59.345995+07
+102	12	10	tool_category			Tambah	2024-11-29 09:17:59.346612+07
+103	12	10	tool_condition			Tambah	2024-11-29 09:17:59.347216+07
+104	12	10	unit	PCS	PCS	Tambah	2024-11-29 09:17:59.349894+07
+105	12	10	initial_stock	16	16	Tambah	2024-11-29 09:17:59.352786+07
 262	15	1	tool_category_id	0	38	Edit	2024-12-05 09:40:27.537729+07
 263	15	1	tool_condition_id	\N	0	Edit	2024-12-05 09:40:27.540495+07
 264	15	1	unit_id	\N	12	Edit	2024-12-05 09:40:27.542696+07
@@ -513,56 +521,6 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 288	6	1	tool_condition_id	\N	7	Edit	2024-12-05 09:43:27.639611+07
 289	6	1	unit_id	\N	14	Edit	2024-12-05 09:43:27.642029+07
 291	4	1	unit_id	\N	14	Edit	2024-12-05 09:43:43.978779+07
-56	8	\N	asset_id	8	\N	Tambah	2024-11-29 09:15:14.576678+07
-57	8	\N	branch_id	3	3	Tambah	2024-11-29 09:15:14.57815+07
-58	8	\N	asset_name	Coba Alat	Coba Alat	Tambah	2024-11-29 09:15:14.579077+07
-59	8	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:15:14.580047+07
-60	8	\N	tool_category			Tambah	2024-11-29 09:15:14.583719+07
-61	8	\N	tool_condition			Tambah	2024-11-29 09:15:14.589943+07
-62	8	\N	unit	PCS	PCS	Tambah	2024-11-29 09:15:14.594325+07
-63	8	\N	initial_stock	3	3	Tambah	2024-11-29 09:15:14.595781+07
-64	8	\N	current_stock	3	3	Tambah	2024-11-29 09:15:14.597035+07
-65	8	\N	asset_name	Coba Alat	FOGGING TASCO KN 150	Edit	2024-11-29 09:15:31.638253+07
-66	8	\N	category	Bahan	Alat	Edit	2024-11-29 09:15:31.651231+07
-67	8	\N	tool_category		Peralatan Pest Control	Edit	2024-11-29 09:15:31.652905+07
-68	8	\N	tool_condition		Baik	Edit	2024-11-29 09:15:31.655594+07
-69	8	\N	unit	PCS	UNIT	Edit	2024-11-29 09:15:31.656616+07
-70	8	\N	current_stock	3	2	Edit	2024-11-29 09:15:31.657235+07
-71	9	\N	asset_id	9	\N	Tambah	2024-11-29 09:16:43.855329+07
-72	9	\N	branch_id	3	3	Tambah	2024-11-29 09:16:43.857136+07
-73	9	\N	asset_name	METHYL BROMIDE	METHYL BROMIDE	Tambah	2024-11-29 09:16:43.858533+07
-74	9	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:16:43.86061+07
-75	9	\N	tool_category			Tambah	2024-11-29 09:16:43.862901+07
-76	9	\N	tool_condition			Tambah	2024-11-29 09:16:43.864481+07
-77	9	\N	unit	TABUNG	TABUNG	Tambah	2024-11-29 09:16:43.87823+07
-78	9	\N	initial_stock	10	10	Tambah	2024-11-29 09:16:43.880706+07
-79	9	\N	current_stock	8	8	Tambah	2024-11-29 09:16:43.882152+07
-80	10	\N	asset_id	10	\N	Tambah	2024-11-29 09:17:10.11228+07
-81	10	\N	branch_id	3	3	Tambah	2024-11-29 09:17:10.114563+07
-82	10	\N	asset_name	PHOSPHIN/ PH3 (KINGPHOST)	PHOSPHIN/ PH3 (KINGPHOST)	Tambah	2024-11-29 09:17:10.12948+07
-83	10	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:17:10.18946+07
-84	10	\N	tool_category			Tambah	2024-11-29 09:17:10.194049+07
-85	10	\N	tool_condition			Tambah	2024-11-29 09:17:10.195321+07
-86	10	\N	unit	KG	KG	Tambah	2024-11-29 09:17:10.196487+07
-87	10	\N	initial_stock	20	20	Tambah	2024-11-29 09:17:10.19754+07
-88	10	\N	current_stock	18	18	Tambah	2024-11-29 09:17:10.198383+07
-89	11	\N	asset_id	11	\N	Tambah	2024-11-29 09:17:29.40742+07
-90	11	\N	branch_id	4	4	Tambah	2024-11-29 09:17:29.409095+07
-91	11	\N	asset_name	SULFURYL FLOURIDE	SULFURYL FLOURIDE	Tambah	2024-11-29 09:17:29.410244+07
-92	11	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:17:29.412176+07
-93	11	\N	tool_category			Tambah	2024-11-29 09:17:29.425461+07
-94	11	\N	tool_condition			Tambah	2024-11-29 09:17:29.427051+07
-95	11	\N	unit	TABUNG	TABUNG	Tambah	2024-11-29 09:17:29.429109+07
-96	11	\N	initial_stock	8	8	Tambah	2024-11-29 09:17:29.431087+07
-97	11	\N	current_stock	8	8	Tambah	2024-11-29 09:17:29.438135+07
-98	12	\N	asset_id	12	\N	Tambah	2024-11-29 09:17:59.343436+07
-99	12	\N	branch_id	4	4	Tambah	2024-11-29 09:17:59.34472+07
-100	12	\N	asset_name	SARUNG TANGAN KATUN	SARUNG TANGAN KATUN	Tambah	2024-11-29 09:17:59.345425+07
-101	12	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:17:59.345995+07
-102	12	\N	tool_category			Tambah	2024-11-29 09:17:59.346612+07
-103	12	\N	tool_condition			Tambah	2024-11-29 09:17:59.347216+07
-104	12	\N	unit	PCS	PCS	Tambah	2024-11-29 09:17:59.349894+07
-105	12	\N	initial_stock	16	16	Tambah	2024-11-29 09:17:59.352786+07
 11	3	1	asset_id	3	\N	Tambah	2024-11-29 09:11:57.242418+07
 12	3	1	branch_id	4	4	Tambah	2024-11-29 09:11:57.244837+07
 13	3	1	asset_name	BLOWER KRISBOW + BELALAI	BLOWER KRISBOW + BELALAI	Tambah	2024-11-29 09:11:57.267245+07
@@ -586,52 +544,40 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 41	6	4	category	Alat	Alat	Tambah	2024-11-29 09:14:10.276482+07
 42	6	4	tool_category	Alat Ukur Fumigasi	Alat Ukur Fumigasi	Tambah	2024-11-29 09:14:10.277084+07
 43	6	4	tool_condition	Rusak	Rusak	Tambah	2024-11-29 09:14:10.292089+07
-106	12	\N	current_stock	13	13	Tambah	2024-11-29 09:17:59.353532+07
-107	13	\N	asset_id	13	\N	Tambah	2024-11-29 09:18:53.530139+07
-108	13	\N	branch_id	4	4	Tambah	2024-11-29 09:18:53.548671+07
-109	13	\N	asset_name	RATGONE 0,005 BB	RATGONE 0,005 BB	Tambah	2024-11-29 09:18:53.551612+07
-110	13	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:18:53.553078+07
-111	13	\N	tool_category			Tambah	2024-11-29 09:18:53.554081+07
-112	13	\N	tool_condition			Tambah	2024-11-29 09:18:53.555032+07
-113	13	\N	unit	GRAM	GRAM	Tambah	2024-11-29 09:18:53.55583+07
-114	13	\N	initial_stock	11	11	Tambah	2024-11-29 09:18:53.556545+07
-115	13	\N	current_stock	9	9	Tambah	2024-11-29 09:18:53.55723+07
-116	14	\N	asset_id	14	\N	Tambah	2024-11-29 09:19:14.746573+07
-117	14	\N	branch_id	4	4	Tambah	2024-11-29 09:19:14.750667+07
-118	14	\N	asset_name	RODEX 0,005 BB	RODEX 0,005 BB	Tambah	2024-11-29 09:19:14.75175+07
-119	14	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:19:14.752568+07
-120	14	\N	tool_category			Tambah	2024-11-29 09:19:14.753931+07
-121	14	\N	tool_condition			Tambah	2024-11-29 09:19:14.756364+07
-122	14	\N	unit	GRAM	GRAM	Tambah	2024-11-29 09:19:14.757625+07
-123	14	\N	initial_stock	10	10	Tambah	2024-11-29 09:19:14.758474+07
-124	14	\N	current_stock	8	8	Tambah	2024-11-29 09:19:14.759366+07
-125	15	\N	asset_id	15	\N	Tambah	2024-11-29 09:19:44.694162+07
-126	15	\N	branch_id	4	4	Tambah	2024-11-29 09:19:44.695102+07
-127	15	\N	asset_name	 BESTRIN FORTE 100 EC	 BESTRIN FORTE 100 EC	Tambah	2024-11-29 09:19:44.697776+07
-128	15	\N	category	Bahan	Bahan	Tambah	2024-11-29 09:19:44.699134+07
-129	15	\N	tool_category			Tambah	2024-11-29 09:19:44.703582+07
-130	15	\N	tool_condition			Tambah	2024-11-29 09:19:44.704673+07
-131	15	\N	unit	L	L	Tambah	2024-11-29 09:19:44.705453+07
-132	15	\N	initial_stock	13	13	Tambah	2024-11-29 09:19:44.706215+07
-133	15	\N	current_stock	10	10	Tambah	2024-11-29 09:19:44.716525+07
-134	16	\N	asset_id	16	\N	Tambah	2024-11-29 09:31:28.436542+07
-135	16	\N	branch_id	4	4	Tambah	2024-11-29 09:31:28.457307+07
-136	16	\N	asset_name	SCBA FMS	SCBA FMS	Tambah	2024-11-29 09:31:28.458869+07
-137	16	\N	category	Alat	Alat	Tambah	2024-11-29 09:31:28.460544+07
-138	16	\N	tool_category	Peralatan Fumigasi	Peralatan Fumigasi	Tambah	2024-11-29 09:31:28.462133+07
-139	16	\N	tool_condition	Baik	Baik	Tambah	2024-11-29 09:31:28.463331+07
-140	16	\N	unit	UNIT	UNIT	Tambah	2024-11-29 09:31:28.464228+07
-141	16	\N	initial_stock	3	3	Tambah	2024-11-29 09:31:28.464884+07
-142	16	\N	current_stock	2	2	Tambah	2024-11-29 09:31:28.465413+07
-143	17	\N	asset_id	17	\N	Tambah	2024-12-02 17:11:18.249421+07
-144	17	\N	branch_id	3	3	Tambah	2024-12-02 17:11:18.255278+07
-145	17	\N	asset_name	BLOWER KRISBOW + BELALAI	BLOWER KRISBOW + BELALAI	Tambah	2024-12-02 17:11:18.256562+07
-146	17	\N	category	Alat	Alat	Tambah	2024-12-02 17:11:18.259303+07
-147	17	\N	tool_category	Alat Ukur Fumigasi	Alat Ukur Fumigasi	Tambah	2024-12-02 17:11:18.261676+07
-148	17	\N	tool_condition	Cukup	Cukup	Tambah	2024-12-02 17:11:18.262486+07
-149	17	\N	unit	UNIT	UNIT	Tambah	2024-12-02 17:11:18.263141+07
-150	17	\N	initial_stock	4	4	Tambah	2024-12-02 17:11:18.263892+07
-151	17	\N	current_stock	3	3	Tambah	2024-12-02 17:11:18.264704+07
+56	8	5	asset_id	8	\N	Tambah	2024-11-29 09:15:14.576678+07
+57	8	5	branch_id	3	3	Tambah	2024-11-29 09:15:14.57815+07
+58	8	5	asset_name	Coba Alat	Coba Alat	Tambah	2024-11-29 09:15:14.579077+07
+59	8	5	category	Bahan	Bahan	Tambah	2024-11-29 09:15:14.580047+07
+60	8	5	tool_category			Tambah	2024-11-29 09:15:14.583719+07
+61	8	5	tool_condition			Tambah	2024-11-29 09:15:14.589943+07
+62	8	5	unit	PCS	PCS	Tambah	2024-11-29 09:15:14.594325+07
+63	8	5	initial_stock	3	3	Tambah	2024-11-29 09:15:14.595781+07
+64	8	5	current_stock	3	3	Tambah	2024-11-29 09:15:14.597035+07
+80	10	10	asset_id	10	\N	Tambah	2024-11-29 09:17:10.11228+07
+65	8	9	asset_name	Coba Alat	FOGGING TASCO KN 150	Edit	2024-11-29 09:15:31.638253+07
+66	8	9	category	Bahan	Alat	Edit	2024-11-29 09:15:31.651231+07
+67	8	9	tool_category		Peralatan Pest Control	Edit	2024-11-29 09:15:31.652905+07
+68	8	9	tool_condition		Baik	Edit	2024-11-29 09:15:31.655594+07
+69	8	9	unit	PCS	UNIT	Edit	2024-11-29 09:15:31.656616+07
+70	8	9	current_stock	3	2	Edit	2024-11-29 09:15:31.657235+07
+71	9	5	asset_id	9	\N	Tambah	2024-11-29 09:16:43.855329+07
+72	9	5	branch_id	3	3	Tambah	2024-11-29 09:16:43.857136+07
+73	9	5	asset_name	METHYL BROMIDE	METHYL BROMIDE	Tambah	2024-11-29 09:16:43.858533+07
+74	9	5	category	Bahan	Bahan	Tambah	2024-11-29 09:16:43.86061+07
+75	9	5	tool_category			Tambah	2024-11-29 09:16:43.862901+07
+81	10	10	branch_id	3	3	Tambah	2024-11-29 09:17:10.114563+07
+82	10	10	asset_name	PHOSPHIN/ PH3 (KINGPHOST)	PHOSPHIN/ PH3 (KINGPHOST)	Tambah	2024-11-29 09:17:10.12948+07
+83	10	10	category	Bahan	Bahan	Tambah	2024-11-29 09:17:10.18946+07
+84	10	10	tool_category			Tambah	2024-11-29 09:17:10.194049+07
+85	10	10	tool_condition			Tambah	2024-11-29 09:17:10.195321+07
+86	10	10	unit	KG	KG	Tambah	2024-11-29 09:17:10.196487+07
+87	10	10	initial_stock	20	20	Tambah	2024-11-29 09:17:10.19754+07
+88	10	10	current_stock	18	18	Tambah	2024-11-29 09:17:10.198383+07
+89	11	9	asset_id	11	\N	Tambah	2024-11-29 09:17:29.40742+07
+90	11	9	branch_id	4	4	Tambah	2024-11-29 09:17:29.409095+07
+91	11	9	asset_name	SULFURYL FLOURIDE	SULFURYL FLOURIDE	Tambah	2024-11-29 09:17:29.410244+07
+92	11	9	category	Bahan	Bahan	Tambah	2024-11-29 09:17:29.412176+07
+93	11	9	tool_category			Tambah	2024-11-29 09:17:29.425461+07
 19	3	1	current_stock	3	3	Tambah	2024-11-29 09:11:57.309415+07
 20	4	1	asset_id	4	\N	Tambah	2024-11-29 09:13:06.326652+07
 21	4	1	branch_id	3	3	Tambah	2024-11-29 09:13:06.328408+07
@@ -659,6 +605,9 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 222	16	3	tool_category_id	\N	40	Edit	2024-12-04 16:09:00.736528+07
 225	10	3	tool_category_id	\N	0	Edit	2024-12-04 16:11:40.729258+07
 236	17	3	tool_category_id	0	40	Edit	2024-12-04 16:13:31.026888+07
+106	12	10	current_stock	13	13	Tambah	2024-11-29 09:17:59.353532+07
+107	13	4	asset_id	13	\N	Tambah	2024-11-29 09:18:53.530139+07
+108	13	4	branch_id	4	4	Tambah	2024-11-29 09:18:53.548671+07
 265	14	1	tool_category_id	0	38	Edit	2024-12-05 09:40:41.52726+07
 266	14	1	tool_condition_id	\N	0	Edit	2024-12-05 09:40:41.528858+07
 267	14	1	unit_id	\N	10	Edit	2024-12-05 09:40:41.529856+07
@@ -668,8 +617,51 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 281	9	1	tool_category_id	0	38	Edit	2024-12-05 09:42:57.354169+07
 282	9	1	tool_condition_id	\N	0	Edit	2024-12-05 09:42:57.355769+07
 283	9	1	unit_id	\N	12	Edit	2024-12-05 09:42:57.356642+07
-293	16	1	tool_condition_id	\N	7	Edit	2024-12-05 09:44:07.260435+07
-294	16	1	unit_id	\N	14	Edit	2024-12-05 09:44:07.262409+07
+109	13	4	asset_name	RATGONE 0,005 BB	RATGONE 0,005 BB	Tambah	2024-11-29 09:18:53.551612+07
+110	13	4	category	Bahan	Bahan	Tambah	2024-11-29 09:18:53.553078+07
+111	13	4	tool_category			Tambah	2024-11-29 09:18:53.554081+07
+112	13	4	tool_condition			Tambah	2024-11-29 09:18:53.555032+07
+113	13	4	unit	GRAM	GRAM	Tambah	2024-11-29 09:18:53.55583+07
+114	13	4	initial_stock	11	11	Tambah	2024-11-29 09:18:53.556545+07
+115	13	4	current_stock	9	9	Tambah	2024-11-29 09:18:53.55723+07
+116	14	3	asset_id	14	\N	Tambah	2024-11-29 09:19:14.746573+07
+117	14	3	branch_id	4	4	Tambah	2024-11-29 09:19:14.750667+07
+118	14	3	asset_name	RODEX 0,005 BB	RODEX 0,005 BB	Tambah	2024-11-29 09:19:14.75175+07
+119	14	3	category	Bahan	Bahan	Tambah	2024-11-29 09:19:14.752568+07
+120	14	3	tool_category			Tambah	2024-11-29 09:19:14.753931+07
+121	14	3	tool_condition			Tambah	2024-11-29 09:19:14.756364+07
+122	14	3	unit	GRAM	GRAM	Tambah	2024-11-29 09:19:14.757625+07
+123	14	3	initial_stock	10	10	Tambah	2024-11-29 09:19:14.758474+07
+124	14	3	current_stock	8	8	Tambah	2024-11-29 09:19:14.759366+07
+125	15	9	asset_id	15	\N	Tambah	2024-11-29 09:19:44.694162+07
+126	15	9	branch_id	4	4	Tambah	2024-11-29 09:19:44.695102+07
+127	15	9	asset_name	 BESTRIN FORTE 100 EC	 BESTRIN FORTE 100 EC	Tambah	2024-11-29 09:19:44.697776+07
+128	15	9	category	Bahan	Bahan	Tambah	2024-11-29 09:19:44.699134+07
+129	15	9	tool_category			Tambah	2024-11-29 09:19:44.703582+07
+130	15	9	tool_condition			Tambah	2024-11-29 09:19:44.704673+07
+131	15	9	unit	L	L	Tambah	2024-11-29 09:19:44.705453+07
+132	15	9	initial_stock	13	13	Tambah	2024-11-29 09:19:44.706215+07
+133	15	9	current_stock	10	10	Tambah	2024-11-29 09:19:44.716525+07
+134	16	10	asset_id	16	\N	Tambah	2024-11-29 09:31:28.436542+07
+135	16	10	branch_id	4	4	Tambah	2024-11-29 09:31:28.457307+07
+136	16	10	asset_name	SCBA FMS	SCBA FMS	Tambah	2024-11-29 09:31:28.458869+07
+137	16	10	category	Alat	Alat	Tambah	2024-11-29 09:31:28.460544+07
+138	16	10	tool_category	Peralatan Fumigasi	Peralatan Fumigasi	Tambah	2024-11-29 09:31:28.462133+07
+139	16	10	tool_condition	Baik	Baik	Tambah	2024-11-29 09:31:28.463331+07
+140	16	10	unit	UNIT	UNIT	Tambah	2024-11-29 09:31:28.464228+07
+141	16	10	initial_stock	3	3	Tambah	2024-11-29 09:31:28.464884+07
+142	16	10	current_stock	2	2	Tambah	2024-11-29 09:31:28.465413+07
+143	17	4	asset_id	17	\N	Tambah	2024-12-02 17:11:18.249421+07
+144	17	4	branch_id	3	3	Tambah	2024-12-02 17:11:18.255278+07
+145	17	4	asset_name	BLOWER KRISBOW + BELALAI	BLOWER KRISBOW + BELALAI	Tambah	2024-12-02 17:11:18.256562+07
+146	17	4	category	Alat	Alat	Tambah	2024-12-02 17:11:18.259303+07
+147	17	4	tool_category	Alat Ukur Fumigasi	Alat Ukur Fumigasi	Tambah	2024-12-02 17:11:18.261676+07
+148	17	4	tool_condition	Cukup	Cukup	Tambah	2024-12-02 17:11:18.262486+07
+149	17	4	unit	UNIT	UNIT	Tambah	2024-12-02 17:11:18.263141+07
+150	17	4	initial_stock	4	4	Tambah	2024-12-02 17:11:18.263892+07
+151	17	4	current_stock	3	3	Tambah	2024-12-02 17:11:18.264704+07
+293	16	8	tool_condition_id	\N	7	Edit	2024-12-05 09:44:07.260435+07
+294	16	8	unit_id	\N	14	Edit	2024-12-05 09:44:07.262409+07
 218	4	3	tool_category_id	\N	40	Edit	2024-12-04 16:08:29.127086+07
 220	6	3	tool_category_id	\N	39	Edit	2024-12-04 16:08:43.007131+07
 223	16	3	tool_category_id	40	38	Edit	2024-12-04 16:09:12.220228+07
@@ -688,6 +680,14 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 287	7	1	unit_id	\N	14	Edit	2024-12-05 09:43:19.253021+07
 290	5	1	unit_id	\N	14	Edit	2024-12-05 09:43:33.952713+07
 292	3	1	unit_id	\N	14	Edit	2024-12-05 09:43:47.750351+07
+76	9	5	tool_condition			Tambah	2024-11-29 09:16:43.864481+07
+77	9	5	unit	TABUNG	TABUNG	Tambah	2024-11-29 09:16:43.87823+07
+78	9	5	initial_stock	10	10	Tambah	2024-11-29 09:16:43.880706+07
+79	9	5	current_stock	8	8	Tambah	2024-11-29 09:16:43.882152+07
+94	11	9	tool_condition			Tambah	2024-11-29 09:17:29.427051+07
+95	11	9	unit	TABUNG	TABUNG	Tambah	2024-11-29 09:17:29.429109+07
+96	11	9	initial_stock	8	8	Tambah	2024-11-29 09:17:29.431087+07
+97	11	9	current_stock	8	8	Tambah	2024-11-29 09:17:29.438135+07
 \.
 
 
@@ -699,6 +699,10 @@ COPY public.asset_change_log (asset_log_id, asset_id, user_id, column_name, valu
 
 COPY public.blacklist_tokens (id_blacklist_token, token, expired_at, created_at) FROM stdin;
 13	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoYW5kcmEyNTI1Iiwic3ViIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3MzM3MTU5NTYsImV4cCI6MTczMzgwMjM1Nn0.G4jKAXj4GE0bzCNdh8_j9ZlVk8t3Rcc5srX7_L_v2dI	2024-12-10 10:46:00.803+07	2024-12-09 10:46:00.804+07
+14	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoYW5kcmEyNTI1Iiwic3ViIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3MzM3MTYyOTUsImV4cCI6MTczMzgwMjY5NX0.BgebOXcpDZekrEL3ma3x3SpXyXurD33aO_UrGJCcN3U	2024-12-10 22:44:12.879+07	2024-12-09 22:44:12.882+07
+15	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoYW5kcmEyNTI1Iiwic3ViIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3MzM3NTkwNTYsImV4cCI6MTczMzg0NTQ1Nn0.UmHgvgWTgA7lcuqOsdlcx_DABx6JPtU7O6TArb36JK4	2024-12-10 23:25:14.99+07	2024-12-09 23:25:14.991+07
+16	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoYW5kcmEyNTI1Iiwic3ViIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3MzM3NjE1MTksImV4cCI6MTczMzg0NzkxOX0.AlUn4fu8h_0cyIZgmuLNay1GK4snjwnmk-D5JgK5HU8	2024-12-10 23:47:10.764+07	2024-12-09 23:47:10.765+07
+17	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoYW5kcmEyNTI1Iiwic3ViIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3MzM3NjI4MzYsImV4cCI6MTczMzg0OTIzNn0.Xlwe21lUbBERu9aUiQLweCTHF1o3txWJxKcXm8-nQQo	2024-12-11 09:42:55.442+07	2024-12-10 09:42:55.445+07
 \.
 
 
@@ -797,6 +801,7 @@ COPY public."user" (user_id, employee_id, username, password, type_user, role) F
 8	9	sayuti2525	$2a$10$gioSR0wvwBTK36lb.bfKru/kx/zkBmj8KVaXgPACtI.qgQs3Eh3j6	Employee	Petugas Lapangan
 10	14	cahya2525	$2a$10$mZQL.EJSx24Mgxo/IcwTuOlj1b23UOmMxiXUTlgqRoPziVkHbLg4K	\N	Manajer Teknis
 1	1	chandra2525	$2a$10$.jsNzd9.URRQ9tsxw8YN8.lWd2MjtQkMVMj8.mjWrobCCpyA2mShi	Employee	Admin
+16	\N	asdasd	$2a$10$r76I203GLcQidt7Zqj4QdOQVr1KhYZivUh4P12.TYsoJjS8emLWoq	\N	Admin
 \.
 
 
@@ -806,7 +811,7 @@ COPY public."user" (user_id, employee_id, username, password, type_user, role) F
 -- Name: asset_asset_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.asset_asset_id_seq', 65, true);
+SELECT pg_catalog.setval('public.asset_asset_id_seq', 68, true);
 
 
 --
@@ -815,7 +820,7 @@ SELECT pg_catalog.setval('public.asset_asset_id_seq', 65, true);
 -- Name: asset_change_log_asset_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.asset_change_log_asset_log_id_seq', 323, true);
+SELECT pg_catalog.setval('public.asset_change_log_asset_log_id_seq', 351, true);
 
 
 --
@@ -824,7 +829,7 @@ SELECT pg_catalog.setval('public.asset_change_log_asset_log_id_seq', 323, true);
 -- Name: blacklist_tokens_id_blacklist_token_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.blacklist_tokens_id_blacklist_token_seq', 13, true);
+SELECT pg_catalog.setval('public.blacklist_tokens_id_blacklist_token_seq', 17, true);
 
 
 --
@@ -842,7 +847,7 @@ SELECT pg_catalog.setval('public.branch_branch_id_seq', 145, true);
 -- Name: employee_employee_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.employee_employee_id_seq', 20, true);
+SELECT pg_catalog.setval('public.employee_employee_id_seq', 28, true);
 
 
 --
@@ -869,7 +874,7 @@ SELECT pg_catalog.setval('public.tool_condition_tool_condition_id_seq', 36, true
 -- Name: unit_unit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.unit_unit_id_seq', 25, true);
+SELECT pg_catalog.setval('public.unit_unit_id_seq', 26, true);
 
 
 --
@@ -878,7 +883,7 @@ SELECT pg_catalog.setval('public.unit_unit_id_seq', 25, true);
 -- Name: user_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.user_user_id_seq', 13, true);
+SELECT pg_catalog.setval('public.user_user_id_seq', 17, true);
 
 
 --
@@ -998,7 +1003,7 @@ ALTER TABLE ONLY public."user"
     ADD CONSTRAINT fk_user1 FOREIGN KEY (employee_id) REFERENCES public.employee(employee_id) NOT VALID;
 
 
--- Completed on 2024-12-09 13:11:25 WIB
+-- Completed on 2024-12-10 10:23:22 WIB
 
 --
 -- PostgreSQL database dump complete

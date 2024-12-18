@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <h6 class="mb-3">Sidebar Types</h6>
     <div class="d-grid gap-3 grid-cols-3 mb-3 text-center">
@@ -39,4 +39,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

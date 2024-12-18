@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div :id="id" :style="'height: ' + height + 'px;'">
     <slot></slot>
   </div>
@@ -106,4 +106,4 @@ export default {
 </script>
 <style>
 @import '@/assets/vendor/leaflet/leaflet.css';
-</style>
+</style> -->
