@@ -205,6 +205,12 @@ const defaultChildRoutes = (prefix) => [
     // },
   },
   {
+    path: '/listgudang',
+    name: prefix + '.list-gudang',
+    meta: { auth: true, name: 'List Gudang', isBanner: true },
+    component: () => import('@/views/tables/ListWarehouse.vue'),
+  },
+  {
     path: '/listemployee',
     name: prefix + '.list-employee',
     meta: { auth: true, name: 'List Employee', isBanner: true },
@@ -215,6 +221,12 @@ const defaultChildRoutes = (prefix) => [
     name: prefix + '.list-user',
     meta: { auth: true, name: 'List User', isBanner: true },
     component: () => import('@/views/tables/ListUser.vue')
+  },
+  {
+    path: '/listcustomer',
+    name: prefix + '.list-customer',
+    meta: { auth: true, name: 'List Customer', isBanner: true },
+    component: () => import('@/views/tables/ListCustomer.vue'),
   },
   {
     path: '/listasset',
@@ -245,6 +257,36 @@ const defaultChildRoutes = (prefix) => [
     name: prefix + '.list-unit',
     meta: { auth: true, name: 'List Unit', isBanner: true },
     component: () => import('@/views/tables/ListUnit.vue')
+  },
+  {
+    path: '/listcategory',
+    name: prefix + '.list-category',
+    meta: { auth: true, name: 'List Kategori', isBanner: true },
+    component: () => import('@/views/tables/ListCategory.vue'),
+  },
+  {
+    path: '/listvendor',
+    name: prefix + '.list-vendor',
+    meta: { auth: true, name: 'List Vendor', isBanner: true },
+    component: () => import('@/views/tables/ListVendor.vue'),
+  },
+  {
+    path: '/listvendorlog',
+    name: prefix + '.list-vendor-log',
+    meta: { auth: true, name: 'List Vendor Log', isBanner: true },
+    component: () => import('@/views/tables/ListVendorLog.vue'),
+  },
+  {
+    path: '/listskutype',
+    name: prefix + '.list-skutype',
+    meta: { auth: true, name: 'List SKU Type', isBanner: true },
+    component: () => import('@/views/tables/ListSkuType.vue'),
+  },
+  {
+    path: '/listskuitem',
+    name: prefix + '.list-skuitem',
+    meta: { auth: true, name: 'List SKU Item', isBanner: true },
+    component: () => import('@/views/tables/ListSkuItem.vue'),
   },
   // {
   //   path: '/employee/add',

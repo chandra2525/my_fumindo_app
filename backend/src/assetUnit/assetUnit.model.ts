@@ -1,5 +1,6 @@
 import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
 import { Asset } from '../asset/asset.model';
+import { SkuItem } from '../skuItem/skuItem.model';
 
 // @Table
 @Table({ 
@@ -15,5 +16,8 @@ export class AssetUnit extends Model<AssetUnit> {
 
   @HasMany(() => Asset)
   asset: Asset[];
+
+  @HasMany(() => SkuItem)
+  skuItem: SkuItem[];
 }
 

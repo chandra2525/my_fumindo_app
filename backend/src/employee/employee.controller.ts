@@ -133,7 +133,7 @@ export class EmployeeController {
     // return this.employeeService.remove(id);
     try {
       await this.employeeService.remove(id);
-      return { message: 'Branch deleted successfully' };
+      return { message: 'Employee deleted successfully' };
     } catch (error) {
       if (error.name === 'SequelizeForeignKeyConstraintError') {
         throw new HttpException(
@@ -142,7 +142,7 @@ export class EmployeeController {
         );
       }
       throw new HttpException(
-        'An error occurred while deleting the branch.',
+        'An error occurred while deleting the employee.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

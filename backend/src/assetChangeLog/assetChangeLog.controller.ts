@@ -8,6 +8,31 @@ import { AssetChangeLog } from './assetChangeLog.model';
 export class AssetChangeLogController {
   constructor(private readonly assetChangeLogService: AssetChangeLogService) {}
 
+  @Get('grouped')
+  async getGroupedLogs(
+    @Query('asset_name') asset_name?: string,
+    @Query('category') category?: string,
+    @Query('username') username?: string,
+    @Query('operation') operation?: string,
+    @Query('order_by') orderBy: string = 'created_at_group',
+    @Query('order_direction') orderDirection: 'ASC' | 'DESC' = 'DESC',
+    @Query('search') search?: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ) {
+    return this.assetChangeLogService.getGroupedLogs(
+      asset_name,
+      category,
+      username,
+      operation,
+      orderBy,
+      orderDirection,
+      search,
+      page,
+      pageSize,
+    );
+  }
+
   @Get()
   async findAll(
     @Query('asset_name') assetName?: string, 

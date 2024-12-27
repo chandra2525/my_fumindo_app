@@ -293,7 +293,7 @@ export class EmployeeService {
         // Validasi data (sesuaikan dengan model Anda)
         // if (!rowData.branch_id ||!rowData.fullname ||!rowData.phone_number ||!rowData.email ||!rowData.address ||!rowData.division) {
         if (!rowData.branch_id ||!rowData.fullname) {
-          throw new Error('Data tidak valid: kolom "ID Cabang", "Nama Karyawan", "No Telpon", "E-mail", "Alamat", "Divisi" diperlukan');
+          throw new Error('Data tidak valid: kolom "Nama Cabang", "Nama Karyawan", "No Telpon", "E-mail", "Alamat", "Divisi" diperlukan');
         }
 
         rowData.status = 'Offline';
@@ -350,7 +350,7 @@ export class EmployeeService {
     // Tambahkan baris contoh (opsional)
     worksheet.addRow({
       no: 1,
-      branch_name: 'Isi nama cabang',
+      branch_name: 'Isi nama cabang yang sesuai',
       fullname: 'Isi nama lengkap karyawan, maksimal 100 huruf',
       phone_number: 'Isi no telpon karyawan, maksimal 15 angka',
       email: 'Isi email karyawan, maksimal 100 huruf',

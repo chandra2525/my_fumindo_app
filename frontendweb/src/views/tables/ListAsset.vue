@@ -572,7 +572,6 @@ const submitAsset = async () => {
       if (index !== -1) {
         assetData.value[index] = { ...editForm.value }
       }
-      fetchAssetData()
     }else {
       // Tambahkan data baru jika dalam mode tambah
       editForm.value.user_id = user_id;
@@ -583,8 +582,8 @@ const submitAsset = async () => {
         },
       })
       console.log('Data berhasil ditambahkan:', response.data)
-      fetchAssetData()
     }
+    fetchAssetData()
   } catch (error) {
     console.error('Gagal mengupdate data:', error)
     handleAuthError();

@@ -2,6 +2,7 @@ import { SequelizeModuleOptions } from '@nestjs/sequelize';
 
 export const databaseConfig: SequelizeModuleOptions = {
   dialect: 'postgres',
+  timezone: '+07:00',
   host: 'localhost',
   port: 5432,
   username: 'postgres',

@@ -165,7 +165,7 @@
               :columns="branchColumns"
               :currentPage="currentPage"
               :pageSize="pageSize" 
-              :idrow="asset_id"  
+              :idrow="branch_id"  
               @edit="showEditModal"
               @delete="showDeleteModal"
               @sort="onSort"

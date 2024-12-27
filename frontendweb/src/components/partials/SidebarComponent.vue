@@ -22,9 +22,24 @@
       </side-menu> -->
       <li><hr class="hr-horizontal" /></li>
       <side-menu title="Feature" :static-item="true"></side-menu>
-      <side-menu isTag="router-link" title="Cabang" icon="brief-case" :route="{ to: 'default.list-cabang' }"></side-menu>
+      <side-menu title="Cabang" icon="brief-case" toggle-id="cabang" :caret-icon="true" :route="{ popup: 'false', to: 'cabang' }" @onClick="toggle" :active="currentRoute.includes('cabang')">
+        <b-collapse tag="ul" class="sub-nav" id="cabang" accordion="sidebar-menu" :visible="currentRoute.includes('cabang')">
+          <side-menu isTag="router-link" title="Cabang" icon="circle" :icon-size="10" icon-type="solid" miniTitle="C" :route="{ to: 'default.list-cabang' }"></side-menu>
+          <side-menu isTag="router-link" title="Gudang" icon="circle" :icon-size="10" icon-type="solid" miniTitle="G" :route="{ to: 'default.list-gudang' }"></side-menu>
+        </b-collapse>
+      </side-menu>
+      <side-menu isTag="router-link" title="Kategori" icon="analytics" :route="{ to: 'default.list-category' }"></side-menu>
+      <side-menu title="Vendor" icon="cart" toggle-id="vendor" :caret-icon="true" :route="{ popup: 'false', to: 'vendor' }" @onClick="toggle" :active="currentRoute.includes('vendor')">
+        <b-collapse tag="ul" class="sub-nav" id="vendor" accordion="sidebar-menu" :visible="currentRoute.includes('vendor')">
+          <side-menu isTag="router-link" title="List Vendor" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-vendor' }"></side-menu>
+          <side-menu isTag="router-link" title="List Vendor Aset" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-vendor-log' }"></side-menu>
+        </b-collapse>
+      </side-menu>
+      <side-menu isTag="router-link" title="SKU Type" icon="analytics" :route="{ to: 'default.list-skutype' }"></side-menu>
+      <side-menu isTag="router-link" title="SKU Item" icon="offer" :route="{ to: 'default.list-skuitem' }"></side-menu>
       <side-menu isTag="router-link" title="Karyawan" icon="user-group" :route="{ to: 'default.list-employee' }"></side-menu>
       <side-menu isTag="router-link" title="User" icon="user" :route="{ to: 'default.list-user' }"></side-menu>
+      <side-menu isTag="router-link" title="Pelanggan" icon="users" :route="{ to: 'default.list-customer' }"></side-menu>
       <side-menu title="Aset" icon="offer" toggle-id="asset" :caret-icon="true" :route="{ popup: 'false', to: 'asset' }" @onClick="toggle" :active="currentRoute.includes('asset')">
         <b-collapse tag="ul" class="sub-nav" id="asset" accordion="sidebar-menu" :visible="currentRoute.includes('asset')">
           <side-menu isTag="router-link" title="List Aset" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-asset' }"></side-menu>
@@ -34,6 +49,7 @@
           <side-menu isTag="router-link" title="Kelola Satuan" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-unit' }"></side-menu>
         </b-collapse>
       </side-menu>
+      
       <!-- <side-menu title="Special Pages" icon="document" toggle-id="special-pages" :caret-icon="true" :route="{ popup: 'false', to: 'special-pages' }" @onClick="toggle" :active="currentRoute.includes('special-pages')">
         <b-collapse tag="ul" class="sub-nav" id="special-pages" accordion="sidebar-menu" :visible="currentRoute.includes('special-pages')">
           <side-menu isTag="router-link" title="Billing" icon="circle" :icon-size="10" icon-type="solid" miniTitle="B" :route="{ to: 'default.billing' }"></side-menu>

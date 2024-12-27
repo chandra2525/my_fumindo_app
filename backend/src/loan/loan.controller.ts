@@ -18,10 +18,37 @@ export class TemplateQueryDto {
 export class LoanController {
   constructor(private readonly loanService: LoanService) {}
 
+  @Get()
+  async findAll(
+    @Query('customer_name') customer_name?: string,
+    @Query('order_by') orderBy?: string,
+    @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
+    @Query('search') search?: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ) {
+    return this.loanService.findAll(
+      customer_name,
+      orderBy,
+      orderDirection,
+      search,
+      page,
+      pageSize,
+    ); // Panggil logika filter
+  }
+
+  @Get(':loan_id')
+  async getLoanWithAssets(@Param('loan_id') loan_id: number) {
+    const loan = await this.loanService.findLoanWithAssets(loan_id);
+    if (!loan) {
+      return { message: `Loan with id ${loan_id} not found` };
+    }
+    return loan;
+  }
+
   @Post()
   async create(@Body() createLoanDto: CreateLoanDto) {
     return await this.loanService.createLoan(createLoanDto);
   }
- 
-}
 
+}

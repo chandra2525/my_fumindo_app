@@ -11,13 +11,180 @@ import 'moment/locale/id';
 
 @Injectable()
 export class AssetChangeLogService {
-  constructor(@InjectModel(AssetChangeLog) private assetChangeLogModel: typeof AssetChangeLog,
-  private sequelize: Sequelize ) {}
+  constructor(
+    @InjectModel(AssetChangeLog)
+    private assetChangeLogModel: typeof AssetChangeLog,
+    private sequelize: Sequelize,
+  ) {}
 
   async create(data): Promise<AssetChangeLog> {
     return await this.assetChangeLogModel.create(data);
   }
 
+  async getGroupedLogs(
+    asset_name?: string,
+    category?: string,
+    username?: string, 
+    operation?: string,
+    orderBy: string = 'created_at_group',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
+    search?: string,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<{ rows: any[]; sp: any }> {
+    // const whereClause: any = {};
+
+    // // Filter by asset_id
+    // if (asset_id) {
+    //   whereClause.asset_id = asset_id;
+    // }
+
+    // // Filter by operation
+    // if (operation) {
+    //   whereClause.operation = { [Op.iLike]: `%${operation}%` };  
+    // }
+
+    // // Search by multiple columns
+    // if (search) {
+    //   whereClause[Op.or] = [
+    //     { asset_id: { [Op.eq]: search } },
+    //     { operation: { [Op.iLike]: `%${search}%` } },
+    //   ];
+    // }
+
+    // Pagination variables
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
+
+    // const logs = await this.assetChangeLogModel.findAndCountAll({
+    //   attributes: [
+    //     [this.sequelize.fn('to_char', this.sequelize.col('created_at'), 'YYYY-MM-DD HH24:MI:SS'), 'created_at_group'],
+    //     'asset_id',
+    //     'operation',
+    //   ],
+    //   where: whereClause,
+    //   group: ['created_at_group', 'asset_id', 'operation'],
+    //   order: [[this.sequelize.col(orderBy), orderDirection]],
+    //   // order: [[this.sequelize.fn('to_char', this.sequelize.col('created_at'), 'YYYY-MM-DD HH24:MI:SS'), 'ASC']],
+    //   offset,
+    //   limit,
+    //   raw: true,
+    // });
+
+    // TO_CHAR(acl.created_at, 'Dy, DD MonthYYYY, "Jam" HH24:MI:SS') || ' WIB' AS created_at_group,
+    // TO_CHAR(acl.created_at, 'Dy, DD Month YYYY, "Jam" HH24:MI:SS') AS created_at_group,
+      // Base query with raw SQL
+    const query = `
+      SELECT 
+        TO_CHAR(acl.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at_group,
+        acl.user_id,
+        acl.asset_id,
+        a.asset_name,
+        a.category,
+        u.username,
+        acl.operation
+      FROM asset_change_log acl
+      JOIN asset a ON acl.asset_id = a.asset_id
+      JOIN "user" u ON acl.user_id = u.user_id
+      WHERE 1=1
+      ${asset_name ? `AND a.asset_name ILIKE :asset_name` : ''}
+      ${category ? `AND a.category ILIKE :category` : ''}
+      ${username ? `AND u.username ILIKE :username` : ''}
+      ${operation ? `AND acl.operation ILIKE :operation` : ''}
+      ${
+        search
+          ? `AND (
+            a.asset_name ILIKE :search OR 
+            a.category ILIKE :search OR 
+            u.username ILIKE :search OR 
+            CAST(acl.asset_id AS TEXT) ILIKE :search OR 
+            CAST(acl.user_id AS TEXT) ILIKE :search OR
+            acl.operation ILIKE :search
+          )`
+          : ''
+      }
+      GROUP BY created_at_group, acl.asset_id, acl.user_id, a.asset_name, a.category, u.username, acl.operation
+      ORDER BY ${orderBy} ${orderDirection}
+      LIMIT :limit OFFSET :offset
+    `;
+
+    // Count query for total rows (ignoring pagination)
+    const countQuery = `
+      SELECT COUNT(*) AS "total_count" FROM (
+        SELECT 
+          TO_CHAR(acl.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at_group,
+          acl.user_id,
+          acl.asset_id,
+          a.asset_name,
+          a.category,
+          u.username,
+          acl.operation
+        FROM asset_change_log acl
+        JOIN asset a ON acl.asset_id = a.asset_id
+        JOIN "user" u ON acl.user_id = u.user_id
+        WHERE 1=1
+        ${asset_name ? `AND a.asset_name ILIKE :asset_name` : ''}
+        ${category ? `AND a.category ILIKE :category` : ''}
+        ${username ? `AND u.username ILIKE :username` : ''}
+        ${operation ? `AND acl.operation ILIKE :operation` : ''}
+        ${
+          search
+            ? `AND (
+              a.asset_name ILIKE :search OR 
+              a.category ILIKE :search OR 
+              u.username ILIKE :search OR 
+              CAST(acl.asset_id AS TEXT) ILIKE :search OR 
+              CAST(acl.user_id AS TEXT) ILIKE :search OR
+              acl.operation ILIKE :search
+            )`
+            : ''
+        }
+        GROUP BY created_at_group, acl.asset_id, acl.user_id, a.asset_name, a.category, u.username, acl.operation
+      ) AS grouped_logs
+    `;
+
+    // Bind replacements for query
+    const replacements = {
+      asset_name: asset_name ? `%${asset_name}%` : undefined,
+      category: category ? `%${category}%` : undefined,
+      username: username ? `%${username}%` : undefined,
+      // user_id, 
+      operation: operation ? `%${operation}%` : undefined,
+      search: search ? `%${search}%` : undefined,
+      limit,
+      offset,
+    };
+  
+    // Execute queries
+    const [rows, totalRows] = await Promise.all([
+      this.sequelize.query(query, { replacements, type: QueryTypes.SELECT }),
+      this.sequelize.query(countQuery, {
+        replacements,
+        type: QueryTypes.SELECT,
+      }),
+    ]);
+    // return logs;
+
+
+    // Access total count correctly 
+    const totalCount = totalRows[0]?.['total_count'] || 0;
+
+    // Pagination info
+    const sp = {
+      page,
+      pageSize,
+      pageCount: Math.ceil(totalCount / pageSize),
+      rowCount: totalCount,
+      // pageCount: Math.ceil(logs.count.length / pageSize), // Count is array length due to grouping
+      // rowCount: logs.count.length,
+      start: offset,
+      limit,
+    };
+
+    // return { rows: logs.rows, sp };
+    return { rows, sp };
+  }
+  
   async findAll(
     assetNames?: string[],
     userNames?: string[],
@@ -53,20 +220,20 @@ export class AssetChangeLogService {
           value_before ILIKE '%${search}%' OR 
           value_after ILIKE '%${search}%' OR 
           operation ILIKE '%${search}%' OR 
-          (SELECT asset_name FROM assets WHERE assets.id = asset_change_log.asset_id) ILIKE '%${search}%' OR 
-          (SELECT username FROM users WHERE users.id = asset_change_log.user_id) ILIKE '%${search}%')`
+          (SELECT asset_name FROM asset WHERE asset.asset_id = asset_change_log.asset_id) ILIKE '%${search}%' OR 
+          (SELECT username FROM user WHERE user.user_id = asset_change_log.user_id) ILIKE '%${search}%')`
       );
     }
     if (assetNames?.length) {
       const assetNamesFilter = assetNames.map((name) => `'${name}'`).join(', ');
       whereClause.push(
-        `(SELECT asset_name FROM assets WHERE assets.id = asset_change_log.asset_id) IN (${assetNamesFilter})`
+        `(SELECT asset_name FROM asset WHERE asset.asset_id = asset_change_log.asset_id) IN (${assetNamesFilter})`
       );
     }
     if (userNames?.length) {
       const userNamesFilter = userNames.map((name) => `'${name}'`).join(', ');
       whereClause.push(
-        `(SELECT username FROM users WHERE users.id = asset_change_log.user_id) IN (${userNamesFilter})`
+        `(SELECT username FROM user WHERE user.user_id = asset_change_log.user_id) IN (${userNamesFilter})`
       );
     }
   

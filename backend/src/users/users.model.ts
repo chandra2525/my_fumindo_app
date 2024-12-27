@@ -1,8 +1,9 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo  } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Employee } from '../employee/employee.model';
+import { Loan } from 'src/loan/loan.model';
 
 // @Table
-@Table({ 
+@Table({
   tableName: 'user',
   timestamps: false  // Menonaktifkan createdAt dan updatedAt
 })
@@ -11,7 +12,7 @@ export class User extends Model<User> {
   user_id: number;
 
   @ForeignKey(() => Employee)
-  @Column({ type: DataType.INTEGER, allowNull: true  })
+  @Column({ type: DataType.INTEGER, allowNull: true })
   employee_id: number;
 
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
@@ -28,5 +29,7 @@ export class User extends Model<User> {
 
   @BelongsTo(() => Employee)
   employee: Employee;
-}
 
+  @HasMany(() => Loan)
+  loans: Loan[];
+}

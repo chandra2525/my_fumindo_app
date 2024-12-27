@@ -390,7 +390,7 @@ const AssetColumns = [
   // { title: 'ID Aset', data: 'asset_id', sortable: true },
   { title: 'Nama Aset', data: 'asset_name', sortable: true }, 
   { title: 'Username', data: 'username', sortable: true }, 
-  { title: 'Dibuat Pada Waktu', data: 'created_at', sortable: true },
+  { title: 'Dibuat Pada Waktu', data: 'created_at_group', sortable: true },
   { title: 'Operasi', data: 'operation', sortable: true }, 
   // { title: 'Aksi', data: 'actions', sortable: false },
 ];
@@ -569,7 +569,7 @@ const submitAsset = async () => {
 // Fungsi untuk mengambil data asset dari backend
 const fetchAssetData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/asset_change_log', {
+    const response = await axios.get('http://localhost:3000/api/asset_change_log/grouped', {
       headers: {
         Authorization: `Bearer ${token}`,
       },

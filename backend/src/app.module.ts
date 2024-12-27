@@ -12,6 +12,13 @@ import { AssetToolConditionModule } from './assetToolCondition/assetToolConditio
 import { AssetUnitModule } from './assetUnit/assetUnit.module';
 import { LoanModule } from './loan/loan.module';
 import { LoanAssetModule } from './loanAsset/loanAsset.module';
+import { CustomerModule } from './customer/customer.module';
+import { WarehouseModule } from './warehouse/warehouse.module';
+import { CategoryModule } from './category/category.module';
+import { VendorModule } from './vendor/vendor.module';
+import { VendorChangeLogModule } from './vendorChangeLog/vendorChangeLog.module';
+import { SkuTypeModule } from './skuType/skuType.module';
+import { SkuItemModule } from './skuItem/skuItem.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -23,12 +30,19 @@ import { databaseConfig } from './config/database.config';
     BranchModule,
     EmployeeModule,
     AssetModule,
-    AssetChangeLogModule, 
+    AssetChangeLogModule,
     AssetToolCategoryModule,
     AssetToolConditionModule,
     AssetUnitModule,
     LoanModule,
     LoanAssetModule,
+    CustomerModule,
+    WarehouseModule,
+    CategoryModule,
+    VendorModule,
+    VendorChangeLogModule,
+    SkuTypeModule,
+    SkuItemModule,
   ],
 })
 export class AppModule {}
