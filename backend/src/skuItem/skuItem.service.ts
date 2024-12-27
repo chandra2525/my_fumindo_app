@@ -22,11 +22,11 @@ export class SkuItemService {
     vendorNames?: string[],
     sku_item_name?: string,
     brand?: string,
-    length?: string,
-    width?: string,
-    height?: string,
-    weight?: string,
-    price?: string,
+    // length?: string,
+    // width?: string,
+    // height?: string,
+    // weight?: string,
+    // price?: string,
     consumed?: string,
     orderBy: string = 'sku_item_id',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
@@ -42,21 +42,21 @@ export class SkuItemService {
     if (brand) {
       whereClause.brand = { [Op.iLike]: `%${brand}%` };  
     }
-    if (length) {
-      whereClause.length = { [Op.iLike]: `%${length}%` };  
-    }
-    if (width) {
-      whereClause.width = { [Op.iLike]: `%${width}%` };  
-    }
-    if (height) {
-      whereClause.height = { [Op.iLike]: `%${height}%` };  
-    }
-    if (weight) {
-      whereClause.weight = { [Op.iLike]: `%${weight}%` };  
-    }
-    if (price) {
-      whereClause.price = { [Op.iLike]: `%${price}%` };  
-    }
+    // if (length) {
+    //   whereClause.length = { [Op.iLike]: `%${length}%` };  
+    // }
+    // if (width) {
+    //   whereClause.width = { [Op.iLike]: `%${width}%` };  
+    // }
+    // if (height) {
+    //   whereClause.height = { [Op.iLike]: `%${height}%` };  
+    // }
+    // if (weight) {
+    //   whereClause.weight = { [Op.iLike]: `%${weight}%` };  
+    // }
+    // if (price) {
+    //   whereClause.price = { [Op.iLike]: `%${price}%` };  
+    // }
     if (consumed) {
       whereClause.consumed = { [Op.iLike]: `%${consumed}%` };  
     }
@@ -64,11 +64,11 @@ export class SkuItemService {
       whereClause[Op.or] = [
         { sku_item_name: { [Op.iLike]: `%${search}%` } },
         { brand: { [Op.iLike]: `%${search}%` } },
-        { length: { [Op.iLike]: `%${search}%` } },
-        { width: { [Op.iLike]: `%${search}%` } },
-        { height: { [Op.iLike]: `%${search}%` } },
-        { weight: { [Op.iLike]: `%${search}%` } },
-        { price: { [Op.iLike]: `%${search}%` } },
+        // { length: { [Op.iLike]: `%${search}%` } },
+        // { width: { [Op.iLike]: `%${search}%` } },
+        // { height: { [Op.iLike]: `%${search}%` } },
+        // { weight: { [Op.iLike]: `%${search}%` } },
+        // { price: { [Op.iLike]: `%${search}%` } },
         { consumed: { [Op.iLike]: `%${search}%` } },
         { '$skuType.sku_type_name$': { [Op.iLike]: `%${search}%` } },
         { '$assetUnit.unit_name$': { [Op.iLike]: `%${search}%` } },
@@ -358,11 +358,11 @@ export class SkuItemService {
     vendorNames?: string[],
     sku_item_name?: string,
     brand?: string,
-    length?: string,
-    width?: string,
-    height?: string,
-    weight?: string,
-    price?: string,
+    // length?: string,
+    // width?: string,
+    // height?: string,
+    // weight?: string,
+    // price?: string,
     consumed?: string,
     orderBy: string = 'sku_item_id',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
@@ -416,21 +416,21 @@ export class SkuItemService {
     if (brand) {
       whereClause.brand = { [Op.iLike]: `%${brand}%` };  
     }
-    if (length) {
-      whereClause.length = { [Op.iLike]: `%${length}%` };  
-    }
-    if (width) {
-      whereClause.width = { [Op.iLike]: `%${width}%` };  
-    }
-    if (height) {
-      whereClause.height = { [Op.iLike]: `%${height}%` };  
-    }
-    if (weight) {
-      whereClause.weight = { [Op.iLike]: `%${weight}%` };  
-    }
-    if (price) {
-      whereClause.price = { [Op.iLike]: `%${price}%` };  
-    }
+    // if (length) {
+    //   whereClause.length = { [Op.iLike]: `%${length}%` };  
+    // }
+    // if (width) {
+    //   whereClause.width = { [Op.iLike]: `%${width}%` };  
+    // }
+    // if (height) {
+    //   whereClause.height = { [Op.iLike]: `%${height}%` };  
+    // }
+    // if (weight) {
+    //   whereClause.weight = { [Op.iLike]: `%${weight}%` };  
+    // }
+    // if (price) {
+    //   whereClause.price = { [Op.iLike]: `%${price}%` };  
+    // }
     if (consumed) {
       whereClause.consumed = { [Op.iLike]: `%${consumed}%` };  
     }
@@ -438,11 +438,11 @@ export class SkuItemService {
       whereClause[Op.or] = [
         { sku_item_name: { [Op.iLike]: `%${search}%` } },
         { brand: { [Op.iLike]: `%${search}%` } },
-        { length: { [Op.iLike]: `%${search}%` } },
-        { width: { [Op.iLike]: `%${search}%` } },
-        { height: { [Op.iLike]: `%${search}%` } },
-        { weight: { [Op.iLike]: `%${search}%` } },
-        { price: { [Op.iLike]: `%${search}%` } },
+        // { length: { [Op.iLike]: `%${search}%` } },
+        // { width: { [Op.iLike]: `%${search}%` } },
+        // { height: { [Op.iLike]: `%${search}%` } },
+        // { weight: { [Op.iLike]: `%${search}%` } },
+        // { price: { [Op.iLike]: `%${search}%` } },
         { consumed: { [Op.iLike]: `%${search}%` } },
         { '$skuType.sku_type_name$': { [Op.iLike]: `%${search}%` } },
         { '$assetUnit.unit_name$': { [Op.iLike]: `%${search}%` } },

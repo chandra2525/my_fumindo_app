@@ -78,7 +78,7 @@
             </div> 
           </div>
           
-          <div class="row mb-2">
+          <div class="row mb-3">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter merek</label>
               <div class="input-group has-validation">
@@ -86,14 +86,20 @@
               </div>
             </div>
             <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter panjang</label>
+              <label for="validationCustomUsername01" class="form-label">Filter SKU dapat dikonsumsi</label>
               <div class="input-group has-validation">
-                <input type="text" v-model="filterLength" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+                <input type="text" v-model="filterConsumed" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
+            <!-- <div class="col-sm-6">
+              <label for="validationCustomUsername01" class="form-label">Filter panjang</label>
+              <div class="input-group has-validation"> 
+                <input type="text" v-model="filterLength" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
+            </div> -->
           </div>
 
-          <div class="row mb-2">
+          <!-- <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter lebar</label>
               <div class="input-group has-validation">
@@ -121,15 +127,10 @@
                 <input type="text" v-model="filterPrice" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="row mb-2">
-            <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter SKU dapat dikonsumsi</label>
-              <div class="input-group has-validation">
-                <input type="text" v-model="filterConsumed" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div>
-            </div>
+            
             <div class="col-sm-6">
               <!-- Input Pencarian Global -->
               <div class="search-container">
@@ -254,36 +255,63 @@
                         <input v-model="editForm.sku_item_name" maxlength="100" type="text" class="form-control" id="sku_item_name" required />
                       </div>
                       <div class="mb-3"> 
-                        <label for="brand" class="form-label">Merek<span class="text-primary">*</span></label>
+                        <label for="brand" class="form-label">Merek</label>
                         <input v-model="editForm.brand" maxlength="100" type="text" class="form-control" id="brand" />
                       </div>
                       <div class="mb-3"> 
-                        <label for="length" class="form-label">Panjang<span class="text-primary">*</span></label>
-                        <input v-model="editForm.length" maxlength="4" type="number" class="form-control" id="length" />
+                        <label for="length" class="form-label">Panjang</label>
+                        <div class="input-group">
+                          <!-- <input v-model="editForm.length" maxlength="4" type="number" class="form-control" id="length" /> -->
+                          <input v-model="editForm.length" maxlength="6" type="text" class="form-control" id="length" @input="validateDecimalInput('length')" />
+                          <span class="input-group-text">cm</span>
+                        </div>
                       </div>
                       <div class="mb-3"> 
-                        <label for="width" class="form-label">Lebar<span class="text-primary">*</span></label>
-                        <input v-model="editForm.width" maxlength="4" type="number" class="form-control" id="width" />
+                        <label for="width" class="form-label">Lebar</label> 
+                        <div class="input-group">
+                          <!-- <input v-model="editForm.width" maxlength="4" type="number" class="form-control" id="width" /> -->
+                          <input v-model="editForm.width" maxlength="6" type="text" class="form-control" id="width" @input="validateDecimalInput('width')" />
+                          <span class="input-group-text">cm</span>
+                        </div>
                       </div>
                       <div class="mb-3"> 
-                        <label for="height" class="form-label">Tinggi<span class="text-primary">*</span></label>
-                        <input v-model="editForm.height" maxlength="4" type="number" class="form-control" id="height" />
+                        <label for="height" class="form-label">Tinggi</label>
+                        <div class="input-group">
+                          <!-- <input v-model="editForm.height" maxlength="4" type="number" class="form-control" id="height" /> -->
+                          <input v-model="editForm.height" maxlength="6" type="text" class="form-control" id="height" @input="validateDecimalInput('height')" />
+                          <span class="input-group-text">cm</span>
+                        </div>
                       </div>
                       <div class="mb-3"> 
-                        <label for="weight" class="form-label">Berat<span class="text-primary">*</span></label>
-                        <input v-model="editForm.weight" maxlength="4" type="number" class="form-control" id="weight" />
+                        <label for="weight" class="form-label">Berat</label>
+                        <div class="input-group">
+                          <!-- <input v-model="editForm.weight" maxlength="4" type="number" class="form-control" id="weight" /> -->
+                          <input v-model="editForm.weight" maxlength="6" type="text" class="form-control" id="weight" @input="validateDecimalInput('weight')" />
+                          <span class="input-group-text">kg</span>
+                        </div>
                       </div>
                       <div class="mb-3"> 
-                        <label for="price" class="form-label">Harga<span class="text-primary">*</span></label>
-                        <input v-model="editForm.price" maxlength="4" type="number" class="form-control" id="price" />
+                        <label for="price" class="form-label">Harga</label>
+                        <div class="input-group">
+                          <input v-model="editForm.price" maxlength="4" type="number" class="form-control" id="price" />
+                          <span class="input-group-text">Rp</span>
+                        </div>
                       </div>
-                      <div class="mb-3"> 
+                      <div class="mb-3">
+                        <label for="consumed" class="form-label">SKU dapat Dikonsumsi<span class="text-primary">*</span></label>
+                        <div class="mb-1">
+                          <b-form-radio value="Iya" v-model="editForm.consumed" class="d-inline-block">Iya</b-form-radio>
+                          <label class="form-label text-white"> . . . . </label>
+                          <b-form-radio value="Tidak" v-model="editForm.consumed" class="d-inline-block">Tidak</b-form-radio>
+                        </div>
+                      </div>
+                      <!-- <div class="mb-3"> 
                         <label for="consumed" class="form-label">SKU dapat Dikonsumsi<span class="text-primary">*</span></label>
                         <input v-model="editForm.consumed" maxlength="4" type="text" class="form-control" id="consumed" required/>
-                      </div>
+                      </div> -->
                       <!-- Tambahkan field lainnya sesuai dengan struktur data Item SKU -->
                       <button type="submit" class="btn btn-primary" :data-bs-dismiss="
-                        editForm.sku_type_id&&editForm.unit_id&&editForm.vendor_id&&editForm.sku_item_name&&editForm.consumed ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Item SKU' }}
+                        editForm.sku_type_id&&editForm.unit_id&&editForm.vendor_id&&editForm.sku_item_name&&editForm.consumed&&editForm.price ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Item SKU' }}
                       </button>
                     </form>
                   </div>
@@ -453,12 +481,12 @@ const editForm = ref({
   vendor_id: '',
   sku_item_name: '',
   brand: '',
-  length: '',
-  width: '',
-  height: '',
-  weight: '',
-  price: '',
-  consumed: '',
+  length: '0',
+  width: '0',
+  height: '0',
+  weight: '0',
+  price: '0',
+  consumed: 'Iya',
 })
 
 // Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
@@ -476,12 +504,12 @@ const resetForm = () => {
     vendor_id: '',
     sku_item_name: '',
     brand: '',
-    length: '',
-    width: '',
-    height: '',
-    weight: '',
-    price: '',
-    consumed: '',
+    length: '0',
+    width: '0',
+    height: '0',
+    weight: '0',
+    price: '0',
+    consumed: 'Iya',
   }
 }
 
@@ -509,6 +537,9 @@ const showAddModal = () => {
 // Fungsi untuk submit tambah/edit
 const submitSkuItem = async () => {
   console.log('Edit data submitted:', editForm.value)
+  
+  console.log('Edit data height:', editForm.value.height)
+  
   try {
     if (isEditMode.value) {
       // Update data jika dalam mode edit
@@ -845,6 +876,18 @@ const handleAuthError = () => {
   alertMessage.value = `Cek koneksi internet Anda.`;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
+};
+
+const validateDecimalInput = async (field) => {
+  // Hanya izinkan angka dan koma/desimal
+  const value = editForm.value[field];
+  // const decimalRegex = /^[0-9]*[.]?[0-9]*$/; // Angka desimal dengan "," atau "."
+  const decimalRegex = /^[0-9]*\.?[0-9]*$/; // Angka desimal dengan "."
+  
+  // Perbaiki input jika tidak valid
+  if (!decimalRegex.test(value)) {
+    editForm.value[field] = value.slice(0, -1);// Hapus karakter terakhir
+  }
 };
 
 
