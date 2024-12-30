@@ -27,8 +27,7 @@
             <button class="btn btn-danger btn-sm delete-btn" @click="$emit('delete', row)" data-bs-toggle="modal" data-bs-target="#delete-confirmation">Hapus</button>
           </template>
           <template v-if="column.data === 'view'">
-            <button class="btn btn-success btn-sm me-2" :route="{ to: 'default.list-customer' }">Detail</button>
-            <!-- <button class="btn btn-danger btn-sm delete-btn" @click="$emit('delete', row)" data-bs-toggle="modal" data-bs-target="#delete-confirmation">Hapus</button> -->
+            <button class="btn btn-success btn-sm me-2" @click="$emit('viewDetail', row)">Detail</button>
           </template>
           <!-- Data biasa untuk kolom lain -->
           <template v-else>

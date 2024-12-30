@@ -8,7 +8,7 @@
           </div>
           <div>
             <button
-              class="btn btn-success"
+              class="btn btn-success width-button-style-top"
               style="margin-right: 10px;" 
               @click="showAddModal"
               data-bs-toggle="modal"
@@ -16,20 +16,20 @@
               Tambah Item SKU
             </button>
             <button 
-              class="btn btn-outline-success" 
+              class="btn btn-outline-success width-button-style-top" 
               style="margin-right: 10px;" 
               @click="exportSkuItemData">
               Ekspor Data
             </button>
             <button
-              class="btn btn-info"
+              class="btn btn-info width-button-style-top"
               style="margin-right: 10px;"
               data-bs-toggle="modal"
               data-bs-target="#mass-upload-modal">
               Mass Upload
             </button>
             <button 
-              class="btn btn-outline-info" 
+              class="btn btn-outline-info width-button-style-top" 
               @click="downloadTemplateSkuItemData">
               Download Template
             </button>
@@ -48,7 +48,22 @@
               ></v-select>
             </div>
             <div class="col-sm-6">
-              <label for="filter" class="form-label">Filter unit</label>
+                <label for="validationCustomUsername01" class="form-label">Filter nama jenis SKU</label>
+                <div class="input-group has-validation">
+                  <input type="text" v-model="filterSkuItemName" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+                </div>
+            </div> 
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <label for="validationCustomUsername01" class="form-label">Filter merek</label>
+              <div class="input-group has-validation">
+                <input type="text" v-model="filterBrand" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter satuan</label>
               <v-select 
                 :options="unitNames" 
                 v-model="selectedUnits" 
@@ -58,8 +73,8 @@
               ></v-select>
             </div>
           </div>
-
-          <div class="row mb-2">
+          
+          <div class="row mb-3">
             <div class="col-sm-6">
               <label for="filter" class="form-label">Filter vendor</label>
               <v-select 
@@ -71,26 +86,21 @@
               ></v-select>
             </div>
             <div class="col-sm-6">
-                <label for="validationCustomUsername01" class="form-label">Filter nama jenis SKU</label>
-                <div class="input-group has-validation">
-                  <input type="text" v-model="filterSkuItemName" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-                </div>
-            </div> 
-          </div>
-          
-          <div class="row mb-3">
-            <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter merek</label>
-              <div class="input-group has-validation">
-                <input type="text" v-model="filterBrand" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div>
+              <label for="filter" class="form-label">Filter SKU dapat dikonsumsi</label>
+              <v-select 
+                :options="optionsConsume"
+                v-model="selectedConsume"
+                multiple
+                @update:modelValue="onConsumeSelect"
+                class="filter-style"
+              ></v-select>
             </div>
-            <div class="col-sm-6">
+            <!-- <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter SKU dapat dikonsumsi</label>
               <div class="input-group has-validation">
                 <input type="text" v-model="filterConsumed" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
-            </div>
+            </div> -->
             <!-- <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter panjang</label>
               <div class="input-group has-validation"> 
@@ -130,7 +140,6 @@
           </div> -->
 
           <div class="row mb-2">
-            
             <div class="col-sm-6">
               <!-- Input Pencarian Global -->
               <div class="search-container">
@@ -145,18 +154,19 @@
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="row mb-4">
-            <div class="col-sm-4">
-              <button
-                class="btn btn-primary width-button-style filter-style" 
-                @click="fetchSkuItemData"
-                title="Search">
-                Filter
-              </button>
+             <div class="col-sm-4">
+              <label for="validationCustomUsername01" class="form-label text-white">I</label>
+              <div class="input-group has-validation">
+                <button
+                  class="btn btn-primary width-button-style filter-style" 
+                  @click="fetchSkuItemData"
+                  title="Search">
+                  Filter
+                </button>
+              </div>
             </div>
           </div>
+ 
 
           <div class="row mb-2">
             <!-- Dropdown Show Entries -->
@@ -232,24 +242,6 @@
                           </option>
                         </select>
                       </div>
-                      <div class="mb-3"> 
-                        <label for="input-205" class="form-label">Dari Unit<span class="text-primary">*</span></label>
-                        <select id="unit_id" v-model="editForm.unit_id" class="form-select" required>
-                          <option value="" disabled>Silahkan pilih unit</option>
-                          <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
-                            {{ unit.unit_name }}
-                          </option>
-                        </select>
-                      </div>
-                      <div class="mb-3"> 
-                        <label for="input-205" class="form-label">Dari Vendor<span class="text-primary">*</span></label>
-                        <select id="vendor_id" v-model="editForm.vendor_id" class="form-select" required>
-                          <option value="" disabled>Silahkan pilih vendor</option>
-                          <option v-for="vendor in vendors" :key="vendor.vendor_id" :value="vendor.vendor_id">
-                            {{ vendor.vendor_name }}
-                          </option>
-                        </select>
-                      </div>
                       <div class="mb-3">
                         <label for="sku_item_name" class="form-label">Nama Item SKU<span class="text-primary">*</span></label>
                         <input v-model="editForm.sku_item_name" maxlength="100" type="text" class="form-control" id="sku_item_name" required />
@@ -289,6 +281,24 @@
                           <input v-model="editForm.weight" maxlength="6" type="text" class="form-control" id="weight" @input="validateDecimalInput('weight')" />
                           <span class="input-group-text">kg</span>
                         </div>
+                      </div>
+                      <div class="mb-3"> 
+                        <label for="input-205" class="form-label">Dari Satuan<span class="text-primary">*</span></label>
+                        <select id="unit_id" v-model="editForm.unit_id" class="form-select" required>
+                          <option value="" disabled>Silahkan pilih satuan</option>
+                          <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
+                            {{ unit.unit_name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="mb-3"> 
+                        <label for="input-205" class="form-label">Dari Vendor<span class="text-primary">*</span></label>
+                        <select id="vendor_id" v-model="editForm.vendor_id" class="form-select" required>
+                          <option value="" disabled>Silahkan pilih vendor</option>
+                          <option v-for="vendor in vendors" :key="vendor.vendor_id" :value="vendor.vendor_id">
+                            {{ vendor.vendor_name }}
+                          </option>
+                        </select>
                       </div>
                       <div class="mb-3"> 
                         <label for="price" class="form-label">Harga</label>
@@ -396,6 +406,12 @@
     /* margin-bottom: 1rem; */
   }
 
+  .width-button-style-top {
+    /* width: 105px; */
+    font-size: 13px;
+    /* padding: 10px; */
+  }
+
   .show-entries {
     /* max-width: 400px; */
     width: 95px;
@@ -431,9 +447,11 @@ const skuItemData = ref([]);
 const skuTypeNames = ref([]);
 const unitNames = ref([]);
 const vendorNames = ref([]);
+const optionsConsume = ref([]);
 const selectedSkuTypes = ref([]);
 const selectedUnits = ref([]);
 const selectedVendors = ref([]);
+const selectedConsume = ref([]);
 const filterSkuItemName = ref('');
 const filterBrand = ref('');
 const filterLength = ref('');
@@ -441,7 +459,7 @@ const filterWidth = ref('');
 const filterHeight = ref('');
 const filterWeight= ref('');
 const filterPrice = ref('');
-const filterConsumed = ref('');
+// const filterConsumed = ref('');
 const globalSearch = ref('');
 
 const currentPage = ref(1); // Halaman aktif
@@ -456,14 +474,14 @@ const token = localStorage.getItem('access_token');
 const columns = [
   // { title: 'ID', data: 'sku_item_id', sortable: true },
   { title: 'Dari Jenis SKU', data: 'sku_type_name', sortable: true },
-  { title: 'Dari Unit', data: 'unit_name', sortable: true },
-  { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
   { title: 'Nama Item SKU', data: 'sku_item_name', sortable: true },
   { title: 'Merek', data: 'brand', sortable: true },
   { title: 'Panjang', data: 'length', sortable: true },
   { title: 'Lebar', data: 'width', sortable: true },
   { title: 'Tinggi', data: 'height', sortable: true },
   { title: 'Berat', data: 'weight', sortable: true },
+  { title: 'Dari Satuan', data: 'unit_name', sortable: true },
+  { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
   { title: 'Harga', data: 'price', sortable: true },
   { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
   { title: 'Aksi', data: 'actions', sortable: false },
@@ -577,6 +595,7 @@ onMounted(async () => {
   await fetchUnits();
   await fetchVendors();
   await fetchSkuItemData();
+   optionsConsume.value= ["Iya", "Tidak"];
 });
 
 const currentSort = ref({ column: 'sku_item_id', order: 'DESC' });
@@ -601,6 +620,11 @@ const onVendorSelect = (selected) => {
   // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
 };
 
+const onConsumeSelect = (selected) => {
+  selectedConsume.value = selected; // Perbarui nilai terpilih
+  // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
+};
+
 
 // Daftar  
 const skuTypes = ref([]);
@@ -610,6 +634,7 @@ const vendors = ref([]);
 
 // Fungsi untuk mengambil data jenis SKU dari backend
 const fetchSkuItemData = async () => {
+    console.log('SelectedConsumedata:', selectedConsume.value.join(','))
   try {
     const response = await axios.get('http://localhost:3000/api/sku_item', {
       headers: {
@@ -626,7 +651,8 @@ const fetchSkuItemData = async () => {
         height: filterHeight.value,
         weight: filterWeight.value,
         price: filterPrice.value,
-        consumed: filterConsumed.value,
+        // consumed: filterConsumed.value,
+        consumed: selectedConsume.value.join(','),
         search: globalSearch.value,
         order_by: currentSort.value.column,
         order_direction: currentSort.value.order,
@@ -719,6 +745,9 @@ const fetchVendors = async () => {
     });
     vendors.value = response.data.rows;
     vendorNames.value = response.data.rows.map(item => item.vendor_name);
+    console.log('vendorNames.value:', vendorNames.value)
+ 
+    vendorNames.value
   } catch (error) {
     console.error('Error fetching vendors:', error);
     handleAuthError();
@@ -743,7 +772,8 @@ const exportSkuItemData = async () => {
         height: filterHeight.value,
         weight: filterWeight.value,
         price: filterPrice.value,
-        consumed: filterConsumed.value,
+        // consumed: filterConsumed.value,
+        consumed: selectedConsume.value.join(','),
         search: globalSearch.value,
         order_by: currentSort.value.column,
         order_direction: currentSort.value.order,
@@ -889,6 +919,6 @@ const validateDecimalInput = async (field) => {
     editForm.value[field] = value.slice(0, -1);// Hapus karakter terakhir
   }
 };
-
+ 
 
 </script>

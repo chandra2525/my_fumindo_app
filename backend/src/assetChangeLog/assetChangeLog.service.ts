@@ -58,14 +58,14 @@ export class AssetChangeLogService {
 
     // const logs = await this.assetChangeLogModel.findAndCountAll({
     //   attributes: [
-    //     [this.sequelize.fn('to_char', this.sequelize.col('created_at'), 'YYYY-MM-DD HH24:MI:SS'), 'created_at_group'],
+    //     [this.sequelize.fn('to_char', this.sequelize.col('created_at'), 'DD-MM-YYYY HH24:MI:SS'), 'created_at_group'],
     //     'asset_id',
     //     'operation',
     //   ],
     //   where: whereClause,
     //   group: ['created_at_group', 'asset_id', 'operation'],
     //   order: [[this.sequelize.col(orderBy), orderDirection]],
-    //   // order: [[this.sequelize.fn('to_char', this.sequelize.col('created_at'), 'YYYY-MM-DD HH24:MI:SS'), 'ASC']],
+    //   // order: [[this.sequelize.fn('to_char', this.sequelize.col('created_at'), 'DD-MM-YYYY HH24:MI:SS'), 'ASC']],
     //   offset,
     //   limit,
     //   raw: true,
@@ -76,7 +76,7 @@ export class AssetChangeLogService {
       // Base query with raw SQL
     const query = `
       SELECT 
-        TO_CHAR(acl.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at_group,
+        TO_CHAR(acl.created_at, 'DD-MM-YYYY HH24:MI:SS') AS created_at_group,
         acl.user_id,
         acl.asset_id,
         a.asset_name,
@@ -112,7 +112,7 @@ export class AssetChangeLogService {
     const countQuery = `
       SELECT COUNT(*) AS "total_count" FROM (
         SELECT 
-          TO_CHAR(acl.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at_group,
+          TO_CHAR(acl.created_at, 'DD-MM-YYYY HH24:MI:SS') AS created_at_group,
           acl.user_id,
           acl.asset_id,
           a.asset_name,

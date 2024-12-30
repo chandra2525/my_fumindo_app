@@ -76,10 +76,22 @@ export class AssetUnitController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<{ message: string }> {
-    // return this.assetUnitService.remove(id);
-    await this.assetUnitService.remove(id);
-    return { message: 'Id berhasil dihapus : '+id };
+  async remove(@Param('id') id: number){
+    try {
+      await this.assetUnitService.remove(id);
+      return { message: 'Unit deleted successfully, Id Unit: '+id };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus Satuan ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the Unit.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('mass-upload')

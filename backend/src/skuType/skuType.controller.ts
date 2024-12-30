@@ -93,10 +93,22 @@ export class SkuTypeController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<{ message: string }> {
-    // return this.vendorService.remove(id);
-    await this.skuTypeService.remove(id);
-    return { message: 'Id berhasil dihapus : '+id };
+  async remove(@Param('id') id: number){
+    try {
+      await this.skuTypeService.remove(id);
+      return { message: 'SKU Type deleted successfully, Id SKU Type: '+id };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus Jenis SKU ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the SKU type.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('mass-upload')

@@ -11,8 +11,11 @@ import 'moment/locale/id';
 
 @Injectable()
 export class VendorChangeLogService {
-  constructor(@InjectModel(VendorChangeLog) private vendorChangeLogModel: typeof VendorChangeLog,
-  private sequelize: Sequelize ) {}
+  constructor(
+    @InjectModel(VendorChangeLog) 
+    private vendorChangeLogModel: typeof VendorChangeLog,
+    private sequelize: Sequelize 
+  ) {}
 
   async create(data): Promise<VendorChangeLog> {
     return await this.vendorChangeLogModel.create(data);
@@ -145,6 +148,23 @@ export class VendorChangeLogService {
 
     // return { rows: logs.rows, sp };
     return { rows, sp };
+  }
+
+  async getLogsByCreatedAt(createdAt: string): Promise<VendorChangeLog[]> {
+    // Memastikan parameter dalam format yang sesuai (YYYY-MM-DD HH24:MI:SS)
+    const formattedCreatedAt = this.sequelize.fn(
+      'TO_CHAR',
+      this.sequelize.col('created_at'),
+      'YYYY-MM-DD HH24:MI:SS',
+    );
+
+    // Query untuk mendapatkan log berdasarkan created_at
+    const logs = await this.vendorChangeLogModel.findAll({
+      where: this.sequelize.where(formattedCreatedAt, createdAt),
+      raw: true,
+    });
+
+    return logs;
   }
 
   async findAll(

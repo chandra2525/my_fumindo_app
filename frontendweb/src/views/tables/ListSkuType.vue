@@ -4,11 +4,11 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">List jenis SKU</h4>
+            <h4 class="card-title">List Jenis SKU</h4>
           </div>
           <div>
             <button
-              class="btn btn-success"
+              class="btn btn-success width-button-style-top"
               style="margin-right: 10px;" 
               @click="showAddModal"
               data-bs-toggle="modal"
@@ -16,20 +16,20 @@
               Tambah Jenis SKU
             </button>
             <button 
-              class="btn btn-outline-success" 
+              class="btn btn-outline-success width-button-style-top" 
               style="margin-right: 10px;" 
               @click="exportSkuTypeData">
               Ekspor Data
             </button>
             <button
-              class="btn btn-info"
+              class="btn btn-info width-button-style-top"
               style="margin-right: 10px;"
               data-bs-toggle="modal"
               data-bs-target="#mass-upload-modal">
               Mass Upload
             </button>
             <button 
-              class="btn btn-outline-info" 
+              class="btn btn-outline-info width-button-style-top" 
               @click="downloadTemplateSkuTypeData">
               Download Template
             </button>
@@ -56,11 +56,11 @@
             </div> 
           </div>
           
-          <div class="row mb-2">
+          <div class="row mb-3">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter kode jenis SKU</label>
               <div class="input-group has-validation">
-                <input type="text" v-model="filterSkuTypeCode" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+                <input type="text" v-model="filterSkuTypeCode" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
             <div class="col-sm-6">
@@ -72,7 +72,8 @@
                     type="text"
                     id="global-search"
                     v-model="globalSearch" 
-                    class="form-control filter-style" 
+                    class="form-control"
+                    style="height: 35px"
                   />
                 </div>
               </div>
@@ -82,7 +83,8 @@
           <div class="row mb-4">
             <div class="col-sm-4">
               <button
-                class="btn btn-primary width-button-style filter-style" 
+                class="btn btn-primary width-button-style" 
+                style="height: 35px"
                 @click="fetchSkuTypeData"
                 title="Search">
                 Filter
@@ -156,13 +158,26 @@
                     <form @submit.prevent="submitSkuType">
                       <p>Form yang bertanda <span class="text-primary">*</span> wajib diisi</p> 
                       <div class="mb-3"> 
-                        <label for="input-205" class="form-label">Dari Kategori<span class="text-primary">*</span></label>
-                        <select id="category_id" v-model="editForm.category_id" class="form-select" required>
+                        <label for="category_id" class="form-label">Dari Kategori<span class="text-primary">*</span></label>
+                        <!-- <select id="category_id" v-model="editForm.category_id" class="form-select" required>
                           <option value="" disabled>Silahkan pilih kategori</option>
                           <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
                             {{ category.path }}
                           </option>
-                        </select>
+                        </select> -->
+                        <v-select
+                          id="category_id"
+                          v-model="editForm.category_id"
+                          :options="categories"
+                          :reduce="category => category.category_id"
+                          label="path"
+                          :searchable="true"
+                          :loading="isLoading"
+                          @search="fetchCategories"
+                          @scroll-bottom="loadMoreCategories"
+                          placeholder="Silahkan pilih kategori"
+                          required
+                        />
                       </div> 
                       <div class="mb-3">
                         <label for="sku_type_name" class="form-label">Nama Jenis SKU<span class="text-primary">*</span></label>
@@ -248,7 +263,7 @@
 <style scoped>
   .filter-style {
     /* max-width: 400px; */
-    height: 35px;
+    /* height: 35px; */
     /* margin-bottom: 1rem; */
   }
 
@@ -257,6 +272,12 @@
     width: 85px;
     font-size: 13px; /* Kecil */
     /* margin-bottom: 1rem; */
+  }
+
+  .width-button-style-top {
+    /* width: 105px; */
+    font-size: 13px;
+    /* padding: 10px; */
   }
 
   .show-entries {
@@ -468,8 +489,8 @@ const fetchCategories = async () => {
         Authorization: `Bearer ${token}`,
       },
       params: {  
-        // order_by: currentSort.value.column,
-        // order_direction: currentSort.value.order,
+        order_by: 'path',
+        order_direction: 'ASC',
         page: 1,
         pageSize: 1000,
       },

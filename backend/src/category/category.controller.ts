@@ -92,9 +92,22 @@ export class CategoryController {
   }
  
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<{ message: string }> {
-    await this.categoryService.delete(id);
-    return { message: 'Id berhasil dihapus : '+id };
+  async remove(@Param('id') id: number){
+    try {
+      await this.categoryService.delete(id);
+      return { message: 'Category deleted successfully, Id Category: '+id };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus kategori ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the category.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('mass-upload')

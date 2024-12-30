@@ -12,9 +12,9 @@ export class SkuItemController {
 
   @Get()
   async findAll(
-    @Query('sku_type_name') skuTypeName?: string, 
-    @Query('unit_name') unitName?: string, 
-    @Query('vendor_name') vendorName?: string, 
+    @Query('sku_type_name') skuTypeName?: string,
+    @Query('unit_name') unitName?: string,
+    @Query('vendor_name') vendorName?: string,
     @Query('sku_item_name') sku_item_name?: string,
     @Query('brand') brand?: string,
     // @Query('length') length?: string,
@@ -22,7 +22,8 @@ export class SkuItemController {
     // @Query('height') height?: string,
     // @Query('weight') weight?: string,
     // @Query('price') price?: string,
-    @Query('consumed') consumed?: string,
+    // @Query('consumed') consumed?: string,
+    @Query('consumed') consumeds?: string, 
     @Query('order_by') orderBy?: string,
     @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
     @Query('search') search?: string,
@@ -33,6 +34,7 @@ export class SkuItemController {
     const skuTypeNameArray = skuTypeName ? skuTypeName.split(',') : []; // Pisahkan string menjadi array
     const unitNameArray = unitName ? unitName.split(',') : []; // Pisahkan string menjadi array
     const vendorNameArray = vendorName ? vendorName.split(',') : []; // Pisahkan string menjadi array
+    const consumedArray = consumeds ? consumeds.split(',') : []; // Pisahkan string menjadi array
     return this.skuItemService.findAll(
       skuTypeNameArray,
       unitNameArray,
@@ -44,7 +46,7 @@ export class SkuItemController {
       // height,
       // weight,
       // price,
-      consumed,
+      consumedArray,
       orderBy,
       orderDirection,
       search,
@@ -76,7 +78,8 @@ export class SkuItemController {
     // @Query('height') height?: string,
     // @Query('weight') weight?: string,
     // @Query('price') price?: string,
-    @Query('consumed') consumed?: string,
+    // @Query('consumed') consumed?: string,
+    @Query('consumed') consumeds?: string, 
     @Query('order_by') orderBy?: string,
     @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
     @Query('search') search?: string,
@@ -84,6 +87,7 @@ export class SkuItemController {
     const skuTypeNameArray = skuTypeName ? skuTypeName.split(',') : []; // Pisahkan string menjadi array
     const unitNameArray = unitName ? unitName.split(',') : []; // Pisahkan string menjadi array
     const vendorNameArray = vendorName ? vendorName.split(',') : []; // Pisahkan string menjadi array
+    const consumedArray = consumeds ? consumeds.split(',') : []; // Pisahkan string menjadi array
     const buffer = await this.skuItemService.exportSkuItems(
       skuTypeNameArray,
       unitNameArray,
@@ -95,7 +99,7 @@ export class SkuItemController {
       // height,
       // weight,
       // price,
-      consumed,
+      consumedArray,
       orderBy,
       orderDirection,
       search,

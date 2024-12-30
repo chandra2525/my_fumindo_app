@@ -25,31 +25,40 @@
       <side-menu title="Cabang" icon="brief-case" toggle-id="cabang" :caret-icon="true" :route="{ popup: 'false', to: 'cabang' }" @onClick="toggle" :active="currentRoute.includes('cabang')">
         <b-collapse tag="ul" class="sub-nav" id="cabang" accordion="sidebar-menu" :visible="currentRoute.includes('cabang')">
           <side-menu isTag="router-link" title="Cabang" icon="circle" :icon-size="10" icon-type="solid" miniTitle="C" :route="{ to: 'default.list-cabang' }"></side-menu>
-          <side-menu isTag="router-link" title="Gudang" icon="circle" :icon-size="10" icon-type="solid" miniTitle="G" :route="{ to: 'default.list-gudang' }"></side-menu>
+          <side-menu isTag="router-link" title="Gudang" icon="circle" :icon-size="10" icon-type="solid" miniTitle="G" :route="{ to: 'default.list-gudang-cabang' }"></side-menu>
         </b-collapse>
       </side-menu>
-      <side-menu isTag="router-link" title="Kategori" icon="analytics" :route="{ to: 'default.list-category' }"></side-menu>
-      <side-menu title="Vendor" icon="cart" toggle-id="vendor" :caret-icon="true" :route="{ popup: 'false', to: 'vendor' }" @onClick="toggle" :active="currentRoute.includes('vendor')">
-        <b-collapse tag="ul" class="sub-nav" id="vendor" accordion="sidebar-menu" :visible="currentRoute.includes('vendor')">
-          <side-menu isTag="router-link" title="List Vendor" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-vendor' }"></side-menu>
-          <side-menu isTag="router-link" title="List Vendor Aset" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-vendor-log' }"></side-menu>
-        </b-collapse>
-      </side-menu>
-      <side-menu isTag="router-link" title="SKU Type" icon="analytics" :route="{ to: 'default.list-skutype' }"></side-menu>
-      <side-menu isTag="router-link" title="SKU Item" icon="offer" :route="{ to: 'default.list-skuitem' }"></side-menu>
       <side-menu isTag="router-link" title="Karyawan" icon="user-group" :route="{ to: 'default.list-employee' }"></side-menu>
       <side-menu isTag="router-link" title="User" icon="user" :route="{ to: 'default.list-user' }"></side-menu>
       <side-menu isTag="router-link" title="Pelanggan" icon="users" :route="{ to: 'default.list-customer' }"></side-menu>
       <side-menu title="Aset" icon="offer" toggle-id="asset" :caret-icon="true" :route="{ popup: 'false', to: 'asset' }" @onClick="toggle" :active="currentRoute.includes('asset')">
         <b-collapse tag="ul" class="sub-nav" id="asset" accordion="sidebar-menu" :visible="currentRoute.includes('asset')">
           <side-menu isTag="router-link" title="List Aset" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-asset' }"></side-menu>
-          <side-menu isTag="router-link" title="List Perubahan Aset" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-asset-log' }"></side-menu>
-          <side-menu isTag="router-link" title="Kelola Kategori Alat" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-tool-category' }"></side-menu>
-          <side-menu isTag="router-link" title="Kelola Kondisi Alat" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-tool-condition' }"></side-menu>
-          <side-menu isTag="router-link" title="Kelola Satuan" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-unit' }"></side-menu>
+          <side-menu isTag="router-link" title="List Perubahan Aset" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-log-asset' }"></side-menu>
+          <side-menu isTag="router-link" title="Kelola Kategori Alat" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-tool-category-asset' }"></side-menu>
+          <side-menu isTag="router-link" title="Kelola Kondisi Alat" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-tool-condition-asset' }"></side-menu>
+          <side-menu isTag="router-link" title="Kelola Satuan" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-unit-asset' }"></side-menu>
         </b-collapse>
       </side-menu>
-      
+      <li><hr class="hr-horizontal" /></li>
+      <side-menu title="Manajemen Aset" :static-item="true"></side-menu>
+      <side-menu title="Konfigurasi" icon="setting" toggle-id="configuration" :caret-icon="true" :route="{ popup: 'false', to: 'configuration' }" @onClick="toggle" :active="currentRoute.includes('configuration')">
+        <b-collapse tag="ul" class="sub-nav" id="configuration" accordion="sidebar-menu" :visible="currentRoute.includes('configuration')">
+          <side-menu isTag="router-link" title="Kategori" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-category-configuration' }"></side-menu>
+          <side-menu isTag="router-link" title="Vendor" icon="circle" :icon-size="10" icon-type="solid" miniTitle="V" :route="{ to: 'default.list-vendor-configuration' }"></side-menu>
+          <side-menu isTag="router-link" title="SKU Type" icon="circle" :icon-size="10" icon-type="solid" miniTitle="ST" :route="{ to: 'default.list-skutype-configuration' }"></side-menu>
+          <side-menu isTag="router-link" title="SKU Item" icon="circle" :icon-size="10" icon-type="solid" miniTitle="SI" :route="{ to: 'default.list-skuitem-configuration' }"></side-menu>
+          <!-- <side-menu isTag="router-link" title="List Perubahan Vendor" icon="circle" :icon-size="10" icon-type="solid" miniTitle="L" :route="{ to: 'default.list-vendor-log-configuration' }"></side-menu> -->
+        </b-collapse>
+      </side-menu>
+      <side-menu isTag="router-link" title="Pembelian Masuk" icon="cart" :route="{ to: 'default.list-purchase-inbound' }"></side-menu>
+      <side-menu isTag="router-link" title="Peta Inventaris" icon="brief-case" :route="{ to: 'errors.maintenance' }"></side-menu>
+      <side-menu isTag="router-link" title="Tugas Pemindahan" icon="arrow-box-right" :route="{ to: 'errors.maintenance' }"></side-menu>
+      <side-menu isTag="router-link" title="Tugas Jenis Inventaris" icon="bag" :route="{ to: 'errors.maintenance' }"></side-menu>
+      <!-- <side-menu isTag="router-link" title="Inventory Type Task" icon="file" :route="{ to: 'default.maintenance' }"></side-menu> -->
+      <side-menu isTag="router-link" title="Penyesuaian" icon="pencil" :route="{ to: 'errors.maintenance' }"></side-menu>
+      <li><hr class="hr-horizontal" /></li>
+      <li><hr class="hr-horizontal" /></li>
       <!-- <side-menu title="Special Pages" icon="document" toggle-id="special-pages" :caret-icon="true" :route="{ popup: 'false', to: 'special-pages' }" @onClick="toggle" :active="currentRoute.includes('special-pages')">
         <b-collapse tag="ul" class="sub-nav" id="special-pages" accordion="sidebar-menu" :visible="currentRoute.includes('special-pages')">
           <side-menu isTag="router-link" title="Billing" icon="circle" :icon-size="10" icon-type="solid" miniTitle="B" :route="{ to: 'default.billing' }"></side-menu>

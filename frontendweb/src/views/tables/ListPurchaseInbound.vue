@@ -4,9 +4,9 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">List Vendor</h4>
+            <h4 class="card-title">List Purchase Inbound</h4>
           </div> 
-          <div >
+          <div>
             <button 
               class="btn btn-success width-button-style-top" 
               style="margin-right: 10px;" 
@@ -399,6 +399,7 @@ const vendorColumns = [
 // Mengambil data vendor saat komponen dimuat
 onMounted(async () => {
   await fetchVendorData();
+  await addPurchaseInboundData();
 });
 
 const currentSort = ref({ column: 'vendor_id', order: 'DESC' });
@@ -440,6 +441,41 @@ const fetchVendorData = async () => {
     handleAuthError();
   }
 };
+
+
+const editFormPurchase = ref({
+  purchase_inbound_id: null,
+  warehouse_id: 1,
+  vendor_id: 2,
+  user_id: 4,
+  sku_item_id: [1, 2, 3, 4],
+  expected_quantity: [12, 9, 15, 22],
+  inventory_type: "Storage",
+  purchase_order_number: "PO-15-2024",
+  expected_inbound_date: "2024-11-29",
+  asn: "PO-VE-30/12/2024",
+  status: "Pending"
+})
+
+const addPurchaseInboundData = async () => {
+  try {
+    // editFormPurchase.value.user_id = user_id;
+    // editFormPurchase.value.operation = 'Tambah';
+    const response = await axios.post('http://localhost:3000/api/purchase_inbound', editFormPurchase.value, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log('Data berhasil ditambahkan:', response.data)
+
+    // Tambahkan data baru ke tabel
+    // vendorData.value.push(response.data)
+  } catch (error) {
+    console.error('Error fetching vendor data:', error); 
+    handleAuthError();
+  }
+};
+
 
 // Fungsi untuk mengganti halaman
 const changePage = (page) => {

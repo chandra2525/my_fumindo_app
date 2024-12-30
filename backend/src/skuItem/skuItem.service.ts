@@ -27,7 +27,8 @@ export class SkuItemService {
     // height?: string,
     // weight?: string,
     // price?: string,
-    consumed?: string,
+    // consumed?: string,
+    consumeds?: string[],
     orderBy: string = 'sku_item_id',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
     search?: string,
@@ -57,8 +58,11 @@ export class SkuItemService {
     // if (price) {
     //   whereClause.price = { [Op.iLike]: `%${price}%` };  
     // }
-    if (consumed) {
-      whereClause.consumed = { [Op.iLike]: `%${consumed}%` };  
+    // if (consumed) {
+    //   whereClause.consumed = { [Op.iLike]: `%${consumed}%` };  
+    // }
+    if (consumeds?.length) {
+      whereClause.consumed = { [Op.in]: consumeds }; // Filter consumed
     }
     if (search) {
       whereClause[Op.or] = [
@@ -363,7 +367,8 @@ export class SkuItemService {
     // height?: string,
     // weight?: string,
     // price?: string,
-    consumed?: string,
+    // consumed?: string,
+    consumeds?: string[],
     orderBy: string = 'sku_item_id',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
     search?: string,
@@ -431,8 +436,11 @@ export class SkuItemService {
     // if (price) {
     //   whereClause.price = { [Op.iLike]: `%${price}%` };  
     // }
-    if (consumed) {
-      whereClause.consumed = { [Op.iLike]: `%${consumed}%` };  
+    // if (consumed) {
+    //   whereClause.consumed = { [Op.iLike]: `%${consumed}%` };  
+    // }
+    if (consumeds?.length) {
+      whereClause.consumed = { [Op.in]: consumeds }; // Filter consumed
     }
     if (search) {
       whereClause[Op.or] = [

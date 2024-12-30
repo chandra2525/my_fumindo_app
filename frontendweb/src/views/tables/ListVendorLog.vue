@@ -8,7 +8,7 @@
           </div>
           <div>
             <button 
-              class="btn btn-outline-success" 
+              class="btn btn-outline-success width-button-style-top" 
               style="margin-right: 10px;" 
               @click="exportVendorData">
               Ekspor Data
@@ -107,6 +107,7 @@
               :idrow="created_at_group"
               @edit="showEditModal"
               @delete="showDeleteModal"
+              @viewDetail="navigateToDetail"
               @sort="onSort"
             />
             
@@ -157,6 +158,12 @@
     font-size: 13px; /* Kecil */
     /* margin-bottom: 1rem; */
   }
+  
+  .width-button-style-top {
+    /* width: 105px; */
+    font-size: 13px;
+    /* padding: 10px; */
+  }
 
   .show-entries {
     /* max-width: 400px; */
@@ -181,13 +188,22 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DataTable from '@/components/DataTable.vue';
 // import Actions from '@/components/TableActions.vue';
-// import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 // import { Modal } from 'bootstrap'
-// const router = useRouter();
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+
+const navigateToDetail = (rowData) => {
+  router.push({ name: 'VendorLogDetail', params: {
+    created_at: rowData.created_at_group,
+    operation: rowData.operation,
+    vendor_name: rowData.vendor_name,
+    username: rowData.username,
+  } });
+};
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 // Ambil token dari localStorage
@@ -198,7 +214,7 @@ const VendorColumns = [
   // { title: 'ID Vendor', data: 'vendor_id', sortable: true },
   { title: 'Nama Vendor', data: 'vendor_name', sortable: true }, 
   { title: 'Username', data: 'username', sortable: true }, 
-  { title: 'Dibuat Pada Waktu', data: 'created_at_group', sortable: true },
+  { title: 'Dibuat Pada Waktu', data: 'created_at_group2', sortable: true },
   { title: 'Operasi', data: 'operation', sortable: true }, 
   { title: 'Aksi', data: 'view', sortable: false },
 ];
@@ -262,7 +278,12 @@ const fetchVendorChangeLogData = async () => {
     })
     console.log('coba res')
     console.log(response.data)
-    vendorData.value = response.data.rows
+    // vendorData.value = response.data.rows
+    // Format data sebelum dimasukkan ke tabel
+    vendorData.value = response.data.rows.map((item) => ({
+      ...item, 
+      created_at_group2: formatTanggal(item.created_at_group), // Format kolom tanggal
+    }));
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
@@ -341,6 +362,44 @@ const handleAuthError = () => {
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
+
+
+function formatTanggal(tanggalString) {
+  const hari = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu"
+  ];
+  const bulan = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember"
+  ];
+
+  const date = new Date(tanggalString);
+  const namaHari = hari[date.getDay()];
+  const tanggal = date.getDate();
+  const namaBulan = bulan[date.getMonth()];
+  const tahun = date.getFullYear();
+  const jam = date.getHours().toString().padStart(2, "0");
+  const menit = date.getMinutes().toString().padStart(2, "0");
+  const detik = date.getSeconds().toString().padStart(2, "0");
+
+  return `${namaHari}, ${tanggal} ${namaBulan} ${tahun}, Jam ${jam}:${menit}:${detik} WIB`;
+}
 
 
 </script>

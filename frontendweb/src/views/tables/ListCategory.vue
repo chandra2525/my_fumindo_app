@@ -16,31 +16,35 @@
               Tambah Kategori
             </button> -->
        
-            <button id="btnGroupDrop1" type="button" class="btn btn-success dropdown-toggle" style="margin-right: 10px;" data-bs-toggle="dropdown" aria-expanded="false">Tambah Kategori</button>
+            <button id="btnGroupDrop1" type="button" class="btn btn-success dropdown-toggle width-button-style-top" style="margin-right: 10px;" data-bs-toggle="dropdown" aria-expanded="false">Tambah Kategori</button>
             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                 <li><a class="dropdown-item" href="#" @click="showAddModal('1')" data-bs-toggle="modal" data-bs-target="#form-confirmation">Kategori Level 1</a></li>
                 <li><a class="dropdown-item" href="#" @click="showAddModal('2')" data-bs-toggle="modal" data-bs-target="#form-confirmation">Kategori Level 2</a></li>
                 <li><a class="dropdown-item" href="#" @click="showAddModal('3')" data-bs-toggle="modal" data-bs-target="#form-confirmation">Kategori Level 3</a></li>
             </ul>
- 
             <button 
-              class="btn btn-outline-success" 
+              class="btn btn-outline-success width-button-style-top" 
               style="margin-right: 10px;" 
               @click="exportCategoryData">
               Ekspor Data
             </button>
             <button
-              class="btn btn-info"
+              class="btn btn-info width-button-style-top"
               style="margin-right: 10px;"
               data-bs-toggle="modal"
               data-bs-target="#mass-upload-modal">
               Mass Upload
             </button>
             <button 
-              class="btn btn-outline-info" 
+              class="btn btn-outline-info width-button-style-top"
               @click="downloadTemplateCategoryData">
               Download Template
             </button>
+            <!-- <button 
+              class="btn btn-outline-warning width-button-style-top" 
+              @click="downloadTemplateCategoryData">
+              Log
+            </button> -->
           </div>
         </div>
         <div class="card-body">
@@ -273,6 +277,12 @@
     font-size: 13px;
   }
 
+  .width-button-style-top {
+    /* width: 105px; */
+    font-size: 13px;
+    /* padding: 10px; */
+  }
+
   .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -361,7 +371,20 @@ const fetchCategoryData = async () => {
         pageSize: pageSize.value, // Kirim ukuran data per halaman 
        }, 
     });
-    categoryData.value = response.data.rows;// Asumsikan response berupa { data, total }
+    // categoryData.value = response.data.rows;// Asumsikan response berupa { data, total }
+    
+    // Memodifikasi path untuk menghapus bagian terakhir
+    categoryData.value = response.data.rows.map((item) => {
+       if (!item.path || !item.path.includes(' > ')) {
+        // Jika path kosong atau tidak memiliki turunan, tampilkan "-"
+        item.path = '-';
+      } else {
+        // Jika ada turunan, hapus bagian terakhir
+        const pathParts = item.path.split(' > '); // Pisahkan path berdasarkan ' > '
+        item.path = pathParts.slice(0, -1).join(' > '); // Gabungkan kembali tanpa elemen terakhir
+      }
+      return item;
+    });
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
 
@@ -619,9 +642,17 @@ const confirmDelete = async () => {
     const modal = new BootstrapModal(document.getElementById('message-alert'));
     modal.show(); 
     fetchCategoryData()
-  } catch (error) {
-    console.error('Failed to delete category data:', error) 
-    handleAuthError();
+   } catch (error) {
+    if (error.response && error.response.status === 409) {
+        titleMessage.value = `Gagal Menghapus`;
+        alertMessage.value = `Data Kategori <strong>${selectedCategory.value.category_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Kategori <strong>${selectedCategory.value.category_name}</strong>.`;
+        const modal = new BootstrapModal(document.getElementById('message-alert'));
+        modal.show(); 
+    } 
+    else {
+      console.error('Failed to delete category data:', error) 
+      handleAuthError();
+    }
   }
 }
 

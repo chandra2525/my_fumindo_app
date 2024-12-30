@@ -19,6 +19,7 @@ import { VendorModule } from './vendor/vendor.module';
 import { VendorChangeLogModule } from './vendorChangeLog/vendorChangeLog.module';
 import { SkuTypeModule } from './skuType/skuType.module';
 import { SkuItemModule } from './skuItem/skuItem.module';
+import { PurchaseInboundModule } from './purchaseInbound/purchaseInbound.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -43,6 +44,7 @@ import { databaseConfig } from './config/database.config';
     VendorChangeLogModule,
     SkuTypeModule,
     SkuItemModule,
+    PurchaseInboundModule,
   ],
 })
 export class AppModule {}

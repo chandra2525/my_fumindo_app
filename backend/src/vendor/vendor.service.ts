@@ -164,7 +164,7 @@ export class VendorService {
           vendor_id: vendorTable.vendor_id,
           user_id: data.user_id,
           column_name: change.column_name,
-          value_before: change.value_before,
+          // value_before: change.value_before,
           value_after: change.value_after,
           operation: data.operation,
         });

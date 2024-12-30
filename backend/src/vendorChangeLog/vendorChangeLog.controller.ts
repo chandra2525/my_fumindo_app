@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { VendorChangeLogService } from './vendorChangeLog.service';
 import { VendorChangeLog } from './vendorChangeLog.model';
@@ -32,6 +32,20 @@ export class VendorChangeLogController {
       pageSize,
     );
   }
+
+  
+  @Get('details')
+  async getLogsByCreatedAt(
+    @Query('created_at') createdAt: string,
+  ): Promise<any> {
+    if (!createdAt) {
+      throw new BadRequestException('Parameter created_at is required');
+    }
+
+    const logs = await this.vendorChangeLogService.getLogsByCreatedAt(createdAt);
+    return logs;
+  }
+  
 
   @Get()
   async getAllVendors() {

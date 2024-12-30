@@ -206,7 +206,7 @@ const defaultChildRoutes = (prefix) => [
   },
   {
     path: '/listgudang',
-    name: prefix + '.list-gudang',
+    name: prefix + '.list-gudang-cabang',
     meta: { auth: true, name: 'List Gudang', isBanner: true },
     component: () => import('@/views/tables/ListWarehouse.vue'),
   },
@@ -236,57 +236,70 @@ const defaultChildRoutes = (prefix) => [
   },
   {
     path: '/listassetlog',
-    name: prefix + '.list-asset-log',
+    name: prefix + '.list-log-asset',
     meta: { auth: true, name: 'List Asset Log', isBanner: true },
     component: () => import('@/views/tables/ListAssetLog.vue')
   },
   {
     path: '/listtoolcategory',
-    name: prefix + '.list-tool-category',
+    name: prefix + '.list-tool-category-asset',
     meta: { auth: true, name: 'List Tool Category', isBanner: true },
     component: () => import('@/views/tables/ListToolCategory.vue')
   },
   {
     path: '/listtoolcondition',
-    name: prefix + '.list-tool-condition',
+    name: prefix + '.list-tool-condition-asset',
     meta: { auth: true, name: 'List Tool Condition', isBanner: true },
     component: () => import('@/views/tables/ListToolCondition.vue')
   },
   {
     path: '/listunit',
-    name: prefix + '.list-unit',
+    name: prefix + '.list-unit-asset',
     meta: { auth: true, name: 'List Unit', isBanner: true },
     component: () => import('@/views/tables/ListUnit.vue')
   },
   {
     path: '/listcategory',
-    name: prefix + '.list-category',
+    name: prefix + '.list-category-configuration',
     meta: { auth: true, name: 'List Kategori', isBanner: true },
     component: () => import('@/views/tables/ListCategory.vue'),
   },
   {
     path: '/listvendor',
-    name: prefix + '.list-vendor',
+    name: prefix + '.list-vendor-configuration',
     meta: { auth: true, name: 'List Vendor', isBanner: true },
     component: () => import('@/views/tables/ListVendor.vue'),
   },
   {
     path: '/listvendorlog',
-    name: prefix + '.list-vendor-log',
+    name: 'ListVendorLog',
     meta: { auth: true, name: 'List Vendor Log', isBanner: true },
     component: () => import('@/views/tables/ListVendorLog.vue'),
   },
   {
+    path: '/vendor-log-detail/:created_at&:operation&:vendor_name&:username',
+    name: 'VendorLogDetail',
+    meta: { auth: true, name: 'Detail Vendor Log', isBanner: true },
+    component: () => import('@/views/VendorLogDetail.vue'),
+    props: true,
+  },
+  {
     path: '/listskutype',
-    name: prefix + '.list-skutype',
+    name: prefix + '.list-skutype-configuration',
     meta: { auth: true, name: 'List SKU Type', isBanner: true },
     component: () => import('@/views/tables/ListSkuType.vue'),
   },
   {
     path: '/listskuitem',
-    name: prefix + '.list-skuitem',
+    name: prefix + '.list-skuitem-configuration',
     meta: { auth: true, name: 'List SKU Item', isBanner: true },
     component: () => import('@/views/tables/ListSkuItem.vue'),
+  },
+  {
+    path: '/listpurchaseinbound',
+    name: prefix + '.list-purchase-inbound',
+    meta: { auth: true, name: 'List Purchase Inbound', isBanner: true },
+    component: () => import('@/views/tables/ListPurchaseInbound.vue'),
   },
   // {
   //   path: '/employee/add',

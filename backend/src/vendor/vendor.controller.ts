@@ -116,10 +116,22 @@ export class VendorController {
   // }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<{ message: string }> {
-    // return this.vendorService.remove(id);
-    await this.vendorService.remove(id);
-    return { message: 'Id berhasil dihapus : '+id };
+  async remove(@Param('id') id: number){
+    try {
+      await this.vendorService.remove(id);
+      return { message: 'Vendor deleted successfully, Id Vendor: '+id };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus vendor ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the vendor.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // @Delete(':id')
