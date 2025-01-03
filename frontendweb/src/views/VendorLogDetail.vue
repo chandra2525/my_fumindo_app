@@ -53,7 +53,7 @@
       <b-card no-body>
         <b-card-header header-class="d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">Versi Lama</h4>
+            <h5 class="card-title">Versi Lama</h5>
           </div>
         </b-card-header>
         <b-card-body>
@@ -93,7 +93,7 @@
       <b-card no-body>
         <b-card-header header-class="d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">Versi Baru</h4>
+            <h5 class="card-title">Versi Baru</h5>
           </div>
         </b-card-header>
         <b-card-body>

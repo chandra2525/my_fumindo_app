@@ -4,21 +4,19 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">List Purchase Inbound</h4>
-          </div> 
+            <h4 class="card-title">Pembelian Masuk</h4>
+          </div>
           <div>
-            <button 
-              class="btn btn-success width-button-style-top" 
+            <button
+              class="btn btn-success width-button-style-top"
               style="margin-right: 10px;" 
-              @click="showAddModal" 
-              data-bs-toggle="modal" 
-              data-bs-target="#form-confirmation">
-              Tambah Vendor
+              @click="navigateToAdd">
+              Tambah Pembelian Masuk
             </button>
             <button 
               class="btn btn-outline-success width-button-style-top" 
               style="margin-right: 10px;" 
-              @click="exportVendorData">
+              @click="exportPurchaseInboundData">
               Ekspor Data
             </button>
             <button
@@ -29,71 +27,95 @@
               Mass Upload
             </button>
             <button 
-              class="btn btn-outline-info width-button-style-top"
-              style="margin-right: 10px;"
-              @click="downloadTemplateVendorData">
+              class="btn btn-outline-info width-button-style-top" 
+              @click="downloadTemplatePurchaseInboundData">
               Download Template
             </button>
-            <button 
-              class="btn btn-outline-warning width-button-style-top" 
-              @click="navigateToVendorLog">
-              Log
-            </button>
           </div>
-        </div> 
-        <div class="card-body"> 
+        </div>
+        <div class="card-body">
           <div class="row mb-2">
-            <div class="col-sm-6"> 
-              <label for="validationCustomUsername01" class="form-label">Filter nama vendor</label>
-              <div class="input-group has-validation">
-                <input type="text" v-model="filterVendor" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div> 
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter gudang</label>
+              <v-select 
+                :options="warehouseNames" 
+                v-model="selectedWarehouses" 
+                multiple  
+                @update:modelValue="onWarehouseSelect" 
+                class="filter-style"
+              ></v-select>
             </div>
+            <div class="col-sm-6">
+                <label for="validationCustomUsername01" class="form-label">Filter nomor pesanan pembelian</label>
+                <div class="input-group has-validation">
+                  <input type="text" v-model="filterPurchaseOrderNumber" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+                </div>
+            </div> 
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter jenis inventaris</label>
+              <v-select 
+                :options="optionsInventoryType"
+                v-model="selectedInventoryType"
+                multiple
+                @update:modelValue="onInventoryTypeSelect"
+                class="filter-style"
+              ></v-select>
+            </div>
+            <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter vendor</label>
+              <v-select 
+                :options="vendorNames" 
+                v-model="selectedVendors" 
+                multiple  
+                @update:modelValue="onVendorSelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+          </div>
           
-            <div class="col-sm-6"> 
-                <label for="validationCustomUsername01" class="form-label">Filter no telpon</label>
-                <div class="input-group has-validation">
-                  <input type="text" v-model="filterPhoneNumber" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-                </div>
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <label for="validationCustomUsername01" class="form-label">Filter pembuat</label>
+              <div class="input-group has-validation">
+                <input type="text" v-model="filterUsername" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <label for="validationCustomUsername01" class="form-label">Filter tanggal masuk</label>
+              <div class="input-group has-validation">
+                <input type="text" v-model="filterInboundDate" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
             </div>
           </div>
 
           <div class="row mb-2">
             <div class="col-sm-6">
-                <label for="validationCustomUsername01" class="form-label">Filter email</label>
-                <div class="input-group has-validation">
-                  <input type="text" v-model="filterEmail" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-                </div>
-            </div>
-            <div class="col-sm-6"> 
-              <label for="validationCustomUsername01" class="form-label">Filter alamat</label>
+              <label for="validationCustomUsername01" class="form-label">Filter ASN</label>
               <div class="input-group has-validation">
-                <input type="text" v-model="filterAddress" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div> 
+                <input type="text" v-model="filterAsn" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
             </div>
-          </div>
-
-          <div class="row mb-2">
             <div class="col-sm-6">
-                <label for="validationCustomUsername01" class="form-label">Filter tanggal peninjauan mendatang</label>
-                <div class="input-group has-validation">
-                  <input type="text" v-model="filterUpcomingReviewDate" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-                </div>
-            </div>
-            <div class="col-sm-6"> 
-              <label for="validationCustomUsername01" class="form-label">Filter komentar vendor</label>
+              <label for="validationCustomUsername01" class="form-label">Filter tanggal pembuatan</label>
               <div class="input-group has-validation">
-                <input type="text" v-model="filterVendorRemark" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div> 
+                <input type="text" v-model="filterCreateDate" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
             </div>
           </div>
 
           <div class="row mb-3">
             <div class="col-sm-6">
-                <label for="validationCustomUsername01" class="form-label">Filter status vendor</label>
-                <div class="input-group has-validation">
-                  <input type="text" v-model="filterVendorStatus" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-                </div>
+              <label for="filter" class="form-label">Filter status</label>
+              <v-select 
+                :options="optionsStatus"
+                v-model="selectedStatus"
+                multiple
+                @update:modelValue="onStatusSelect"
+                class="filter-style"
+              ></v-select>
             </div>
             <div class="col-sm-6">
               <!-- Input Pencarian Global -->
@@ -112,26 +134,28 @@
           </div>
 
           <div class="row mb-4">
-            <div class="col-sm-4">
+             <div class="col-sm-4">
               <div class="input-group has-validation">
                 <button
                   class="btn btn-primary width-button-style filter-style" 
-                  @click="fetchVendorData"
+                  @click="fetchPurchaseInboundData"
                   title="Search">
                   Filter
                 </button>
               </div>
             </div>
           </div>
-          
-          <div class="row mb-2"> 
+ 
+
+          <div class="row mb-2">
+            <!-- Dropdown Show Entries -->
             <div class="col-sm-6 pagination-show-entries">
               <label for="entries" class="form-label col-sm-3">Show entries</label>
               <select
                 id="entries"
                 class="form-select show-entries"
                 v-model="pageSize"
-                @change="fetchVendorData"
+                @change="fetchPurchaseInboundData"
               >
                 <option value="10">10</option>
                 <option value="25">25</option>
@@ -140,16 +164,17 @@
               </select>
             </div>
           </div>
-
+          
           <div class="table-responsive border-bottom">
             <data-table
-              :data="vendorData"
-              :columns="vendorColumns"
+              :data="purchaseInboundData"
+              :columns="columns"
               :currentPage="currentPage"
-              :pageSize="pageSize" 
-              :idrow="vendor_id"  
+              :pageSize="pageSize"  
+              :idrow="purchase_inbound_id"
               @edit="showEditModal"
               @delete="showDeleteModal"
+              @viewDetail="navigateToDetail"
               @sort="onSort"
             />
 
@@ -182,46 +207,54 @@
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropPermissionLabel">{{ isEditMode ? 'Perbarui Vendor' : 'Tambah Vendor' }}</h5>
+                    <h5 class="modal-title" id="staticBackdropPermissionLabel">{{ isEditMode ? 'Perbarui Pembelian Masuk' : 'Tambah Pembelian Masuk' }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <p>Form yang bertanda <span class="text-primary">*</span> wajib diisi</p> 
-                    <form @submit.prevent="submitVendor">
-                      <div class="mb-3">
-                        <label for="vendor_name" class="form-label">Nama Vendor<span class="text-primary">*</span></label>
-                        <input v-model="editForm.vendor_name" maxlength="100" id="vendor_name" type="text" required class="form-control"/>
-                      </div>
-                      <div class="mb-3">
-                        <label for="phone_number" class="form-label">No Telpon</label>
-                        <input v-model="editForm.phone_number" maxlength="15" id="phone_number" type="text" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
-                      </div>
-                      <div class="mb-3">
-                        <label for="email" class="form-label">E-mail</label>
-                        <input v-model="editForm.email" maxlength="150" id="email" type="email" class="form-control" @input="syncUsername" />
-                      </div>
+                    <form @submit.prevent="submitPurchaseInbound">
+                      <p>Form yang bertanda <span class="text-primary">*</span> wajib diisi</p> 
                       <div class="mb-3"> 
-                        <label for="address" class="form-label">Alamat</label>
-                        <b-form-textarea v-model="editForm.address" maxlength="500" id="address" type="text" rows="4" max-rows="4"></b-form-textarea>
+                        <label for="input-205" class="form-label">Dari Gudang<span class="text-primary">*</span></label>
+                        <select id="warehouse_id" v-model="editForm.warehouse_id" class="form-select" required>
+                          <option value="" disabled>Silahkan pilih gudang</option>
+                          <option v-for="warehouse in warehouses" :key="warehouse.warehouse_id" :value="warehouse.warehouse_id">
+                            {{ warehouse.warehouse_name }}
+                          </option>
+                        </select>
                       </div>
                       <div class="mb-3">
-                        <label for="upcoming_review_date" class="form-label">Tanggal Peninjauan Mendatang</label>
-                        <input v-model="editForm.upcoming_review_date" type="date" class="form-control"/>
+                        <label for="purchase_order_number" class="form-label">Nomor Pesanan Pembelian<span class="text-primary">*</span></label>
+                        <input v-model="editForm.purchase_order_number" maxlength="100" type="text" class="form-control" id="purchase_order_number" required />
                       </div>
                       <div class="mb-3">
-                        <label for="vendor_remark" class="form-label">Komentar Vendor</label>
-                        <b-form-textarea v-model="editForm.vendor_remark" maxlength="500" id="vendor_remark" type="text" rows="2" max-rows="2"></b-form-textarea>
-                      </div> 
-                      <div class="mb-3">
-                        <label for="vendor_status" class="form-label">Status Vendor<span class="text-primary">*</span></label>
+                        <label for="inventory_type" class="form-label">Jenis Inventaris<span class="text-primary">*</span></label>
                         <div class="mb-1">
-                          <b-form-radio value="Tersedia" v-model="editForm.vendor_status" class="d-inline-block">Tersedia</b-form-radio>
+                          <b-form-radio value="Usage" v-model="editForm.inventory_type" class="d-inline-block">Usage</b-form-radio>
                           <label class="form-label text-white"> . . . . </label>
-                          <b-form-radio value="Tidak Tersedia" v-model="editForm.vendor_status" class="d-inline-block">Tidak Tersedia</b-form-radio>
+                          <b-form-radio value="Storage" v-model="editForm.inventory_type" class="d-inline-block">Storage</b-form-radio>
                         </div>
                       </div>
-                      <!-- <p>Status yang dipilih: {{ editForm.vendor_status }}</p> -->
-                      <button type="submit" class="btn btn-primary" :data-bs-dismiss="editForm.vendor_name ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Vendor' }}</button>
+                      <div class="mb-3"> 
+                        <label for="input-205" class="form-label">Dari Vendor<span class="text-primary">*</span></label>
+                        <select id="vendor_id" v-model="editForm.vendor_id" class="form-select" required>
+                          <option value="" disabled>Silahkan pilih vendor</option>
+                          <option v-for="vendor in vendors" :key="vendor.vendor_id" :value="vendor.vendor_id">
+                            {{ vendor.vendor_name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="mb-3"> 
+                        <label for="expected_inbound_date" class="form-label">Tanggal Masuk</label>
+                        <input v-model="editForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" />
+                      </div>
+                      <div class="mb-3"> 
+                        <label for="asn" class="form-label">ASN</label> 
+                        <input v-model="editForm.asn" maxlength="6" type="text" class="form-control" id="asn" />
+                      </div>
+                      <!-- Tambahkan field lainnya sesuai dengan struktur data Pembelian Masuk -->
+                      <button type="submit" class="btn btn-primary" :data-bs-dismiss="
+                        editForm.warehouse_id&&editForm.purchase_order_number&&editForm.inventory_type&&editForm.vendor_id&&editForm.expected_inbound_date ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Pembelian Masuk' }}
+                      </button>
                     </form>
                   </div>
                 </div>
@@ -237,7 +270,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <p>Apa kamu yakin ingin menghapus data Vendor <strong>{{ selectedVendor?.vendor_name }}</strong>?</p>
+                    <p>Apa kamu yakin ingin menghapus data Pembelian Masuk <strong>{{ selectedPurchaseInbound?.purchase_order_number }}</strong>?</p>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -246,6 +279,7 @@
                 </div>
               </div>
             </div>
+ 
 
             <!-- Modal for Mass Upload -->
             <div
@@ -258,11 +292,11 @@
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="massUploadModalLabel">Mass Upload Vendor</h5>
+                    <h5 class="modal-title" id="massUploadModalLabel">Mass Upload Pembelian Masuk</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <form @submit.prevent="uploadFileVendorData">
+                    <form @submit.prevent="uploadFilePurchaseInboundData">
                       <div class="mb-3">
                         <label for="upload-file" class="form-label">Pilih File</label>
                         <input
@@ -281,25 +315,19 @@
               </div>
             </div>
 
-            <!-- Modal Berhasil  Hapus  -->
+            <!-- Memanggil Modal  -->
             <MessageModal :message="alertMessage" :title="titleMessage"/>
-
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <style scoped>
   .filter-style {
     /* max-width: 400px; */
     height: 35px;
-    /* margin-bottom: 1rem; */
-  }
-
-  .show-entries {
-    /* max-width: 400px; */
-    width: 95px;
     /* margin-bottom: 1rem; */
   }
 
@@ -316,6 +344,12 @@
     /* padding: 10px; */
   }
 
+  .show-entries {
+    /* max-width: 400px; */
+    width: 95px;
+    /* margin-bottom: 1rem; */
+  }
+
   .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -326,49 +360,39 @@
     display: flex; 
     align-items: center;
   }
-
-  /* .pagination-container {
-    margin-top: 20px;
-  }
-  .page-item.disabled .page-link {
-    cursor: not-allowed;
-  }
-  .page-item.active .page-link {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-  } */
 </style>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DataTable from '@/components/DataTable.vue';
-// import Actions from '@/components/TableActions.vue';
-import { useRouter } from 'vue-router';
-// import { Modal } from 'bootstrap'
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
-// import "vue-select/dist/vue-select.css";
-// import "vue-select/src/scss/vue-select.scss";
-// import Vue from "vue"; 
+import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
-const router = useRouter();  
 const titleMessage = ref('');
-const alertMessage = ref('');
-const token = localStorage.getItem('access_token');
-const user_id = localStorage.getItem('user_id');
+const alertMessage = ref(''); 
 
-// Reactive data untuk menyimpan data vendor
-const vendorData = ref([]); 
-const filterVendor = ref('');
-const filterPhoneNumber = ref('');
-const filterEmail = ref('');
-const filterAddress = ref('');
-const filterUpcomingReviewDate = ref('');
-const filterVendorRemark = ref('');
-const filterVendorStatus = ref('');
+// Reactive data untuk menyimpan data pembelian masuk
+const purchaseInboundData = ref([]);
+const warehouseNames = ref([]);
+const vendorNames = ref([]);
+const optionsInventoryType = ref([]);
+const optionsStatus = ref([]);
+const selectedWarehouses = ref([]);
+const selectedVendors = ref([]);
+const selectedInventoryType = ref([]);
+const selectedStatus = ref([]);
+
+const filterPurchaseOrderNumber = ref('');
+const filterUsername = ref('');
+const filterInboundDate = ref('');
+const filterAsn = ref('');
+const filterCreateDate= ref('');
+
 const globalSearch = ref('');
 
 const currentPage = ref(1); // Halaman aktif
@@ -376,159 +400,297 @@ const totalPages = ref(0); // Total halaman
 const pageSize = ref(10); // Banyaknya data per halaman
 const totalData = ref(0); // Jumlah total data dari API
 
-// const pagination = ref({
-//   page: 1,       // Halaman saat ini
-//   pageSize: 10,  // Jumlah data per halaman
-//   pageCount: 0,  // Total halaman
-//   rowCount: 0,   // Total data
-// });
-
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
-const vendorColumns = [
-  // { title: 'ID', data: 'vendor_id', sortable: true },
-  { title: 'Nama Vendor', data: 'vendor_name', sortable: true }, 
-  { title: 'No Telpon', data: 'phone_number', sortable: true },
-  { title: 'E-mail', data: 'email', sortable: true },
-  { title: 'Alamat', data: 'address', sortable: true },
-  { title: 'Tanggal Peninjauan Mendatang', data: 'upcoming_review_date', sortable: true },
-  { title: 'Komentar Vendor', data: 'vendor_remark', sortable: true },
-  { title: 'Status Vendor', data: 'vendor_status', sortable: true },
-  { title: 'Aksi', data: 'actions', sortable: false },
+// Ambil token dari localStorage
+const token = localStorage.getItem('access_token');
+
+const columns = [
+  // { title: 'ID', data: 'purchase_inbound_id', sortable: true },
+  { title: 'Dari Gudang', data: 'warehouse_name', sortable: true },
+  { title: 'Nomor Pesanan Pembelian', data: 'purchase_order_number', sortable: true },
+  { title: 'Jenis Inventaris', data: 'inventory_type', sortable: true },
+  { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
+  { title: 'Pembuat', data: 'username', sortable: true },
+  { title: 'Tanggal Masuk', data: 'expected_inbound_date', sortable: true },
+  { title: 'ASN', data: 'asn', sortable: true },
+  { title: 'Tanggal Pembuatan', data: 'create_date2', sortable: true },
+  { title: 'Status', data: 'status', sortable: true },
+  { title: 'Aksi', data: 'detail edit delete', sortable: false },
 ];
 
-// Mengambil data vendor saat komponen dimuat
+
+
+// const isEditModalOpen = ref(false)
+const isEditMode = ref(false)
+
+const editForm = ref({
+  purchase_inbound_id: null,
+  warehouse_id: '',
+  purchase_order_number: '',
+  inventory_type: 'Usage',
+  vendor_id: '',
+  expected_inbound_date: '',
+  asn: '',
+  status: 'Pending',
+  create_date: '',
+})
+
+// Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
+// const openEditModal = (rowData) => {
+//   editForm.value = { ...rowData }
+//   isEditModalOpen.value = true
+// }
+
+// Fungsi untuk reset form saat modal ditutup
+const resetForm = () => {
+  editForm.value = {
+    purchase_inbound_id: null,
+    warehouse_id: '',
+    purchase_order_number: '',
+    inventory_type: 'Usage',
+    vendor_id: '',
+    expected_inbound_date: '',
+    asn: '',
+    status: 'Pending',
+    create_date: '',
+  }
+}
+
+const selectedPurchaseInbound = ref(null) // Menyimpan data pembelian masuk yang dipilih untuk dihapus
+
+// Fungsi untuk menampilkan modal konfirmasi penghapusan
+const showDeleteModal = (rowData) => {
+  selectedPurchaseInbound.value = rowData
+}
+
+// Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
+const showEditModal = (rowData) => {
+  selectedPurchaseInbound.value = rowData
+  editForm.value = { ...rowData } 
+  isEditMode.value = true
+}
+
+const navigateToAdd = () => {
+  router.push({ name: 'AddPurchaseInbound' });
+};
+
+const navigateToDetail = (rowData) => {
+  router.push({ name: 'DetailPurchaseInbound', params: {
+    purchase_inbound_id: rowData.purchase_inbound_id,
+    warehouse_id: rowData.warehouse_id,
+    warehouse_name: rowData.warehouse_name,
+    // warehouse_name: selectedWarehouses.value,
+    purchase_order_number: rowData.purchase_order_number,
+    inventory_type: rowData.inventory_type,
+    vendor_id: rowData.vendor_id,
+    vendor_name: rowData.vendor_name,
+    username: rowData.username,
+    expected_inbound_date: rowData.expected_inbound_date,
+    asn: rowData.asn ?? '-',
+    status: rowData.status,
+    create_date: rowData.create_date2,
+  } });
+};
+
+// Fungsi untuk membuka modal tambah dengan form kosong
+// const showAddModal = () => {
+//   resetForm() // Kosongkan form
+//   isEditMode.value = false
+//   // isEditModalOpen.value = true
+// }
+
+// Fungsi untuk submit tambah/edit
+const submitPurchaseInbound = async () => {
+  console.log('Edit data submitted:', editForm.value)  
+  try {
+    if (isEditMode.value) {
+      // Update data jika dalam mode edit
+      const response = await axios.put(`http://localhost:3000/api/purchase_inbound/${editForm.value.purchase_inbound_id}`, editForm.value, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      console.log('Data berhasil diupdate:', response.data)
+      fetchPurchaseInboundData()
+    }else {
+      // Tambahkan data baru jika dalam mode tambah
+      const response = await axios.post('http://localhost:3000/api/purchase_inbound', editForm.value, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      console.log('Data berhasil ditambahkan:', response.data)
+
+      fetchPurchaseInboundData()
+    }
+    // Tutup modal setelah berhasil update
+    // isEditModalOpen.value = false
+  } catch (error) {
+    console.error('Gagal mengupdate data:', error)
+    handleAuthError();
+    // alert('Lakukan login terlebih dulu') 
+  } 
+  // isEditModalOpen.value = false // Tutup modal setelah submit
+}
+
+// Mengambil data pembelian masuk saat komponen dimuat
 onMounted(async () => {
-  await fetchVendorData();
-  await addPurchaseInboundData();
+  await fetchWarehouses();
+  await fetchVendors();
+  await fetchPurchaseInboundData();
+  optionsInventoryType.value= ["Usage", "Storage"];
+  optionsStatus.value= ["Pending", "Receiving", "Done", "Canceled"];
 });
 
-const currentSort = ref({ column: 'vendor_id', order: 'DESC' });
+const currentSort = ref({ column: 'purchase_inbound_id', order: 'DESC' });
 
 const onSort = ({ column, order }) => {
   currentSort.value = { column, order };
-  fetchVendorData(); // Panggil ulang API dengan parameter sorting
+  fetchPurchaseInboundData(); // Panggil ulang API dengan parameter sorting
 };
 
-// Fungsi untuk mengambil data vendor dari backend
-const fetchVendorData = async () => {
+const onWarehouseSelect = (selected) => {
+  selectedWarehouses.value = selected; // Perbarui nilai terpilih
+  // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onVendorSelect = (selected) => {
+  selectedVendors.value = selected; // Perbarui nilai terpilih
+  // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onInventoryTypeSelect = (selected) => {
+  selectedInventoryType.value = selected; // Perbarui nilai terpilih
+  // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+const onStatusSelect = (selected) => {
+  selectedStatus.value = selected; // Perbarui nilai terpilih
+  // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+};
+
+
+// Daftar  
+const warehouses = ref([]);
+const vendors = ref([]);
+
+
+// Fungsi untuk mengambil data pembelian masuk dari backend
+const fetchPurchaseInboundData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/vendor', {
+    const response = await axios.get('http://localhost:3000/api/purchase_inbound', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: { 
-        vendor_name: filterVendor.value,
-        phone_number: filterPhoneNumber.value,
-        email: filterEmail.value,
-        address: filterAddress.value,
-        upcoming_review_date: filterUpcomingReviewDate.value,
-        vendor_remark: filterVendorRemark.value,
-        vendor_status: filterVendorStatus.value,
+      params: {
+        warehouse_name: selectedWarehouses.value.join(','),
+        purchase_order_number: filterPurchaseOrderNumber.value,
+        inventory_type: selectedInventoryType.value.join(','),
+        vendor_name: selectedVendors.value.join(','),
+        username: filterUsername.value,
+        expected_inbound_date: filterInboundDate.value,
+        asn: filterAsn.value,
+        status: selectedStatus.value.join(','),
+        create_date: filterCreateDate.value,
         search: globalSearch.value,
         order_by: currentSort.value.column,
         order_direction: currentSort.value.order,
         page: currentPage.value, // Kirim nomor halaman
         pageSize: pageSize.value, // Kirim ukuran data per halaman
-        // order_by: 'vendor_id', // Sorting berdasarkan ID
+        // order_by: 'purchase_inbound_id', // Sorting berdasarkan ID
         // order_direction: 'DESC', // Urutan descending
-       }, 
-    });
-    vendorData.value = response.data.rows;// Asumsikan response berupa { data, total }
+      },
+    })
+    purchaseInboundData.value = response.data.rows.map((purchase_inbound) => ({
+      ...purchase_inbound,
+      warehouse_name: purchase_inbound.warehouse?.warehouse_name || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
+      username: purchase_inbound.user?.username || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
+      vendor_name: purchase_inbound.vendor?.vendor_name || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
+      asn: purchase_inbound?.asn || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
+      create_date2: formatTanggal(purchase_inbound.create_date), // Format kolom tanggal
+    }))
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching vendor data:', error); 
+    console.error('Error fetching purchase_inbound data:', error)
     handleAuthError();
+    // alert('Lakukan login terlebih dulu') 
   }
 };
-
-
-const editFormPurchase = ref({
-  purchase_inbound_id: null,
-  warehouse_id: 1,
-  vendor_id: 2,
-  user_id: 4,
-  sku_item_id: [1, 2, 3, 4],
-  expected_quantity: [12, 9, 15, 22],
-  inventory_type: "Storage",
-  purchase_order_number: "PO-15-2024",
-  expected_inbound_date: "2024-11-29",
-  asn: "PO-VE-30/12/2024",
-  status: "Pending"
-})
-
-const addPurchaseInboundData = async () => {
-  try {
-    // editFormPurchase.value.user_id = user_id;
-    // editFormPurchase.value.operation = 'Tambah';
-    const response = await axios.post('http://localhost:3000/api/purchase_inbound', editFormPurchase.value, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    console.log('Data berhasil ditambahkan:', response.data)
-
-    // Tambahkan data baru ke tabel
-    // vendorData.value.push(response.data)
-  } catch (error) {
-    console.error('Error fetching vendor data:', error); 
-    handleAuthError();
-  }
-};
-
 
 // Fungsi untuk mengganti halaman
 const changePage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
-    fetchVendorData(); // Refresh data untuk halaman baru
+    fetchPurchaseInboundData(); // Refresh data untuk halaman baru
   }
 };
 
-// const filter = ref('');
-// const isEditModalOpen = ref(false)
-const isEditMode = ref(false)
 
-const editForm = ref({
-  vendor_id: null, 
-  vendor_name: '',
-  phone_number: '',
-  email: '',
-  address: '',
-  upcoming_review_date: '',
-  vendor_remark: '',
-  vendor_status: 'Tersedia',
-})
-
-// Fungsi untuk reset form saat modal ditutup
-const resetForm = () => {
-  editForm.value = {
-    vendor_id: null, 
-    vendor_name: '',
-    phone_number: '',
-    email: '',
-    address: '',
-    upcoming_review_date: '',
-    vendor_remark: '',
-    vendor_status: 'Tersedia',
-  }
-}
-
-
-const exportVendorData = async () => {
+const fetchWarehouses = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/api/vendor/export", {
+    const response = await axios.get('http://localhost:3000/api/warehouse', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {  
+        // order_by: currentSort.value.column,
+        // order_direction: currentSort.value.order,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    warehouses.value = response.data.rows;
+    warehouseNames.value = response.data.rows.map(item => item.warehouse_name);
+  } catch (error) {
+    console.error('Error fetching warehouses:', error);
+    handleAuthError();
+    // alert('Lakukan login terlebih dulu') 
+  }
+};
+
+
+const fetchVendors = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/vendor', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {  
+        // order_by: currentSort.value.column,
+        // order_direction: currentSort.value.order,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    vendors.value = response.data.rows;
+    vendorNames.value = response.data.rows.map(item => item.vendor_name);
+    console.log('vendorNames.value:', vendorNames.value)
+ 
+    vendorNames.value
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+    handleAuthError();
+    // alert('Lakukan login terlebih dulu') 
+  }
+};
+
+const exportPurchaseInboundData = async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/api/purchase_inbound/export", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: { 
-        vendor_name: filterVendor.value,
-        phone_number: filterPhoneNumber.value,
-        email: filterEmail.value,
-        address: filterAddress.value,
-        upcoming_review_date: filterUpcomingReviewDate.value,
-        vendor_remark: filterVendorRemark.value,
-        vendor_status: filterVendorStatus.value,
+        warehouse_name: selectedWarehouses.value.join(','),
+        purchase_order_number: filterPurchaseOrderNumber.value,
+        inventory_type: selectedInventoryType.value.join(','),
+        vendor_name: selectedVendors.value.join(','),
+        username: filterUsername.value,
+        expected_inbound_date: filterInboundDate.value,
+        asn: filterAsn.value,
+        status: selectedStatus.value.join(','),
+        create_date: filterCreateDate.value,
         search: globalSearch.value,
         order_by: currentSort.value.column,
         order_direction: currentSort.value.order,
@@ -542,7 +704,7 @@ const exportVendorData = async () => {
     // Buat link untuk download
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "data_vendor.xlsx"); // Nama file
+    link.setAttribute("download", "data_pembelian_masuk.xlsx"); // Nama file
     document.body.appendChild(link);
     link.click();
 
@@ -558,7 +720,7 @@ const exportVendorData = async () => {
   }
 };
 
-const uploadFileVendorData = async () => {
+const uploadFilePurchaseInboundData = async () => {
   const fileInput = document.getElementById('upload-file');
   const file = fileInput.files[0];
 
@@ -574,18 +736,18 @@ const uploadFileVendorData = async () => {
   formData.append('file', file);
 
   try {
-    const response = await axios.post('http://localhost:3000/api/vendor/mass-upload', formData, {
+    const response = await axios.post('http://localhost:3000/api/purchase_inbound/mass-upload', formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       },
     });
     titleMessage.value = `Berhasil`;
-    alertMessage.value = `Upload berhasil, ${response.data.successCount} data vendor berhasil terupload`;
+    alertMessage.value = `Upload berhasil, ${response.data.successCount} data pembelian masuk berhasil terupload`;
     const modal = new BootstrapModal(document.getElementById('message-alert'));
     modal.show();
  
-    fetchVendorData();
+    fetchPurchaseInboundData();
   } catch (error) {
     console.error('Gagal mengunggah file:', error);
     titleMessage.value = `Gagal Upload`;
@@ -595,9 +757,9 @@ const uploadFileVendorData = async () => {
   }
 };
 
-const downloadTemplateVendorData = async () => { 
+const downloadTemplatePurchaseInboundData = async () => { 
   try {
-    const response = await axios.get("http://localhost:3000/api/vendor/template/", {
+    const response = await axios.get("http://localhost:3000/api/purchase_inbound/template/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -610,7 +772,7 @@ const downloadTemplateVendorData = async () => {
     // Buat link untuk download
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "template_data_vendor.xlsx"); // Nama file
+    link.setAttribute("download", "template_data_pembelian_masuk.xlsx"); // Nama file
     document.body.appendChild(link);
     link.click();
 
@@ -626,98 +788,35 @@ const downloadTemplateVendorData = async () => {
   }
 }
 
-// Fungsi untuk membuka modal tambah dengan form kosong
-const showAddModal = () => {
-  resetForm() // Kosongkan form
-  isEditMode.value = false 
-}
-
-// Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
-const showEditModal = (rowData) => {
-  selectedVendor.value = rowData
-  editForm.value = { ...rowData }
-  isEditMode.value = true
-}
-
-// Fungsi untuk submit tambah/edit
-const submitVendor = async () => {
-  console.log('Edit data submitted:', editForm.value)
-  try {
-    if (isEditMode.value) {
-      // Update data jika dalam mode edit
-      editForm.value.user_id = user_id;
-      editForm.value.operation = 'Edit';
-      const response = await axios.put(`http://localhost:3000/api/vendor/${editForm.value.vendor_id}`, editForm.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Data berhasil diupdate:', response.data)
-
-      // Perbarui data vendorData di tabel setelah update
-      const index = vendorData.value.findIndex(vendor => vendor.vendor_id === editForm.value.vendor_id)
-      if (index !== -1) {
-        vendorData.value[index] = { ...editForm.value }
-      }
-    } else {
-      // Tambahkan data baru jika dalam mode tambah
-      editForm.value.user_id = user_id;
-      editForm.value.operation = 'Tambah';
-      const response = await axios.post('http://localhost:3000/api/vendor', editForm.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Data berhasil ditambahkan:', response.data)
-
-      // Tambahkan data baru ke tabel
-      vendorData.value.push(response.data)
-    } 
-    fetchVendorData();
-  } catch (error) {
-    console.error('Gagal mengupdate data:', error);
-    handleAuthError();
-    // this.$router.push('/auth/login'); // Redirect ke halaman login
-  }
-}
-
-
-const selectedVendor = ref(null) // Menyimpan data vendor yang dipilih untuk dihapus
-
-// Fungsi untuk menampilkan modal konfirmasi penghapusan
-const showDeleteModal = (rowData) => {
-  selectedVendor.value = rowData
-}
-
 const confirmDelete = async () => {
   try {
-    console.log('Id deleted:', selectedVendor.value.vendor_id)
-    await axios.delete(`http://localhost:3000/api/vendor/${selectedVendor.value.vendor_id}`, {
+    console.log('Id deleted:', selectedPurchaseInbound.value.purchase_inbound_id)
+    await axios.delete(`http://localhost:3000/api/purchase_inbound/${selectedPurchaseInbound.value.purchase_inbound_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-    // alert('Data Vendor ' + selectedVendor.value.vendor_name + ' bertasil dihapus.') 
+    // alert('Data Pembelian Masuk berhasil dihapus.') 
     titleMessage.value = `Berhasil Hapus`;
-    alertMessage.value = `Data Vendor <strong>${selectedVendor.value.vendor_name}</strong> berhasil dihapus.`;
+    alertMessage.value = `Data Pembelian Masuk <strong>${selectedPurchaseInbound.value.purchase_order_number}</strong> berhasil dihapus.`;
     const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show(); 
-    fetchVendorData()
+    modal.show();
+
+    fetchPurchaseInboundData()
   } catch (error) {
     if (error.response && error.response.status === 409) {
         titleMessage.value = `Gagal Menghapus`;
-        alertMessage.value = `Data Vendor <strong>${selectedVendor.value.vendor_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Vendor <strong>${selectedVendor.value.vendor_name}</strong>.`;
+        alertMessage.value = `Data Pembelian Masuk <strong>${selectedPurchaseInbound.value.purchase_order_number}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Pembelian Masuk <strong>${selectedPurchaseInbound.value.purchase_order_number}</strong>.`;
         const modal = new BootstrapModal(document.getElementById('message-alert'));
         modal.show(); 
     } 
     else {
-      console.error('Failed to delete vendor data:', error) 
+      console.error('Failed to delete purchase inbound data:', error) 
       handleAuthError();
     }
   }
 }
 
-// Fungsi untuk menangani kesalahan autentikasi
 const handleAuthError = () => {
   // router.push({ name: 'auth.login' });
   titleMessage.value = `Koneksi Gagal`;
@@ -726,8 +825,41 @@ const handleAuthError = () => {
   modal.show();
 };
 
-const navigateToVendorLog = () => {
-  router.push({ name: 'ListVendorLog'});
-};
+function formatTanggal(tanggalString) {
+  const hari = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu"
+  ];
+  const bulan = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember"
+  ];
+
+  const date = new Date(tanggalString);
+  const namaHari = hari[date.getDay()];
+  const tanggal = date.getDate();
+  const namaBulan = bulan[date.getMonth()];
+  const tahun = date.getFullYear();
+  const jam = date.getHours().toString().padStart(2, "0");
+  const menit = date.getMinutes().toString().padStart(2, "0");
+  const detik = date.getSeconds().toString().padStart(2, "0");
+
+  return `${namaHari}, ${tanggal} ${namaBulan} ${tahun}, Jam ${jam}:${menit}:${detik} WIB`;
+}
 
 </script>

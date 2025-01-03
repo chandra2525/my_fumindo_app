@@ -15,6 +15,7 @@ export class SkuItemController {
     @Query('sku_type_name') skuTypeName?: string,
     @Query('unit_name') unitName?: string,
     @Query('vendor_name') vendorName?: string,
+    @Query('vendor_id') vendorId?: string,
     @Query('sku_item_name') sku_item_name?: string,
     @Query('brand') brand?: string,
     // @Query('length') length?: string,
@@ -34,11 +35,13 @@ export class SkuItemController {
     const skuTypeNameArray = skuTypeName ? skuTypeName.split(',') : []; // Pisahkan string menjadi array
     const unitNameArray = unitName ? unitName.split(',') : []; // Pisahkan string menjadi array
     const vendorNameArray = vendorName ? vendorName.split(',') : []; // Pisahkan string menjadi array
+    const vendorIdArray = vendorId ? vendorId.split(',') : []; // Pisahkan string menjadi array
     const consumedArray = consumeds ? consumeds.split(',') : []; // Pisahkan string menjadi array
     return this.skuItemService.findAll(
       skuTypeNameArray,
       unitNameArray,
       vendorNameArray,
+      vendorIdArray,
       sku_item_name,
       brand,
       // length,

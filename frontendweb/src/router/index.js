@@ -301,6 +301,20 @@ const defaultChildRoutes = (prefix) => [
     meta: { auth: true, name: 'List Purchase Inbound', isBanner: true },
     component: () => import('@/views/tables/ListPurchaseInbound.vue'),
   },
+  {
+    path: '/addpurchaseinbound',
+    name: 'AddPurchaseInbound',
+    meta: { auth: true, name: 'Add Purchase Inbound', isBanner: true },
+    component: () => import('@/views/AddPurchaseInbound.vue'),
+    props: true,
+  },
+  {
+    path: '/detailpurchaseinbound/:purchase_inbound_id&:warehouse_id&:warehouse_name&:purchase_order_number&:inventory_type&:vendor_id&:vendor_name&:username&:expected_inbound_date&:asn&:status&:create_date',
+    name: 'DetailPurchaseInbound',
+    meta: { auth: true, name: 'Detail Purchase Inbound', isBanner: true },
+    component: () => import('@/views/tables/DetailPurchaseInbound.vue'),
+    props: true,
+  },
   // {
   //   path: '/employee/add',
   //   name: 'employee-add',

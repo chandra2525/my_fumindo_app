@@ -20,6 +20,7 @@ export class SkuItemService {
     skuTypeNames?: string[],
     unitNames?: string[],
     vendorNames?: string[],
+    vendorIds?: string[],
     sku_item_name?: string,
     brand?: string,
     // length?: string,
@@ -103,8 +104,10 @@ export class SkuItemService {
         {
           model: Vendor, // Model Vendor
           attributes: ['vendor_name'], // Hanya mengambil vendor_name
-          where: vendorNames?.length
-          ? { vendor_name: { [Op.in]: vendorNames } } // Filter vendor_name jika diberikan
+          where: vendorIds?.length
+          ? { vendor_id: { [Op.in]: vendorIds } } // Filter vendor_id jika diberikan
+          : vendorNames?.length
+          ? { vendor_name: { [Op.in]: vendorNames } } // Filter vendor_id jika diberikan
           : undefined, // Jika tidak ada filter vendor_name, jangan tambahkan where
         },
       ],

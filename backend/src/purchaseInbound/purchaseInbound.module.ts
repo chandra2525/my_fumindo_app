@@ -7,7 +7,7 @@ import { Warehouse } from '../warehouse/warehouse.model';
 import { Vendor } from '../vendor/vendor.model';
 import { User } from '../users/users.model';
 import { SkuItem } from '../skuItem/skuItem.model';
-import { PurchaseInboundItem } from '../purchaseInbound/purchaseInboundItem.model';
+import { PurchaseInboundItem } from '../purchaseInboundItem/purchaseInboundItem.model';
 
 
 @Module({

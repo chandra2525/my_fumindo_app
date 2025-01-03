@@ -25,7 +25,7 @@
               </div> 
             </div>
             <div class="col-sm-6"> 
-              <label for="validationCustomUsername01" class="form-label">Filter username</label>
+              <label for="validationCustomUsername01" class="form-label">Filter pembuat</label>
               <div class="input-group has-validation">
                 <input type="text" v-model="filterUsername" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div> 
@@ -213,7 +213,7 @@ const VendorColumns = [
   // { title: 'ID', data: 'vendor_log_id', sortable: true },
   // { title: 'ID Vendor', data: 'vendor_id', sortable: true },
   { title: 'Nama Vendor', data: 'vendor_name', sortable: true }, 
-  { title: 'Username', data: 'username', sortable: true }, 
+  { title: 'Pembuat', data: 'username', sortable: true }, 
   { title: 'Dibuat Pada Waktu', data: 'created_at_group2', sortable: true },
   { title: 'Operasi', data: 'operation', sortable: true }, 
   { title: 'Aksi', data: 'view', sortable: false },

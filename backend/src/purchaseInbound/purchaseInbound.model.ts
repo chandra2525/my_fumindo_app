@@ -2,7 +2,7 @@ import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from '
 import { Warehouse } from '../warehouse/warehouse.model';
 import { Vendor } from '../vendor/vendor.model';
 import { User } from '../users/users.model'; 
-import { PurchaseInboundItem } from '../purchaseInbound/purchaseInboundItem.model';
+import { PurchaseInboundItem } from '../purchaseInboundItem/purchaseInboundItem.model';
 // import { SkuItem } from '../skuItem/skuItem.model';
 
 // @Table
@@ -49,7 +49,7 @@ export class PurchaseInbound extends Model<PurchaseInbound> {
   status: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  create_date: string;
+  create_date: Date;
 
   @Column({ type: DataType.STRING, allowNull: true })
   update_date: string;

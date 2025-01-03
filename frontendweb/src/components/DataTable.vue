@@ -13,6 +13,11 @@
             {{ sortOrder === 'ASC' ? '▲' : '▼' }}
           </span>
         </th>
+        <!-- <th v-for="column in columns" :key="column.data">
+          <template v-if="column.data === 'delete'">
+            <th>Expected Quantity</th>
+          </template>
+        </th> -->
       </tr>
     </thead>
     <tbody>
@@ -26,14 +31,50 @@
             <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-confirmation">Edit</button>
             <button class="btn btn-danger btn-sm delete-btn" @click="$emit('delete', row)" data-bs-toggle="modal" data-bs-target="#delete-confirmation">Hapus</button>
           </template>
+          <template v-if="column.data === 'delete'">
+            <button class="btn btn-danger btn-sm delete-btn" @click="$emit('delete', row)" data-bs-toggle="modal" data-bs-target="#delete-confirmation">Hapus</button>
+          </template>
           <template v-if="column.data === 'view'">
             <button class="btn btn-success btn-sm me-2" @click="$emit('viewDetail', row)">Detail</button>
+          </template>
+          <template v-if="column.data === 'edit'">
+            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-confirmation">Terima</button>
+          </template>
+          <template v-if="column.data === 'detail edit delete'">
+            <button class="btn btn-success btn-sm me-2" @click="$emit('viewDetail', row)">Detail</button>
+            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-confirmation">Edit</button>
+            <button class="btn btn-danger btn-sm delete-btn" @click="$emit('delete', row)" data-bs-toggle="modal" data-bs-target="#delete-confirmation">Hapus</button>
+          </template>
+          <!-- Input untuk kolom Status -->
+          <template v-if="column.data === 'status'">
+            <div v-if="row.status === 'Pending'" class="text-warning">{{ row.status }}</div>
+            <div v-else-if="row.status === 'Receiving'" class="text-info">{{ row.status }}</div>
+            <div v-else-if="row.status === 'Done'" class="text-success">{{ row.status }}</div>
+            <div v-else-if="row.status === 'Canceled'" class="text-danger">{{ row.status }}</div>
+            <div v-else>{{ row.status }}</div>
+          </template>
+          <!-- Harga dihitung otomatis -->
+          <div v-else-if="column.data === 'price'">
+            {{ row.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}
+          </div>
+          <!-- Total Harga dihitung otomatis -->
+          <div v-else-if="column.data === 'total_price'">
+            {{ row.total_price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}
+          </div>
+          <!-- Input untuk kolom Expected Quantity -->
+          <template v-else-if="column.data === 'expected_quantity'">
+            <input type="number" v-model="row.expected_quantity" class="form-control" min="0" @input="$emit('update', data)"/>
           </template>
           <!-- Data biasa untuk kolom lain -->
           <template v-else>
             {{ row[column.data] }}
           </template>
         </td>
+        <!-- <td v-for="column in columns" :key="column.data">
+          <template v-if="column.data === 'delete'">
+            <input type="number" class="form-control" v-model="row.expected_quantity" @input="updateExpectedQuantity(row)"/>
+          </template>
+        </td> -->
       </tr>
     </tbody>
   </table>
@@ -58,12 +99,17 @@ const props = defineProps({
   isFooter: { type: String }, 
 })
 
-const emit = defineEmits(['sort', 'edit', 'delete'])
+const emit = defineEmits(['sort', 'edit', 'delete', 'update-expected-quantity'])
 const sortColumn = ref(null);
 const sortOrder = ref(null);
 
 const tableRef = ref(null)
 let dataTable = null
+
+// Fungsi untuk update nilai expected_quantity
+// const updateExpectedQuantity = (row) => {
+//   emit('update-expected-quantity', row);
+// };
 
 const onSort = (column) => {
   if (!column.sortable) return;
