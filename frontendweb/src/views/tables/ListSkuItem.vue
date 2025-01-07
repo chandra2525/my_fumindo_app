@@ -48,7 +48,7 @@
               ></v-select>
             </div>
             <div class="col-sm-6">
-                <label for="validationCustomUsername01" class="form-label">Filter nama jenis SKU</label>
+                <label for="validationCustomUsername01" class="form-label">Filter nama item SKU</label>
                 <div class="input-group has-validation">
                   <input type="text" v-model="filterSkuItemName" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
                 </div>

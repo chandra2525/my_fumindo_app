@@ -38,7 +38,10 @@
             <button class="btn btn-success btn-sm me-2" @click="$emit('viewDetail', row)">Detail</button>
           </template>
           <template v-if="column.data === 'edit'">
-            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-confirmation">Terima</button>
+            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-received">Terima</button>
+          </template>
+          <template v-if="column.data === 'edit2'">
+            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-received">Edit</button>
           </template>
           <template v-if="column.data === 'detail edit delete'">
             <button class="btn btn-success btn-sm me-2" @click="$emit('viewDetail', row)">Detail</button>
@@ -53,6 +56,11 @@
             <div v-else-if="row.status === 'Canceled'" class="text-danger">{{ row.status }}</div>
             <div v-else>{{ row.status }}</div>
           </template>
+          
+          <!-- Harga Sekarang dihitung otomatis -->
+          <div v-else-if="column.data === 'current_price'">
+            {{ row.current_price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}
+          </div>
           <!-- Harga dihitung otomatis -->
           <div v-else-if="column.data === 'price'">
             {{ row.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}
@@ -63,7 +71,7 @@
           </div>
           <!-- Input untuk kolom Expected Quantity -->
           <template v-else-if="column.data === 'expected_quantity'">
-            <input type="number" v-model="row.expected_quantity" class="form-control" min="0" @input="$emit('update', data)"/>
+            <input type="number" v-model="row.expected_quantity" class="form-control" required min="1" @input="$emit('update', data)"/>
           </template>
           <!-- Data biasa untuk kolom lain -->
           <template v-else>

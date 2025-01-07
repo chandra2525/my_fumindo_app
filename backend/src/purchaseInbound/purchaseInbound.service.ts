@@ -26,6 +26,7 @@ export class PurchaseInboundService {
     statuses?: string[],
     purchase_order_number?: string,
     username?: string,
+    inbound_by_name?: string,
     expected_inbound_date?: string,
     asn?: string,
     create_date?: Date,
@@ -114,6 +115,13 @@ export class PurchaseInboundService {
           ? { username: { [Op.iLike]: `%${username}%` } } // Filter username jika diberikan
           : undefined, // Jika tidak ada filter username, jangan tambahkan where
         },
+        {
+          model: User, // Model User
+          attributes: ['username'], // Hanya mengambil username
+          where: inbound_by_name?.length
+          ? { username: { [Op.iLike]: `%${inbound_by_name}%` } } // Filter username jika diberikan
+          : undefined, // Jika tidak ada filter username, jangan tambahkan where
+        },
       ],
       where: whereClause,
       order: orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
@@ -144,10 +152,14 @@ export class PurchaseInboundService {
   }
   
   async create(data: CreatePurchaseInboundDto): Promise<{ purchaseInbound: PurchaseInbound; items: PurchaseInboundItem[] }> {
-    const { sku_item_id, expected_quantity, ...inboundData } = data;
+    const { sku_item_id, price, expected_quantity, ...inboundData } = data;
 
     if (sku_item_id.length !== expected_quantity.length) {
       throw new BadRequestException('sku_item_id dan expected_quantity harus memiliki jumlah yang sama.');
+    }
+
+    if (sku_item_id.length !== price.length) {
+      throw new BadRequestException('sku_item_id dan price harus memiliki jumlah yang sama.');
     }
 
     // Simpan data ke tabel purchase_inbound
@@ -157,7 +169,9 @@ export class PurchaseInboundService {
     const items = sku_item_id.map((skuId, index) => ({
       purchase_inbound_id: purchaseInbound.purchase_inbound_id,
       sku_item_id: skuId,
+      current_price: price[index],
       expected_quantity: expected_quantity[index],
+      actual_quantity: 0,
     }));
 
     // Simpan data ke tabel purchase_inbound_item
@@ -200,6 +214,22 @@ export class PurchaseInboundService {
       expected_inbound_date,
       asn,
       status,
+      update_date,
+    });
+  }
+
+  async updateStatus(purchaseInboundId: number, data: any): Promise<void> {
+    const { status, actual_inbound_date, inbound_by, update_date } = data;
+
+    const purchaseInbound = await this.purchaseInboundModel.findByPk(purchaseInboundId);
+    if (!purchaseInbound) {
+      throw new NotFoundException('Purchase Inbound not found');
+    }
+    
+    await purchaseInbound.update({ 
+      status,
+      actual_inbound_date,
+      inbound_by,
       update_date,
     });
   }

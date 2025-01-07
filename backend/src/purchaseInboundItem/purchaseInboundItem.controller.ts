@@ -20,6 +20,7 @@ export class PurchaseInboundItemController {
     @Query('weight') weight?: string,
     @Query('price') price?: string,
     @Query('expected_quantity') expected_quantity?: string,
+    @Query('actual_quantity') actual_quantity?: string,
     @Query('order_by') orderBy?: string,
     @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
     @Query('search') search?: string,
@@ -39,6 +40,7 @@ export class PurchaseInboundItemController {
       weight,
       price,
       expected_quantity,
+      actual_quantity,
       orderBy,
       orderDirection,
       search,
@@ -51,6 +53,13 @@ export class PurchaseInboundItemController {
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<PurchaseInboundItem> {
     return this.purchaseInboundItemService.findOne(id);
+  }
+
+
+  @Put(':id')
+  async update(@Param('id') id: number, @Body() data: any): Promise<{ message: string }> {
+    await this.purchaseInboundItemService.updateActualQuantity(id, data);
+    return { message: data };
   }
 
 

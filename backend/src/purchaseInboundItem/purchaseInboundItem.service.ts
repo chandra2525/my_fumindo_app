@@ -1,18 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { PurchaseInbound } from '../purchaseInbound/purchaseInbound.model';
 import { PurchaseInboundItem } from './purchaseInboundItem.model'; 
 import { SkuItem } from '../skuItem/skuItem.model'; 
 import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class PurchaseInboundItemService {
   constructor(
     @InjectModel(PurchaseInboundItem)
     private readonly purchaseInboundItemModel: typeof PurchaseInboundItem,
-    @InjectModel(PurchaseInbound)
-    private readonly purchaseInboundModel: typeof PurchaseInbound,
   ) {}
 
 
@@ -26,7 +22,8 @@ export class PurchaseInboundItemService {
     height?: string,
     weight?: string,
     price?: string,
-    expected_quantity?: string, 
+    expected_quantity?: string,
+    actual_quantity?: string,
     orderBy: string = 'purchase_inbound_item_id',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
     search?: string,
@@ -42,6 +39,16 @@ export class PurchaseInboundItemService {
     if (expected_quantity) {
       whereClause.expected_quantity = { [Op.eq]: expected_quantity }; 
     }
+    
+    if (actual_quantity) {
+      if (actual_quantity === '0') {
+        whereClause.actual_quantity = { [Op.eq]: 0 }; // Filter untuk nilai 0
+      } else if (actual_quantity === '>0') {
+        whereClause.actual_quantity = { [Op.gt]: 0 }; // Filter untuk nilai lebih dari 0
+      } else {
+        whereClause.actual_quantity = { [Op.eq]: actual_quantity }; // Filter untuk nilai spesifik
+      }
+    }    
 
     if (search) {
       whereClause[Op.or] = [
@@ -58,6 +65,7 @@ export class PurchaseInboundItemService {
             { weight: { [Op.eq]: Number(search) } },
             { price: { [Op.eq]: Number(search) } },
             { expected_quantity: { [Op.eq]: Number(search) } },
+            { actual_quantity: { [Op.eq]: Number(search) } },
         ]),
       ];
     }
@@ -161,9 +169,26 @@ export class PurchaseInboundItemService {
     return { rows, sp };
   }
 
+
   async findOne(id: number): Promise<PurchaseInboundItem> {
     return this.purchaseInboundItemModel.findByPk(id);
   }
+
+
+  async updateActualQuantity(purchaseInboundItemId: number, data: any): Promise<void> {
+    const { actual_quantity, actual_inbound_item_date } = data;
+
+    const purchaseInboundItem = await this.purchaseInboundItemModel.findByPk(purchaseInboundItemId);
+    if (!purchaseInboundItem) {
+      throw new NotFoundException('Purchase Inbound Item not found');
+    }
+    
+    await purchaseInboundItem.update({ 
+      actual_quantity,
+      actual_inbound_item_date
+    });
+  }
+
 
   async remove(id: number): Promise<void> {
     const purchaseInboundItem = await this.findOne(id);

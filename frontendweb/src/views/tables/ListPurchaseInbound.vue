@@ -55,7 +55,7 @@
 
           <div class="row mb-2">
             <div class="col-sm-6">
-              <label for="filter" class="form-label">Filter jenis inventaris</label>
+              <label for="filter" class="form-label">Filter jenis aset</label>
               <v-select 
                 :options="optionsInventoryType"
                 v-model="selectedInventoryType"
@@ -227,7 +227,7 @@
                         <input v-model="editForm.purchase_order_number" maxlength="100" type="text" class="form-control" id="purchase_order_number" required />
                       </div>
                       <div class="mb-3">
-                        <label for="inventory_type" class="form-label">Jenis Inventaris<span class="text-primary">*</span></label>
+                        <label for="inventory_type" class="form-label">Jenis Aset<span class="text-primary">*</span></label>
                         <div class="mb-1">
                           <b-form-radio value="Usage" v-model="editForm.inventory_type" class="d-inline-block">Usage</b-form-radio>
                           <label class="form-label text-white"> . . . . </label>
@@ -408,7 +408,7 @@ const columns = [
   // { title: 'ID', data: 'purchase_inbound_id', sortable: true },
   { title: 'Dari Gudang', data: 'warehouse_name', sortable: true },
   { title: 'Nomor Pesanan Pembelian', data: 'purchase_order_number', sortable: true },
-  { title: 'Jenis Inventaris', data: 'inventory_type', sortable: true },
+  { title: 'Jenis Aset', data: 'inventory_type', sortable: true },
   { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
   { title: 'Pembuat', data: 'username', sortable: true },
   { title: 'Tanggal Masuk', data: 'expected_inbound_date', sortable: true },
@@ -486,6 +486,8 @@ const navigateToDetail = (rowData) => {
     vendor_name: rowData.vendor_name,
     username: rowData.username,
     expected_inbound_date: rowData.expected_inbound_date,
+    actual_inbound_date: rowData.actual_inbound_date ?? '-',
+    inbound_by: rowData.inbound_by ?? '-',
     asn: rowData.asn ?? '-',
     status: rowData.status,
     create_date: rowData.create_date2,

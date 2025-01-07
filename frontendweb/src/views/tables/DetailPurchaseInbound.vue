@@ -10,11 +10,11 @@
                 <h5 class="mb-1">Nomor Pesanan Pembelian : {{ purchase_order_number }}</h5>
               </div>
               <div class="col-sm-2">
-                <h5 v-if="status === 'Pending'" class="text-warning">{{ status }}</h5>
-                <h5 v-else-if="status === 'Receiving'" class="text-info">{{ status }}</h5>
-                <h5 v-else-if="status === 'Done'" class="text-success">{{ status }}</h5>
-                <h5 v-else-if="status === 'Canceled'" class="text-danger">{{ status }}</h5>
-                <h5 v-else>{{ status }}</h5>
+                <h5 v-if="statusPurchase === 'Pending'" class="text-warning">{{ statusPurchase }}</h5>
+                <h5 v-else-if="statusPurchase === 'Receiving'" class="text-info">{{ statusPurchase }}</h5>
+                <h5 v-else-if="statusPurchase === 'Done'" class="text-success">{{ statusPurchase }}</h5>
+                <h5 v-else-if="statusPurchase === 'Canceled'" class="text-danger">{{ statusPurchase }}</h5>
+                <h5 v-else>{{ statusPurchase }}</h5>
               </div>
             </div>
             <div class="row mb-2">
@@ -22,7 +22,7 @@
                 <div>Gudang : <h6>{{ warehouse_name }}</h6></div>
               </div>
               <div class="col-sm-4">
-                <div>Jenis Inventaris : <h6>{{ inventory_type }}</h6></div>
+                <div>Jenis Aset : <h6>{{ inventory_type }}</h6></div>
               </div>
               <div class="col-sm-4">
                 <div>Vendor : <h6>{{ vendor_name }}</h6></div>
@@ -33,10 +33,18 @@
                 <div>Tanggal Masuk Diharapkan : <h6>{{ expected_inbound_date }}</h6></div>
               </div>
               <div class="col-sm-4">
-                <div>ASN : <h6>{{ asn }}</h6></div>
+                <div>Tanggal Masuk Diterima : <h6>{{ actual_inbound_date }}</h6></div>
               </div>
               <div class="col-sm-4">
-                <div>Pembuat : <h6>{{ username }}</h6></div>
+                <div>ASN : <h6>{{ asn }}</h6></div>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-4">
+                <div>Dibuat Oleh : <h6>{{ username }}</h6></div>
+              </div>
+              <div class="col-sm-4">
+                <div>Diselesaikan Oleh : <h6>{{ inboundByName ?? '-' }}</h6></div>
               </div>
             </div>
             <div class="row mb-2">
@@ -107,7 +115,7 @@
 
             <div class="row mb-2">
               <div class="col-sm-6">
-                <label for="filter" class="form-label">Filter jenis inventaris</label>
+                <label for="filter" class="form-label">Filter jenis aset</label>
                 <v-select 
                   :options="optionsInventoryType"
                   v-model="selectedInventoryType"
@@ -189,7 +197,7 @@
                 <div class="input-group has-validation">
                   <button
                     class="btn btn-primary width-button-style filter-style" 
-                    @click="fetchPurchaseInboundData"
+                    @click="fetchSkuItemPendingData"
                     title="Search">
                     Filter
                   </button>
@@ -206,7 +214,7 @@
                   id="entries"
                   class="form-select show-entries"
                   v-model="pageSize"
-                  @change="fetchPurchaseInboundData"
+                  @change="fetchSkuItemPendingData"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -222,7 +230,7 @@
                 :columns="columns"
                 :currentPage="currentPage"
                 :pageSize="pageSize"  
-                :idrow="purchase_inbound_id"
+                :idrow="purchase_inbound_item_id"
                 @edit="showEditModal"
                 @delete="showDeleteModal"
                 @viewDetail="navigateToDetail"
@@ -254,77 +262,7 @@
                 </nav>
               </div>
               
-              <div class="modal fade" id="form-confirmation" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <div class="col-sm-6">
-                        <h5 class="modal-title" id="staticBackdropPermissionLabel">Terima Item SKU</h5>
-                      </div>
-                      <div class="col-sm-4">
-                        <h6 class="text-warning">Progress : {{ editForm.actual_quantity }} / {{ editForm.expected_quantity2 }}</h6>
-                      </div>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <form @submit.prevent="submitSkuItem">
-                        <!-- <p>Form yang bertanda <span class="text-primary">*</span> wajib diisi</p> -->
-                        <!-- <div class="mb-3"> 
-                          <label for="input-205" class="form-label">Dari Jenis SKU<span class="text-primary">*</span></label>
-                          <select id="sku_type_id" v-model="editForm.sku_type_id" class="form-select" required>
-                            <option value="" disabled>Silahkan pilih jenis SKU</option>
-                            <option v-for="sku_type in skuTypes" :key="sku_type.sku_type_id" :value="sku_type.sku_type_id">
-                              {{ sku_type.sku_type_name }}
-                            </option>
-                          </select>
-                        </div> -->
-                        <!-- <div class="mb-3">
-                          <label for="sku_item_name" class="form-label">Nama Item SKU<span class="text-primary">*</span></label>
-                          <input disabled v-model="editForm.sku_item_name" maxlength="100" type="text" class="form-control" id="sku_item_name" required />
-                        </div>
-                        <div class="mb-3"> 
-                          <label for="brand" class="form-label">Merek</label>
-                          <input disabled v-model="editForm.brand" maxlength="100" type="text" class="form-control" id="brand" />
-                        </div> -->
-                        <div class="row mb-3">
-                          <div class="mb-1">Nama Item SKU :</div>
-                          <h6>{{ editForm.sku_item_name }}</h6>
-                        </div>
-                        <div class="row mb-3">
-                          <div class="mb-1">Merek :</div>
-                          <h6>{{ editForm.brand }}</h6>
-                        </div>
-                        <!-- <div class="mb-3"> 
-                          <label for="price" class="form-label">Harga</label>
-                          <input disabled v-model="editForm.price" maxlength="4" type="number" class="form-control" id="price" />
-                        </div>
-                        <div class="mb-3"> 
-                          <label for="expected_quantity2" class="form-label">Kuantitas Diharapkan</label>
-                          <input disabled v-model="editForm.expected_quantity2" maxlength="4" type="number" class="form-control" id="expected_quantity2" /> -->
-                        <!-- </div> -->
-                        <div class="row mb-3">
-                          <div class="col-sm-6">
-                            <div class="mb-1">Harga :</div>
-                            <h6>{{ editForm.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}</h6>
-                          </div>
-                          <div class="col-sm-6">
-                            <div class="mb-1">Kuantitas Diharapkan :</div>
-                            <h6>{{ editForm.expected_quantity2 }}</h6>
-                          </div>
-                        </div>
-                        <div class="mb-3"> 
-                          <label for="actual_quantity" class="form-label">Kuantitas Diterima</label>
-                          <input v-model="editForm.actual_quantity" @input="handleMaxQuantity" maxlength="4" type="number" min="0" class="form-control" id="actual_quantity" required/>
-                        </div>
-                        <!-- Tambahkan field lainnya sesuai dengan struktur data Item SKU -->
-                        <button type="submit" class="btn btn-primary" :data-bs-dismiss="
-                          editForm.sku_type_id&&editForm.unit_id&&editForm.vendor_id&&editForm.sku_item_name&&editForm.consumed&&editForm.price ? 'modal' : null">Terima SKU
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
 
               <!-- Modal Konfirmasi Penghapusan -->
               <!-- <div class="modal fade" id="delete-confirmation" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
@@ -379,9 +317,6 @@
                   </div>
                 </div>
               </div> -->
-
-              <!-- Memanggil Modal  -->
-              <MessageModal :message="alertMessage" :title="titleMessage"/>
             </div>
           </div>
 
@@ -395,8 +330,8 @@
                 <select
                   id="entries"
                   class="form-select show-entries"
-                  v-model="pageSize"
-                  @change="fetchPurchaseInboundData"
+                  v-model="pageSize2"
+                  @change="fetchSkuItemReceivedData"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -408,45 +343,158 @@
             
             <div class="table-responsive border-bottom">
               <data-table
-                :data="purchaseInboundData"
-                :columns="columns"
-                :currentPage="currentPage"
-                :pageSize="pageSize"  
-                :idrow="purchase_inbound_id"
+                :data="purchaseInboundData2"
+                :columns="columns2"
+                :currentPage="currentPage2"
+                :pageSize="pageSize2"  
+                :idrow="purchase_inbound_item_id"
                 @edit="showEditModal"
                 @delete="showDeleteModal"
                 @viewDetail="navigateToDetail"
-                @sort="onSort"
+                @sort="onSort2"
               />
 
               <div class="pagination-container">
                 <p class="text-muted">
-                  Showing {{ (currentPage - 1) * pageSize + 1 }} to
-                  {{ Math.min(currentPage * pageSize, totalData) }} of {{ totalData }} entries
+                  Showing {{ (currentPage2 - 1) * pageSize2 + 1 }} to
+                  {{ Math.min(currentPage2 * pageSize2, totalData2) }} of {{ totalData2 }} entries
                 </p>
                 <nav aria-label="Page navigation example">
                   <ul class="pagination justify-content-end">
-                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                      <button class="page-link" @click="changePage(currentPage - 1)">Previous</button>
+                    <li class="page-item" :class="{ disabled: currentPage2 === 1 }">
+                      <button class="page-link" @click="changePage2(currentPage2 - 1)">Previous</button>
                     </li>
                     <li
                       class="page-item"
-                      v-for="page in totalPages"
+                      v-for="page in totalPages2"
                       :key="page"
-                      :class="{ active: currentPage === page }"
+                      :class="{ active: currentPage2 === page }"
                     >
-                      <button class="page-link" @click="changePage(page)">{{ page }}</button>
+                      <button class="page-link" @click="changePage2(page)">{{ page }}</button>
                     </li>
-                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                      <button class="page-link" @click="changePage(currentPage + 1)">Next</button>
+                    <li class="page-item" :class="{ disabled: currentPage2 === totalPages2 }">
+                      <button class="page-link" @click="changePage2(currentPage2 + 1)">Next</button>
                     </li>
                   </ul>
                 </nav>
               </div>
             </div>
           </div>
+
+          <div class="modal fade" id="form-received" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div class="col-sm-6">
+                    <h5 class="modal-title" id="staticBackdropPermissionLabel">Terima Item SKU</h5>
+                  </div>
+                  <div class="col-sm-4">
+                    <h6 class="text-warning">Progress : {{ editForm.actual_quantity }} / {{ editForm.expected_quantity2 }}</h6>
+                  </div>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form @submit.prevent>
+                    <!-- <p>Form yang bertanda <span class="text-primary">*</span> wajib diisi</p> -->
+                    <!-- <div class="mb-3"> 
+                      <label for="input-205" class="form-label">Dari Jenis SKU<span class="text-primary">*</span></label>
+                      <select id="sku_type_id" v-model="editForm.sku_type_id" class="form-select" required>
+                        <option value="" disabled>Silahkan pilih jenis SKU</option>
+                        <option v-for="sku_type in skuTypes" :key="sku_type.sku_type_id" :value="sku_type.sku_type_id">
+                          {{ sku_type.sku_type_name }}
+                        </option>
+                      </select>
+                    </div> -->
+                    <!-- <div class="mb-3">
+                      <label for="sku_item_name" class="form-label">Nama Item SKU<span class="text-primary">*</span></label>
+                      <input disabled v-model="editForm.sku_item_name" maxlength="100" type="text" class="form-control" id="sku_item_name" required />
+                    </div>
+                    <div class="mb-3"> 
+                      <label for="brand" class="form-label">Merek</label>
+                      <input disabled v-model="editForm.brand" maxlength="100" type="text" class="form-control" id="brand" />
+                    </div> -->
+                    <div class="row mb-3">
+                      <div class="mb-1">Nama Item SKU :</div>
+                      <h6>{{ editForm.sku_item_name }}</h6>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="mb-1">Merek :</div>
+                      <h6>{{ editForm.brand }}</h6>
+                    </div>
+                    <!-- <div class="mb-3"> 
+                      <label for="price" class="form-label">Harga</label>
+                      <input disabled v-model="editForm.price" maxlength="4" type="number" class="form-control" id="price" />
+                    </div>
+                    <div class="mb-3"> 
+                      <label for="expected_quantity2" class="form-label">Kuantitas Diharapkan</label>
+                      <input disabled v-model="editForm.expected_quantity2" maxlength="4" type="number" class="form-control" id="expected_quantity2" /> -->
+                    <!-- </div> -->
+                    <div class="row mb-3">
+                      <div class="col-sm-6">
+                        <div class="mb-1">Harga :</div>
+                        <h6>{{ editForm.current_price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}</h6>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="mb-1">Kuantitas Diharapkan :</div>
+                        <h6>{{ editForm.expected_quantity2 }}</h6>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-sm-6">
+                        <label for="actual_quantity" class="form-label">Kuantitas Diterima</label>
+                        <input v-model="editForm.actual_quantity" @input="handleMaxQuantity" maxlength="4" type="number" min="0" class="form-control" id="actual_quantity"/>
+                      </div>
+                      <div class="col-sm-6">
+                        <label for="actual_inbound_date" class="form-label">Tanggal Diterima Item SKU</label>
+                        <input v-model="actualInboundItemDate" type="date" class="form-control mb-3" id="actual_inbound_date" required @click="$event.target.showPicker()" />
+                      </div>
+                    </div>
+                    <!-- Tambahkan field lainnya sesuai dengan struktur data Item SKU -->
+                    <button type="submit" @click="submitActualQuantity" class="btn btn-primary" :data-bs-dismiss="'modal'">Simpan</button>
+                    <!-- <button type="submit" class="btn btn-primary" :data-bs-dismiss="
+                      editForm.actual_quantity ? 'modal' : null">Terima SKU
+                    </button> -->
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="form-confirmation" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header"> 
+                  <h5 class="modal-title" id="staticBackdropPermissionLabel">Selesaikan Pembelian Masuk</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <!-- <form @submit.prevent="completePurchaseInbound"> -->
+                    <label for="actual_inbound_date" class="form-label">Tanggal Masuk Pembelian Diterima</label>
+                    <input v-model="actualInboundDate" type="date" class="form-control mb-3" id="actual_inbound_date" required @click="$event.target.showPicker()" />
+                    <p>Anda yakin ingin menyelesaikan pembelian masuk?</p>
+                    <!-- <button type="submit" @click="completePurchaseInbound" class="btn btn-primary">Selesaikan Pembelian Masuk</button> -->
+                    <!-- <button type="submit" class="btn btn-primary" :data-bs-dismiss="
+                      editForm.actual_quantity ? 'modal' : null">Terima SKU
+                    </button> -->
+                  <!-- </form> -->
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="completePurchaseInbound">Selesaikan</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Memanggil Modal  -->
+          <MessageModal :message="alertMessage" :title="titleMessage"/>
           
         </div>
+ 
+        <div v-if="statusPurchase != 'Done'" class="card-body">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#form-confirmation">Selesaikan Pembelian Masuk</button>
+        </div>
+        
       </div>
     </div>
   </div>
@@ -492,15 +540,15 @@
 
 
 <script setup>
-import { ref, onMounted, watch, defineProps } from 'vue';
+import { ref, onMounted, defineProps } from 'vue';
 import axios from 'axios';
 import DataTable from '@/components/DataTable.vue';
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
 // import vSelect from 'vue-select';
 // import 'vue-select/dist/vue-select.css';
-// import { useRouter } from 'vue-router';
-// const router = useRouter();
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 
 const activeTab = ref(0); // Tab yang aktif (default: tab pertama)
@@ -535,6 +583,12 @@ const props = defineProps({
   expected_inbound_date: {
     type: String, required: true,
   },
+  actual_inbound_date: {
+    type: String, required: true,
+  },
+  inbound_by: {
+    type: String, required: true,
+  },
   asn: {
     type: String, required: true,
   },
@@ -551,8 +605,9 @@ const alertMessage = ref('');
 
 // Reactive data untuk menyimpan data pembelian masuk
 const purchaseInboundData = ref([]);
+const purchaseInboundData2 = ref([]);
 // const warehouseNames = ref([]);
-const vendorNames = ref([]);
+// const vendorNames = ref([]);
 const optionsInventoryType = ref([]);
 const optionsStatus = ref([]);
 // const selectedWarehouses = ref([]);
@@ -569,13 +624,23 @@ const optionsStatus = ref([]);
 const globalSearch = ref('');
 
 const currentPage = ref(1); // Halaman aktif
+const currentPage2 = ref(1); // Halaman aktif
 const totalPages = ref(0); // Total halaman
+const totalPages2 = ref(0); // Total halaman
 const pageSize = ref(10); // Banyaknya data per halaman
+const pageSize2 = ref(10); // Banyaknya data per halaman
 const totalData = ref(0); // Jumlah total data dari API
+const totalData2 = ref(0); // Jumlah total data dari API
+
+const statusPurchase = ref('');
+const actualInboundDate = ref(new Date().toISOString().split('T')[0]);
+const actualInboundItemDate = ref(new Date().toISOString().split('T')[0]);
+const inboundByName = ref(null);
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 // Ambil token dari localStorage
 const token = localStorage.getItem('access_token');
+const user_id = localStorage.getItem('user_id');
 
 const columns = [
   // { title: 'Dari Jenis SKU', data: 'sku_type_name', sortable: true },
@@ -587,17 +652,37 @@ const columns = [
   { title: 'Berat', data: 'weight', sortable: true },
   // { title: 'Dari Satuan', data: 'unit_name', sortable: true },
   // { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
-  { title: 'Harga', data: 'price', sortable: true },
+  { title: 'Harga', data: 'current_price', sortable: true },
   { title: 'Kuantitas Diharapkan', data: 'expected_quantity2', sortable: true },
   { title: 'Total Harga', data: 'total_price', sortable: false },
   { title: 'Kuantitas Diterima', data: 'actual_quantity', sortable: true },
   { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
-  { title: 'Aksi', data: 'edit', sortable: false },
+  { title: 'Tanggal Masuk Diterima', data: 'actual_inbound_item_date', sortable: true },
+  // { title: 'Aksi', data: 'edit', sortable: false },
+];
+
+const columns2 = [
+  // { title: 'Dari Jenis SKU', data: 'sku_type_name', sortable: true },
+  { title: 'Nama Item SKU', data: 'sku_item_name', sortable: true },
+  { title: 'Merek', data: 'brand', sortable: true },
+  { title: 'Panjang', data: 'length', sortable: true },
+  { title: 'Lebar', data: 'width', sortable: true },
+  { title: 'Tinggi', data: 'height', sortable: true },
+  { title: 'Berat', data: 'weight', sortable: true },
+  // { title: 'Dari Satuan', data: 'unit_name', sortable: true },
+  // { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
+  { title: 'Harga', data: 'current_price', sortable: true },
+  { title: 'Kuantitas Diharapkan', data: 'expected_quantity2', sortable: true },
+  { title: 'Total Harga', data: 'total_price', sortable: false },
+  { title: 'Kuantitas Diterima', data: 'actual_quantity', sortable: true },
+  { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
+  { title: 'Tanggal Masuk Diterima', data: 'actual_inbound_item_date', sortable: true },
+  // { title: 'Aksi', data: 'edit', sortable: false },
 ];
 
 const editForm = ref({
-  sku_item_id: null,
-  sku_type_id: '',
+  purchase_inbound_item_id: null,
+  // sku_type_id: '',
   unit_id: '',
   vendor_id: '',
   sku_item_name: '',
@@ -607,6 +692,7 @@ const editForm = ref({
   height: '0',
   weight: '0',
   price: '0',
+  current_price: '0',
   expected_quantity2: '0',
   actual_quantity: '0',
   consumed: 'Iya',
@@ -624,47 +710,61 @@ const showEditModal = (rowData) => {
 
 // Mengambil data pembelian masuk saat komponen dimuat
 onMounted(async () => {
-  await fetchVendors();
-  await fetchPurchaseInboundData();
+  statusPurchase.value = props.status;
+  if (statusPurchase.value != 'Done') {
+    columns.push({ title: 'Aksi', data: 'edit', sortable: false });
+    columns2.push({ title: 'Aksi', data: 'edit2', sortable: false });
+  } else {
+    await getUserById();
+  }
+  await fetchSkuItemPendingData();
+  await fetchSkuItemReceivedData();
   optionsInventoryType.value= ["Usage", "Storage"];
   optionsStatus.value= ["Pending", "Receiving", "Done", "Canceled"];
 });
 
-const currentSort = ref({ column: 'purchase_inbound_id', order: 'DESC' });
+const currentSort = ref({ column: 'purchase_inbound_item_id', order: 'DESC' });
+const currentSort2 = ref({ column: 'purchase_inbound_item_id', order: 'DESC' });
 
 const onSort = ({ column, order }) => {
   currentSort.value = { column, order };
-  fetchPurchaseInboundData(); // Panggil ulang API dengan parameter sorting
+  fetchSkuItemPendingData(); // Panggil ulang API dengan parameter sorting
+};
+
+const onSort2 = ({ column, order }) => {
+  currentSort2.value = { column, order };
+  fetchSkuItemReceivedData(); // Panggil ulang API dengan parameter sorting
 };
 
 // const onVendorSelect = (selected) => {
 //   selectedVendors.value = selected; // Perbarui nilai terpilih
-//   // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+//   // fetchSkuItemPendingData(); // Panggil fungsi fetch dengan data terpilih
 // };
 
 // const onInventoryTypeSelect = (selected) => {
 //   selectedInventoryType.value = selected; // Perbarui nilai terpilih
-//   // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+//   // fetchSkuItemPendingData(); // Panggil fungsi fetch dengan data terpilih
 // };
 
 // const onStatusSelect = (selected) => {
 //   selectedStatus.value = selected; // Perbarui nilai terpilih
-//   // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
+//   // fetchSkuItemPendingData(); // Panggil fungsi fetch dengan data terpilih
 // };
 
 
 // Daftar
-const vendors = ref([]);
+// const vendors = ref([]);
 
 // Fungsi untuk mengambil data pembelian masuk dari backend
-const fetchPurchaseInboundData = async () => {
+const fetchSkuItemPendingData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/purchase_inbound_item', {
+    const responsePending = await axios.get('http://localhost:3000/api/purchase_inbound_item', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: {
         purchase_inbound_id: props.purchase_inbound_id,
+        actual_quantity: 0,
         search: globalSearch.value,
         order_by: currentSort.value.column == 'expected_quantity2' ? 'expected_quantity' :currentSort.value.column,
         order_direction: currentSort.value.order,
@@ -672,7 +772,8 @@ const fetchPurchaseInboundData = async () => {
         pageSize: pageSize.value, // Kirim ukuran data per halaman
       },
     })
-    purchaseInboundData.value = response.data.rows.map((purchase_inbound) => ({
+
+    purchaseInboundData.value = responsePending.data.rows.map((purchase_inbound) => ({
       ...purchase_inbound,
       // Ambil nama nama atau tampilkan "N/A" jika tidak ada
       sku_item_name: purchase_inbound.skuItem?.sku_item_name || '-',
@@ -688,9 +789,13 @@ const fetchPurchaseInboundData = async () => {
       // create_date2: formatTanggal(purchase_inbound.create_date), // Format kolom tanggal
       expected_quantity2: purchase_inbound.expected_quantity,
       actual_quantity: purchase_inbound.actual_quantity || 0,
+      actual_inbound_item_date: purchase_inbound.actual_inbound_item_date || '-',
+      total_price: parseFloat((purchase_inbound.expected_quantity * purchase_inbound.current_price).toFixed(2)),
+      // total_price: parseFloat((purchase_inbound.expected_quantity * purchase_inbound.skuItem?.price).toFixed(2)),
     }))
-    totalData.value = response.data.sp.rowCount;
-    totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
+
+    totalData.value = responsePending.data.sp.rowCount;
+    totalPages.value = Math.ceil(responsePending.data.sp.rowCount / pageSize.value);
   } catch (error) {
     console.error('Error fetching purchase_inbound data:', error)
     handleAuthError();
@@ -698,39 +803,189 @@ const fetchPurchaseInboundData = async () => {
   }
 };
 
-// Fungsi untuk mengganti halaman
-const changePage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    fetchPurchaseInboundData(); // Refresh data untuk halaman baru
-  }
-};
 
-
-const fetchVendors = async () => {
+const fetchSkuItemReceivedData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/vendor', {
+    const responseReceived = await axios.get('http://localhost:3000/api/purchase_inbound_item', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: {  
-        // order_by: currentSort.value.column,
-        // order_direction: currentSort.value.order,
-        page: 1,
-        pageSize: 1000,
+      params: {
+        purchase_inbound_id: props.purchase_inbound_id,
+        actual_quantity: '>0',
+        search: globalSearch.value,
+        order_by: currentSort2.value.column == 'expected_quantity2' ? 'expected_quantity' :currentSort2.value.column,
+        order_direction: currentSort2.value.order,
+        page: currentPage2.value, // Kirim nomor halaman
+        pageSize: pageSize2.value, // Kirim ukuran data per halaman
       },
-    });
-    vendors.value = response.data.rows;
-    vendorNames.value = response.data.rows.map(item => item.vendor_name);
-    console.log('vendorNames.value:', vendorNames.value)
- 
-    vendorNames.value
+    })
+
+    purchaseInboundData2.value = responseReceived.data.rows.map((purchase_inbound) => ({
+      ...purchase_inbound,
+      // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      sku_item_name: purchase_inbound.skuItem?.sku_item_name || '-',
+      brand: purchase_inbound.skuItem?.brand || '-',
+      length: purchase_inbound.skuItem?.length || '0',
+      width: purchase_inbound.skuItem?.width || '0',
+      height: purchase_inbound.skuItem?.height || '0',
+      weight: purchase_inbound.skuItem?.weight || '0',
+      price: purchase_inbound.skuItem?.price || '0',
+      consumed: purchase_inbound.skuItem?.consumed || '0',
+      // username: purchase_inbound.user?.username || 'N/A',
+      // vendor_name: purchase_inbound.vendor?.vendor_name || 'N/A',
+      // create_date2: formatTanggal(purchase_inbound.create_date), // Format kolom tanggal
+      expected_quantity2: purchase_inbound.expected_quantity,
+      actual_quantity: purchase_inbound.actual_quantity || 0,
+      actual_inbound_item_date: purchase_inbound.actual_inbound_item_date || '-',
+      total_price: parseFloat((purchase_inbound.expected_quantity * purchase_inbound.current_price).toFixed(2)),
+      // total_price: parseFloat((purchase_inbound.expected_quantity * purchase_inbound.skuItem?.price).toFixed(2)),
+    }))
+    
+    totalData2.value = responseReceived.data.sp.rowCount;
+    totalPages2.value = Math.ceil(responseReceived.data.sp.rowCount / pageSize2.value);
+    if(totalData2.value == 0){
+      statusPurchase.value = 'Pending';
+    // }else if(statusPurchase.value == 'Done'){
+    }else if(totalData.value == 0){
+      statusPurchase.value = 'Done';
+    }else if(statusPurchase.value == 'Canceled'){
+      statusPurchase.value = 'Canceled';
+    }else{
+      statusPurchase.value = 'Receiving';
+    }
+    autoUpdateStatus();
   } catch (error) {
-    console.error('Error fetching vendors:', error);
+    console.error('Error fetching purchase_inbound data 22 :', error)
     handleAuthError();
     // alert('Lakukan login terlebih dulu') 
   }
 };
+
+
+// Fungsi untuk mengganti halaman
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchSkuItemPendingData(); // Refresh data untuk halaman baru
+  }
+};
+
+const changePage2 = (page) => {
+  if (page >= 1 && page <= totalPages2.value) {
+    currentPage2.value = page;
+    fetchSkuItemReceivedData(); // Refresh data untuk halaman baru
+  }
+};
+
+
+const getUserById = async () => {
+  console.error('props.inbound_by', props.inbound_by);
+  try {
+    const response = await axios.get(`http://localhost:3000/api/user/${props.inbound_by}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    inboundByName.value = response.data.username;
+    console.log('inboundByName.value:', inboundByName.value)
+  } catch (error) {
+    console.error('Error fetching getUserById:', error);
+    handleAuthError();
+  }
+};
+
+// const fetchVendors = async () => {
+//   try {
+//     const response = await axios.get('http://localhost:3000/api/vendor', {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       params: {
+//         page: 1,
+//         pageSize: 1000,
+//       },
+//     });
+//     vendors.value = response.data.rows;
+//     vendorNames.value = response.data.rows.map(item => item.vendor_name);
+//     console.log('vendorNames.value:', vendorNames.value)
+ 
+//     vendorNames.value
+//   } catch (error) {
+//     console.error('Error fetching vendors:', error);
+//     handleAuthError();
+//     // alert('Lakukan login terlebih dulu') 
+//   }
+// };
+
+
+const submitActualQuantity = async () => {
+  console.log('Edit data submitted:', editForm.value)
+  try {
+    const response = await axios.put(`http://localhost:3000/api/purchase_inbound_item/${editForm.value.purchase_inbound_item_id}`,
+    {
+      actual_quantity: editForm.value.actual_quantity,
+      actual_inbound_item_date: actualInboundItemDate.value,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log('Data berhasil diupdate:', response.data)
+    fetchSkuItemPendingData()
+    fetchSkuItemReceivedData()
+  }
+  catch (error) {
+    console.error('Gagal mengupdate data:', error)
+    handleAuthError();
+  }
+}
+
+
+const autoUpdateStatus = async () => {
+  try {
+    const response = await axios.put(`http://localhost:3000/api/purchase_inbound/updateStatus/${props.purchase_inbound_id}`,
+    {
+      status: statusPurchase.value,
+    }, 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log('Data berhasil diupdate:', response.data)
+  } catch (error) {
+    console.error('Gagal mengupdate data:', error)
+    handleAuthError();
+  }
+}
+
+
+const completePurchaseInbound = async () => {
+  try {
+    const response = await axios.put(`http://localhost:3000/api/purchase_inbound/updateStatus/${props.purchase_inbound_id}`,
+    {
+      status: 'Done',
+      actual_inbound_date : actualInboundDate.value,
+      inbound_by: Number(user_id),
+    }, 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log('Data berhasil diupdate:', response.data)
+    router.go(-1);
+    titleMessage.value = `Berhasil Diselesaikan`;
+    alertMessage.value = `Pembelian masuk berhasil diselesaikan.`;
+    const modal = new BootstrapModal(document.getElementById('message-alert'));
+    modal.show();
+  } catch (error) {
+    console.error('Gagal mengupdate data:', error)
+    handleAuthError();
+  }
+}
 
 
 const handleAuthError = () => {
@@ -751,15 +1006,16 @@ const handleMaxQuantity = (event) => {
 };
 
 
-watch(
-  purchaseInboundData,
-  (newVal) => {
-    newVal.forEach(item => { 
-      item.total_price = parseFloat((item.expected_quantity2 * item.price).toFixed(2));
-    });
-  },
-  { deep: true }
-);
+// watch(
+//   purchaseInboundData,
+//   purchaseInboundData2,
+//   (newVal) => {
+//     newVal.forEach(item => { 
+//       item.total_price = parseFloat((item.expected_quantity2 * item.price).toFixed(2));
+//     });
+//   },
+//   { deep: true }
+// );
 
 // const validateNumericInput = async (field) => {
 //   // Dapatkan nilai input

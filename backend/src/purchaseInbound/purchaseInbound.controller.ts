@@ -17,6 +17,7 @@ export class PurchaseInboundController {
     @Query('status') status?: string,
     @Query('purchase_order_number') purchase_order_number?: string,
     @Query('username') username?: string,
+    @Query('inbound_by_name') inbound_by_name?: string,
     @Query('expected_inbound_date') expected_inbound_date?: string,
     @Query('asn') asn?: string,
     @Query('create_date') create_date?: Date,
@@ -38,6 +39,7 @@ export class PurchaseInboundController {
       statusArray,
       purchase_order_number,
       username,
+      inbound_by_name,
       expected_inbound_date,
       asn,
       create_date,
@@ -58,6 +60,12 @@ export class PurchaseInboundController {
   @Post()
   async create(@Body() createPurchaseInboundDto: CreatePurchaseInboundDto) {
     return await this.purchaseInboundService.create(createPurchaseInboundDto);
+  }
+
+  @Put('updateStatus/:id')
+  async updateStatus(@Param('id') id: number, @Body() data: any): Promise<{ message: string }> {
+    await this.purchaseInboundService.updateStatus(id, data);
+    return { message: data };
   }
 
   @Put(':id')

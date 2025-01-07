@@ -40,6 +40,13 @@ export class PurchaseInbound extends Model<PurchaseInbound> {
   expected_inbound_date: string;
   
   @Column({ type: DataType.STRING, allowNull: true })
+  actual_inbound_date: string;
+
+  @ForeignKey(() => User)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  inbound_by: number;
+
+  @Column({ type: DataType.STRING, allowNull: true })
   asn: string;
   
   // @Column({ type: DataType.INTEGER, allowNull: true })

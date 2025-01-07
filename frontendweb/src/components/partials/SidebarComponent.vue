@@ -52,9 +52,9 @@
         </b-collapse>
       </side-menu>
       <side-menu isTag="router-link" title="Pembelian Masuk" icon="cart" :route="{ to: 'default.list-purchase-inbound' }"></side-menu>
-      <side-menu isTag="router-link" title="Peta Inventaris" icon="brief-case" :route="{ to: 'errors.maintenance' }"></side-menu>
+      <side-menu isTag="router-link" title="Peta Aset" icon="brief-case" :route="{ to: 'errors.maintenance' }"></side-menu>
       <side-menu isTag="router-link" title="Tugas Pemindahan" icon="arrow-box-right" :route="{ to: 'errors.maintenance' }"></side-menu>
-      <side-menu isTag="router-link" title="Tugas Jenis Inventaris" icon="bag" :route="{ to: 'errors.maintenance' }"></side-menu>
+      <side-menu isTag="router-link" title="Tugas Jenis Aset" icon="bag" :route="{ to: 'errors.maintenance' }"></side-menu>
       <!-- <side-menu isTag="router-link" title="Inventory Type Task" icon="file" :route="{ to: 'default.maintenance' }"></side-menu> -->
       <side-menu isTag="router-link" title="Penyesuaian" icon="pencil" :route="{ to: 'errors.maintenance' }"></side-menu>
       <li><hr class="hr-horizontal" /></li>

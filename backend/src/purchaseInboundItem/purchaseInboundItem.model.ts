@@ -20,7 +20,16 @@ export class PurchaseInboundItem  extends Model<PurchaseInboundItem > {
   sku_item_id: number;
   
   @Column({ type: DataType.INTEGER, allowNull: true })
+  current_price: number;
+  
+  @Column({ type: DataType.DOUBLE, allowNull: true })
   expected_quantity: number;
+  
+  @Column({ type: DataType.DOUBLE, allowNull: true })
+  actual_quantity: number;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  actual_inbound_item_date: string;
 
   @BelongsTo(() => PurchaseInbound)
   purchaseInbound: PurchaseInbound;

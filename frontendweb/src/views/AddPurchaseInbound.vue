@@ -26,7 +26,7 @@
                 <input v-model="addForm.purchase_order_number" maxlength="100" type="text" class="form-control" id="purchase_order_number" required />
               </div>
               <div class="col-sm-4">
-                <label for="inventory_type" class="form-label">Jenis Inventaris<span class="text-primary">*</span></label>
+                <label for="inventory_type" class="form-label">Jenis Aset<span class="text-primary">*</span></label>
                 <div class="mb-1">
                   <b-form-radio value="Usage" v-model="addForm.inventory_type" class="d-inline-block">Usage</b-form-radio>
                   <label class="form-label text-white"> . . . . </label>
@@ -46,7 +46,7 @@
                 </select>
               </div>
               <div class="col-sm-4"> 
-                <label for="expected_inbound_date" class="form-label">Tanggal Masuk<span class="text-primary">*</span></label>
+                <label for="expected_inbound_date" class="form-label">Tanggal Masuk Diharapkan<span class="text-primary">*</span></label>
                 <!-- <input v-model="addForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" required /> -->
                 <input v-model="addForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" required @click="$event.target.showPicker()" />
               </div>
@@ -58,18 +58,32 @@
            
             <h5 class="card-title"><span class="text-primary mt-4">|</span>SKU Item yang Dipilih</h5>
             <div class="row mb-2">
-              <div class="col-sm-4">
+              <!-- <div class="col-sm-4">
                 <label class="form-label">Cari Item SKU</label>
                 <input v-model="filterSkuItemName" maxlength="100" type="text" class="form-control" required/>
+              </div> -->
+              <div class="col-sm-6">
+                <label for="filter" class="form-label">Cari Item SKU</label>
+                <v-select
+                  :options="skuItemNames"
+                  v-model="selectedSkuItemNames"
+                  label="sku_item_name"
+                  @click="fetchSkuItemData"
+                  @update:modelValue="onSkuItemSelect" 
+                  class="filter-style"
+                  placeholder="Silahkan pilih item SKU"
+                  required
+                ></v-select>
+                <!-- multiple -->
               </div>
               <div class="col-sm-4">
                 <label for="validationCustomUsername01" class="form-label text-white">I</label>
                 <div class="input-group has-validation">
                   <button
                     class="btn btn-primary" 
-                    @click="fetchSkuItemData"
+                    @click="submitTemporaryItemSKU"
                     title="Search">
-                    Pilih SKU
+                    Tambah SKU
                   </button>
                 </div>
               </div>
@@ -82,7 +96,6 @@
                   id="entries"
                   class="form-select show-entries"
                   v-model="pageSize"
-                  @change="fetchSkuItemData"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -99,13 +112,14 @@
                 :currentPage="currentPage"
                 :pageSize="pageSize"  
                 :idrow="sku_item_id"
+                @update-price="onUpdatePrice"
                 @update-expected-quantity="handleUpdateExpectedQuantity"
                 @edit="showEditModal"
                 @delete="showDeleteModal"
-                @sort="onSort"
+                @page-change="updatePage"
               />
 
-              <div class="pagination-container">
+              <!-- <div class="pagination-container">
                 <p class="text-muted">
                   Showing {{ (currentPage - 1) * pageSize + 1 }} to
                   {{ Math.min(currentPage * pageSize, totalData) }} of {{ totalData }} entries
@@ -128,7 +142,7 @@
                     </li>
                   </ul>
                 </nav>
-              </div>
+              </div> -->
               
               <!-- Modal Konfirmasi Penghapusan -->
               <div class="modal fade" id="delete-confirmation" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
@@ -156,7 +170,7 @@
             <!-- <button type="submit" class="btn btn-primary" :data-bs-dismiss="
               addForm.warehouse_id&&addForm.purchase_order_number&&addForm.inventory_type&&addForm.vendor_id&&addForm.expected_inbound_date ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Pembelian Masuk' }}
             </button> -->
-            <button type="submit" @click="submitPurchaseInbound" class="btn btn-primary">Tambahkan Pembelian Masuk</button>
+            <button type="submit" @click="submitPurchaseInbound" class="btn btn-primary">Simpan</button>
           </form>
         </div>
       </div>
@@ -205,10 +219,12 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-import DataTable from '@/components/DataTable.vue';
+import DataTable from '@/components/DataTableLocal.vue';
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
 import { useRouter } from 'vue-router';
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 const router = useRouter();
 
@@ -218,10 +234,13 @@ const alertMessage = ref('');
 // Reactive data untuk menyimpan data pembelian masuk
 // const skuItemData = ref([]);
 const temporarySkuItems = ref([]);
+const skuItemNames = ref([]);
 const warehouseNames = ref([]);
 const vendorNames = ref([]);
 const optionsInventoryType = ref([]);
 const optionsStatus = ref([]);
+
+const selectedSkuItemNames = ref([]);
 // const selectedWarehouses = ref([]);
 // const selectedVendors = ref([]);
 // const selectedInventoryType = ref([]);
@@ -232,14 +251,14 @@ const optionsStatus = ref([]);
 // const filterInboundDate = ref('');
 // const filterAsn = ref('');
 // const filterCreateDate= ref('');
-const filterSkuItemName = ref('');
+// const filterSkuItemName = ref('');
 
-const globalSearch = ref('');
+// const globalSearch = ref('');
 
 const currentPage = ref(1); // Halaman aktif
-const totalPages = ref(0); // Total halaman
+// const totalPages = ref(0); // Total halaman
 const pageSize = ref(10); // Banyaknya data per halaman
-const totalData = ref(0); // Jumlah total data dari API
+// const totalData = ref(0); // Jumlah total data dari API
 
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 // Ambil token dari localStorage
@@ -257,9 +276,9 @@ const columns = [
   // { title: 'Berat', data: 'weight', sortable: true },
   { title: 'Satuan', data: 'unit_name', sortable: true },
   { title: 'Vendor', data: 'vendor_name', sortable: true },
-  { title: 'Harga', data: 'price', sortable: true },
-  { title: 'Kuantitas Diharapkan', data: 'expected_quantity', sortable: false },
-  { title: 'Total Harga', data: 'total_price', sortable: false },
+  { title: 'Harga Item SKU Saat Ini', data: 'price', sortable: true },
+  { title: 'Kuantitas Diharapkan', data: 'expected_quantity', sortable: true },
+  { title: 'Total Harga', data: 'total_price', sortable: true },
   { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
   { title: 'Aksi', data: 'delete', sortable: false },
   // { title: 'Expected', data: 'delete', sortable: false },
@@ -278,8 +297,9 @@ const addForm = ref({
   vendor_id: '',
   expected_inbound_date: '',
   asn: '',
-  sku_item_id: [1, 2, 3, 4],
-  expected_quantity: [12, 9, 15, 22],
+  sku_item_id: [],
+  price: [],
+  expected_quantity: [],
   status: 'Pending',
 })
 
@@ -299,8 +319,9 @@ const resetForm = () => {
     vendor_id: '',
     expected_inbound_date: '',
     asn: '',
-    sku_item_id: [1, 2, 3, 4],
-    expected_quantity: [12, 9, 15, 22],
+    sku_item_id: [],
+    price: [],
+    expected_quantity: [],
     status: 'Pending',
   }
 }
@@ -326,6 +347,21 @@ const handleUpdateExpectedQuantity = (updatedRow) => {
   }
 };
 
+const onUpdatePrice = (updatedRow) => {
+  console.log("Total Price Updated:", updatedRow);
+  const item = temporarySkuItems.value.find(
+    (item) => item.sku_item_id === updatedRow.sku_item_id
+  );
+  if (item) {
+    item.price = updatedRow.price;
+    console.log(
+      "Updated price:",
+      temporarySkuItems.value.map((item) => item.price)
+    );
+  }
+};
+
+
 // Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
 // const showEditModal = (rowData) => {
 //   selectedSkuItem.value = rowData
@@ -342,40 +378,52 @@ const handleUpdateExpectedQuantity = (updatedRow) => {
 
 // Fungsi untuk submit tambah/edit
 const submitPurchaseInbound = async () => {
-  if(addForm.value.warehouse_id&&addForm.value.purchase_order_number&&addForm.value.inventory_type&&addForm.value.vendor_id&&addForm.value.expected_inbound_date&&filterSkuItemName.value != ''){
-    
-    console.log('submitPurchaseInbound:', addForm.value)
-    const skuItemIds = temporarySkuItems.value.map(item => item.sku_item_id)
-    console.log('submitPurchaseInbound2:', skuItemIds)
+  if(addForm.value.warehouse_id != '' &&
+     addForm.value.purchase_order_number != '' &&
+     addForm.value.inventory_type != '' &&
+     addForm.value.vendor_id != '' &&
+     addForm.value.expected_inbound_date != ''){
 
-    const skuItemQuantity = temporarySkuItems.value.map((item) => item.expected_quantity)
-    // const skuItemQuantities  = temporarySkuItems.value.map(item => item.expected_quantity)
-    console.log('submitPurchaseInbound2:', skuItemQuantity)
-    // console.log('submitPurchaseInbound3:', skuItemQuantities)
-
-    addForm.value.sku_item_id = skuItemIds;
-    addForm.value.expected_quantity = skuItemQuantity;
-    addForm.value.user_id = Number(user_id)
-
-    console.log('submitPurchaseInbound4:', addForm.value)
-
-    try {
-      const response = await axios.post('http://localhost:3000/api/purchase_inbound', addForm.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Data berhasil ditambahkan:', response.data)
-      router.go(-1);
-      titleMessage.value = `Berhasil Ditambahkan`;
-      alertMessage.value = `Data pembelian masuk berhasil ditambahkan.`;
+    if (temporarySkuItems.value.length == 0){
+      titleMessage.value = `Gagal Ditambahkan`;
+      alertMessage.value = `Item SKU belum dipilih.`;
       const modal = new BootstrapModal(document.getElementById('message-alert'));
       modal.show();
-    } catch (error) {
-      console.error('Error fetching vendor data:', error); 
-      handleAuthError();
+    } else {
+      if (temporarySkuItems.value.every((item) => item.expected_quantity !== 0)) {
+        const skuItemIds = temporarySkuItems.value.map(item => item.sku_item_id)
+        const skuItemCurrentPrice = temporarySkuItems.value.map((item) => item.price)
+        const skuItemQuantity = temporarySkuItems.value.map((item) => item.expected_quantity)
+
+        addForm.value.sku_item_id = skuItemIds;
+        addForm.value.price = skuItemCurrentPrice;
+        addForm.value.expected_quantity = skuItemQuantity;
+        addForm.value.user_id = Number(user_id)
+
+        console.log('skuItemCurrentPrice:', skuItemCurrentPrice)
+        console.log('skuItemCurrentPrice:', skuItemQuantity)
+        console.log('addForm.value:', addForm.value)
+        console.log('addForm.value:', addForm.value.price)
+
+        try {
+          const response = await axios.post('http://localhost:3000/api/purchase_inbound', addForm.value, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          console.log('Data berhasil ditambahkan:', response.data)
+          router.go(-1);
+          titleMessage.value = `Berhasil Ditambahkan`;
+          alertMessage.value = `Data pembelian masuk berhasil ditambahkan.`;
+          const modal = new BootstrapModal(document.getElementById('message-alert'));
+          modal.show();
+        } catch (error) {
+          console.error('Error fetching purchase_inbound data:', error); 
+          handleAuthError();
+        }
+      }
     }
-  }
+  } 
 }
 
 // Mengambil data pembelian masuk saat komponen dimuat
@@ -383,16 +431,22 @@ onMounted(async () => {
   resetForm()
   await fetchWarehouses();
   await fetchVendors();
-  // await fetchSkuItemData();
+  await fetchSkuItemData();
   optionsInventoryType.value= ["Usage", "Storage"];
   optionsStatus.value= ["Pending", "Receiving", "Done", "Canceled"];
 });
 
 const currentSort = ref({ column: 'sku_item_id', order: 'DESC' });
 
-const onSort = ({ column, order }) => {
-  currentSort.value = { column, order };
-  fetchSkuItemData(); // Panggil ulang API dengan parameter sorting
+// const onSort = ({ column, order }) => {
+//   currentSort.value = { column, order };
+//   fetchSkuItemData(); // Panggil ulang API dengan parameter sorting
+// };
+
+const onSkuItemSelect = (selected) => {
+ selectedSkuItemNames.value = selected;
+ console.log('selected : ', selected)
+  // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
 };
 
 // const onWarehouseSelect = (selected) => {
@@ -421,92 +475,113 @@ const warehouses = ref([]);
 const vendors = ref([]);
 
 const clearSkuItemData = async () => {
+  selectedSkuItemNames.value = [];
   temporarySkuItems.value = [];
 };
 
 // Fungsi untuk mengambil data jenis SKU dari backend
 const fetchSkuItemData = async () => {
   console.log('addForm.value.vendor_id:', addForm.value.vendor_id)
-  if(addForm.value.warehouse_id&&addForm.value.purchase_order_number&&addForm.value.inventory_type&&addForm.value.vendor_id&&addForm.value.expected_inbound_date&&filterSkuItemName.value != ''){
-    try {
-      const response = await axios.get('http://localhost:3000/api/sku_item', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          // sku_type_name: selectedSkuTypes.value.join(','),
-          // unit_name: selectedUnits.value.join(','),
-          // vendor_name: selectedVendors.value.join(','),
-          vendor_id: addForm.value.vendor_id,
-          sku_item_name: filterSkuItemName.value,
-          // brand: filterBrand.value,
-          // length: filterLength.value,
-          // width: filterWidth.value,
-          // height: filterHeight.value,
-          // weight: filterWeight.value,
-          // price: filterPrice.value,
-          // consumed: selectedConsume.value.join(','),
-          search: globalSearch.value,
-          order_by: currentSort.value.column,
-          order_direction: currentSort.value.order,
-          page: currentPage.value, // Kirim nomor halaman
-          pageSize: pageSize.value, // Kirim ukuran data per halaman
-          // order_by: 'sku_item_id', // Sorting berdasarkan ID
-          // order_direction: 'DESC', // Urutan descending
-        },
-      })
-      const skuItem = response.data.rows[0];
-      if (skuItem) {
-        const exists = temporarySkuItems.value.some(
-          (item) => item.sku_item_id === skuItem.sku_item_id
-        );
-        if (!exists) {
-          temporarySkuItems.value.push({
-            ...skuItem,
-            sku_type_name: skuItem.skuType?.sku_type_name || 'N/A',
-            unit_name: skuItem.assetUnit?.unit_name || 'N/A',
-            vendor_name: skuItem.vendor?.vendor_name || 'N/A',
-            expected_quantity: 0,
-            price: skuItem.price || 0,
-            total_price: 0,
-          });
-        } else {
-          // alert('Item SKU sudah ada di tabel!');
-          titleMessage.value = `Gagal Menambahkan Item SKU`;
-          alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> sudah ada di tabel!`;
-          const modal = new BootstrapModal(document.getElementById('message-alert'));
-          modal.show(); 
-        }
-      } else {
-        // alert('Item SKU tidak ditemukan!');
-        titleMessage.value = `Gagal Menambahkan Item SKU`;
-        alertMessage.value = `Item SKU <strong>${filterSkuItemName.value}</strong> tidak ditemukan!`;
-        const modal = new BootstrapModal(document.getElementById('message-alert'));
-        modal.show(); 
-      }
-      // skuItemData.value = response.data.rows.map((sku_item) => ({
-      //   ...sku_item,
-      //   sku_type_name: sku_item.skuType?.sku_type_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
-      //   unit_name: sku_item.assetUnit?.unit_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
-      //   vendor_name: sku_item.vendor?.vendor_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
-      // }))
-      // totalData.value = response.data.sp.rowCount;
-      // totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
-    } catch (error) {
-      console.error('Error fetching sku_item data:', error)
-      handleAuthError();
-      // alert('Lakukan login terlebih dulu') 
-    }
-  }
+  try {
+    const response = await axios.get('http://localhost:3000/api/sku_item', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        // sku_item_name: selectedSkuItemNames.value,
+        // unit_name: selectedUnits.value.join(','),
+        // vendor_name: selectedVendors.value.join(','),
+        vendor_id: addForm.value.vendor_id,
+        // sku_item_name: filterSkuItemName.value,
+        // brand: filterBrand.value,
+        // length: filterLength.value,
+        // width: filterWidth.value,
+        // height: filterHeight.value,
+        // weight: filterWeight.value,
+        // price: filterPrice.value,
+        // consumed: selectedConsume.value.join(','),
+        // search: globalSearch.value,
+        order_by: currentSort.value.column,
+        order_direction: currentSort.value.order,
+        page: 1,
+        pageSize: 1000,
+        // page: currentPage.value, // Kirim nomor halaman
+        // pageSize: pageSize.value, // Kirim ukuran data per halaman
+        // order_by: 'sku_item_id', // Sorting berdasarkan ID
+        // order_direction: 'DESC', // Urutan descending
+      },
+    })
+    skuItemNames.value = response.data.rows.map((sku_item) => ({
+      ...sku_item,
+      sku_type_name: sku_item.skuType?.sku_type_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      unit_name: sku_item.assetUnit?.unit_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      vendor_name: sku_item.vendor?.vendor_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    }))
+    // skuItemNames.value = response.data.rows.map(item => item.sku_item_name);
+    // skuItemData.value = response.data.rows.map((sku_item) => ({
+    //   ...sku_item,
+    //   sku_type_name: sku_item.skuType?.sku_type_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    //   unit_name: sku_item.assetUnit?.unit_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    //   vendor_name: sku_item.vendor?.vendor_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    // }))
+    // totalData.value = response.data.sp.rowCount;
+    // totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
+  } catch (error) {
+    console.error('Error fetching sku_item data:', error)
+    handleAuthError();
+    // alert('Lakukan login terlebih dulu') 
+  } 
 };
 
 
-// Fungsi untuk mengganti halaman
-const changePage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    fetchSkuItemData(); // Refresh data untuk halaman baru
+const submitTemporaryItemSKU = async () => {
+    console.error('selectedSkuItemNames.value :', selectedSkuItemNames.value)
+  if(selectedSkuItemNames.value.sku_item_name!=undefined){
+    const skuItem = selectedSkuItemNames.value;
+    if (skuItem) {
+      const exists = temporarySkuItems.value.some(
+        (item) => item.sku_item_id === skuItem.sku_item_id
+      );
+      if (!exists) {
+        temporarySkuItems.value.push({
+          ...skuItem,
+          sku_type_name: skuItem.skuType?.sku_type_name || 'N/A',
+          unit_name: skuItem.assetUnit?.unit_name || 'N/A',
+          vendor_name: skuItem.vendor?.vendor_name || 'N/A',
+          expected_quantity: 0,
+          price: skuItem.price || 0,
+          total_price: 0,
+        });
+      } else {
+        // alert('Item SKU sudah ada di tabel!');
+        titleMessage.value = `Gagal Menambahkan Item SKU`;
+        alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> sudah ada di tabel!`;
+        const modal = new BootstrapModal(document.getElementById('message-alert'));
+        modal.show(); 
+      }
+    } else {
+      // alert('Item SKU tidak ditemukan!');
+      titleMessage.value = `Gagal Menambahkan Item SKU`;
+      alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> tidak ditemukan!`;
+      const modal = new BootstrapModal(document.getElementById('message-alert'));
+      modal.show(); 
+    }
+  } else {
+    // alert('Item SKU tidak ditemukan!');
+    titleMessage.value = `Gagal Menambahkan Item SKU`;
+    alertMessage.value = `Item SKU tidak ditemukan!`;
+    const modal = new BootstrapModal(document.getElementById('message-alert'));
+    modal.show(); 
   }
+}
+
+
+// Fungsi untuk mengganti halaman
+const updatePage = (page) => {
+  // if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    // fetchSkuItemData(); // Refresh data untuk halaman baru
+  // }
 };
 
 

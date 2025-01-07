@@ -309,7 +309,7 @@ const defaultChildRoutes = (prefix) => [
     props: true,
   },
   {
-    path: '/detailpurchaseinbound/:purchase_inbound_id&:warehouse_id&:warehouse_name&:purchase_order_number&:inventory_type&:vendor_id&:vendor_name&:username&:expected_inbound_date&:asn&:status&:create_date',
+    path: '/detailpurchaseinbound/:purchase_inbound_id&:warehouse_id&:warehouse_name&:purchase_order_number&:inventory_type&:vendor_id&:vendor_name&:username&:expected_inbound_date&:actual_inbound_date&:inbound_by&:asn&:status&:create_date',
     name: 'DetailPurchaseInbound',
     meta: { auth: true, name: 'Detail Purchase Inbound', isBanner: true },
     component: () => import('@/views/tables/DetailPurchaseInbound.vue'),

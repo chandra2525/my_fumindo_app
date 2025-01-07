@@ -16,6 +16,10 @@ export class CreatePurchaseInboundDto {
 
   @IsArray()
   @IsInt({ each: true })
+  price: number[];
+
+  @IsArray()
+  // @IsInt({ each: true })
   expected_quantity: number[];
 
   @IsString()
