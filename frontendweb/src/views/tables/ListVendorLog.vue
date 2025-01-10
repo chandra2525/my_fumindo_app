@@ -188,13 +188,14 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DataTable from '@/components/DataTable.vue';
 // import Actions from '@/components/TableActions.vue';
-import { useRouter } from 'vue-router';
-const router = useRouter();
 // import { Modal } from 'bootstrap'
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const navigateToDetail = (rowData) => {
   router.push({ name: 'VendorLogDetail', params: {
@@ -239,8 +240,8 @@ const totalData = ref(0); // Jumlah total data dari API
 
 // Mengambil data vendor saat komponen dimuat
 onMounted(async () => { 
-  await fetchVendorOperation();
   await fetchVendorChangeLogData();
+  await fetchVendorOperation();
 });
 
 const currentSort = ref({ column: 'created_at_group', order: 'DESC' });
@@ -287,8 +288,13 @@ const fetchVendorChangeLogData = async () => {
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching vendor change log data:', error)
-    handleAuthError();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching vendor change log data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 };
 
@@ -310,8 +316,13 @@ const fetchVendorOperation = async () => {
     }); 
     vendorOperation.value = [...new Set(response.data)];
   } catch (error) {
-    console.error('Error fetching vendorOperation:', error);
-    handleAuthError();
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching vendorOperation:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -346,19 +357,21 @@ const exportVendorData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error exporting data:", error);
-    // alert("Gagal mengekspor data. Silakan coba lagi.");
-    titleMessage.value = `Gagal Ekspor`;
-    alertMessage.value = `Gagal mengekspor data. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error exporting data:", error);
+      handleErrorMessage(`Gagal Ekspor`,`Gagal mengekspor data. Silakan coba lagi.`,'error');
+    }
   }
 };
 
- 
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  alertMessage.value = `Cek koneksi internet Anda.`;
+
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };

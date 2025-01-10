@@ -93,8 +93,22 @@ export class WarehouseController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
-    return this.warehouseService.remove(id);
+  async remove(@Param('id') id: number){
+    try {
+      await this.warehouseService.remove(id);
+      return { message: 'Warehouse deleted successfully, Warehouse Id: '+id };
+    } catch (error) {
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new HttpException(
+          'Tidak dapat menghapus gudang ini karena dikaitkan dengan data lain',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'An error occurred while deleting the warehouse.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('mass-upload')

@@ -285,7 +285,9 @@ import MessageModal from '@/components/ModalAlert.vue';
 import { Modal as BootstrapModal } from 'bootstrap';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+import { useRouter } from 'vue-router';
 
+const router = useRouter(); 
 const titleMessage = ref('');
 const alertMessage = ref(''); 
 
@@ -390,17 +392,21 @@ const submitWarehouse = async () => {
     // Tutup modal setelah berhasil update
     // isEditModalOpen.value = false
   } catch (error) {
-    console.error('Gagal mengupdate data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal menyimpan data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   } 
   // isEditModalOpen.value = false // Tutup modal setelah submit
 }
 
 // Mengambil data gudang saat komponen dimuat
 onMounted(async () => {
-  await fetchBranches(); 
   await fetchWarehouseData();
+  await fetchBranches();
 });
 
 const currentSort = ref({ column: 'warehouse_id', order: 'DESC' });
@@ -446,9 +452,13 @@ const fetchWarehouseData = async () => {
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching warehouse data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching warehouse data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 };
 
@@ -478,8 +488,7 @@ const fetchBranches = async () => {
     branchNames.value = response.data.rows.map(item => item.branch_name);
   } catch (error) {
     console.error('Error fetching branches:', error);
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // handleErrorMessage();
   }
 };
 
@@ -514,12 +523,13 @@ const exportWarehouseData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error exporting data:", error);
-    // alert("Gagal mengekspor data. Silakan coba lagi.");
-    titleMessage.value = `Gagal Ekspor`;
-    alertMessage.value = `Gagal mengekspor data. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error exporting data:", error);
+      handleErrorMessage(`Gagal Ekspor`,`Gagal mengekspor data. Silakan coba lagi.`,'error');
+    }
   }
 };
 
@@ -528,10 +538,7 @@ const uploadFileWarehouseData = async () => {
   const file = fileInput.files[0];
 
   if (!file) {
-    titleMessage.value = `Pilih File`;
-    alertMessage.value = 'Silakan pilih file sebelum mengunggah.';
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    handleErrorMessage(`Pilih File`,`Silakan pilih file sebelum mengunggah.`,'error');
     return;
   }
 
@@ -545,18 +552,16 @@ const uploadFileWarehouseData = async () => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    titleMessage.value = `Berhasil`;
-    alertMessage.value = `Upload berhasil, ${response.data.successCount} data gudang berhasil terupload`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
- 
+    handleErrorMessage(`Berhasil`,`Upload berhasil, ${response.data.successCount} data gudang berhasil terupload`,'error');
     fetchWarehouseData();
   } catch (error) {
-    console.error('Gagal mengunggah file:', error);
-    titleMessage.value = `Gagal Upload`;
-    alertMessage.value = 'Gagal mengunggah file. Pastikan format file benar.';
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal mengunggah file:', error);
+      handleErrorMessage(`Gagal Upload`,`Gagal mengunggah file. Pastikan format file benar.`,'error');
+    }
   }
 };
 
@@ -582,12 +587,13 @@ const downloadTemplateWarehouseData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error downloading template:", error);
-    // alert("Gagal mendownload template. Silakan coba lagi.");
-    titleMessage.value = `Gagal Download`;
-    alertMessage.value = `Gagal mendownload template. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error downloading template:", error);
+      handleErrorMessage(`Gagal Download`,`Gagal mendownload template. Silakan coba lagi.`,'error');
+    }
   }
 }
 
@@ -599,34 +605,29 @@ const confirmDelete = async () => {
         Authorization: `Bearer ${token}`,
       },
     })
-    // alert('Daca Gudang berhasil dihapus.') 
-    titleMessage.value = `Berhasil Hapus`;
-    alertMessage.value = `Data Gudang <strong>${selectedWarehouse.value.warehouse_name}</strong> berhasil dihapus.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
-
+    handleErrorMessage(`Berhasil Hapus`,`Data Gudang <strong>${selectedWarehouse.value.warehouse_name}</strong> berhasil dihapus.`,'error');
     fetchWarehouseData()
   } catch (error) {
     if (error.response && error.response.status === 409) {
-        titleMessage.value = `Gagal Menghapus`;
-        alertMessage.value = `Data Gudang <strong>${selectedWarehouse.value.warehouse_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Gudang <strong>${selectedWarehouse.value.warehouse_name}</strong>.`;
-        const modal = new BootstrapModal(document.getElementById('message-alert'));
-        modal.show(); 
+      handleErrorMessage(`Gagal Menghapus`,`Data Gudang <strong>${selectedWarehouse.value.warehouse_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Gudang <strong>${selectedWarehouse.value.warehouse_name}</strong>.`,'error');
+    }
+    else if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
     } 
     else {
       console.error('Failed to delete warehouse data:', error) 
-      handleAuthError();
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
     }
   }
 }
 
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  titleMessage.value = `Koneksi Gagal`;
-  alertMessage.value = `Cek koneksi internet Anda.`;
+
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
-
 
 </script>

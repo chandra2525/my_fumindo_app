@@ -345,7 +345,6 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DataTable from '@/components/DataTable.vue';
 // import Actions from '@/components/TableActions.vue';
-import { useRouter } from 'vue-router';
 // import { Modal } from 'bootstrap'
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
@@ -353,6 +352,7 @@ import { Modal as BootstrapModal } from 'bootstrap';
 // import "vue-select/src/scss/vue-select.scss";
 // import Vue from "vue"; 
 import 'vue-select/dist/vue-select.css';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();  
 const titleMessage = ref('');
@@ -436,8 +436,13 @@ const fetchVendorData = async () => {
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching vendor data:', error); 
-    handleAuthError();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching vendor data:', error); 
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 };
 
@@ -513,12 +518,13 @@ const exportVendorData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error exporting data:", error);
-    // alert("Gagal mengekspor data. Silakan coba lagi.");
-    titleMessage.value = `Gagal Ekspor`;
-    alertMessage.value = `Gagal mengekspor data. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error exporting data:", error);
+      handleErrorMessage(`Gagal Ekspor`,`Gagal mengekspor data. Silakan coba lagi.`,'error');
+    }
   }
 };
 
@@ -527,10 +533,7 @@ const uploadFileVendorData = async () => {
   const file = fileInput.files[0];
 
   if (!file) {
-    titleMessage.value = `Pilih File`;
-    alertMessage.value = 'Silakan pilih file sebelum mengunggah.';
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    handleErrorMessage(`Pilih File`,`Silakan pilih file sebelum mengunggah.`,'error');
     return;
   }
 
@@ -544,18 +547,16 @@ const uploadFileVendorData = async () => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    titleMessage.value = `Berhasil`;
-    alertMessage.value = `Upload berhasil, ${response.data.successCount} data vendor berhasil terupload`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
- 
+    handleErrorMessage(`Berhasil`,`Upload berhasil, ${response.data.successCount} data vendor berhasil terupload`,'error');
     fetchVendorData();
   } catch (error) {
-    console.error('Gagal mengunggah file:', error);
-    titleMessage.value = `Gagal Upload`;
-    alertMessage.value = 'Gagal mengunggah file. Pastikan format file benar.';
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal mengunggah file:', error);
+      handleErrorMessage(`Gagal Upload`,`Gagal mengunggah file. Pastikan format file benar.`,'error');
+    }
   }
 };
 
@@ -581,12 +582,13 @@ const downloadTemplateVendorData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error downloading template:", error);
-    // alert("Gagal mendownload template. Silakan coba lagi.");
-    titleMessage.value = `Gagal Download`;
-    alertMessage.value = `Gagal mendownload template. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error downloading template:", error);
+      handleErrorMessage(`Gagal Download`,`Gagal mendownload template. Silakan coba lagi.`,'error');
+    }
   }
 }
 
@@ -639,9 +641,13 @@ const submitVendor = async () => {
     } 
     fetchVendorData();
   } catch (error) {
-    console.error('Gagal mengupdate data:', error);
-    handleAuthError();
-    // this.$router.push('/auth/login'); // Redirect ke halaman login
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal menyimpan data:', error);
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 }
 
@@ -661,34 +667,30 @@ const confirmDelete = async () => {
         Authorization: `Bearer ${token}`,
       },
     })
-    // alert('Data Vendor ' + selectedVendor.value.vendor_name + ' bertasil dihapus.') 
-    titleMessage.value = `Berhasil Hapus`;
-    alertMessage.value = `Data Vendor <strong>${selectedVendor.value.vendor_name}</strong> berhasil dihapus.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show(); 
+    handleErrorMessage(`Berhasil Hapus`,`Data Vendor <strong>${selectedVendor.value.vendor_name}</strong> berhasil dihapus.`,'error');
     fetchVendorData()
   } catch (error) {
     if (error.response && error.response.status === 409) {
-        titleMessage.value = `Gagal Menghapus`;
-        alertMessage.value = `Data Vendor <strong>${selectedVendor.value.vendor_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Vendor <strong>${selectedVendor.value.vendor_name}</strong>.`;
-        const modal = new BootstrapModal(document.getElementById('message-alert'));
-        modal.show(); 
-    } 
-    else {
+      handleErrorMessage(`Gagal Menghapus`,`Data Vendor <strong>${selectedVendor.value.vendor_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Vendor <strong>${selectedVendor.value.vendor_name}</strong>.`,'error');
+    }
+    else if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } else {
       console.error('Failed to delete vendor data:', error) 
-      handleAuthError();
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
     }
   }
 }
 
-// Fungsi untuk menangani kesalahan autentikasi
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  titleMessage.value = `Koneksi Gagal`;
-  alertMessage.value = `Cek koneksi internet Anda.`;
+
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
+
 
 const navigateToVendorLog = () => {
   router.push({ name: 'ListVendorLog'});

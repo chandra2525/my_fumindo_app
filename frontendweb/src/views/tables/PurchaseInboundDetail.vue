@@ -547,9 +547,9 @@ import MessageModal from '@/components/ModalAlert.vue';
 import { Modal as BootstrapModal } from 'bootstrap';
 // import vSelect from 'vue-select';
 // import 'vue-select/dist/vue-select.css';
-// import { useRouter } from 'vue-router';
-// const router = useRouter();
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 
 const activeTab = ref(0); // Tab yang aktif (default: tab pertama)
 const tabs = [
@@ -816,9 +816,13 @@ const fetchSkuItemPendingData = async () => {
     totalData.value = responsePending.data.sp.rowCount;
     totalPages.value = Math.ceil(responsePending.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching purchase_inbound data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching purchase_inbound pending data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 };
 
@@ -878,9 +882,13 @@ const fetchSkuItemReceivedData = async () => {
     }
     autoUpdateStatus();
   } catch (error) {
-    console.error('Error fetching purchase_inbound data 22 :', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching purchase_inbound received data:', error)
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -912,8 +920,13 @@ const getUserById = async () => {
     inboundByName.value = response.data.username;
     console.log('inboundByName.value:', inboundByName.value)
   } catch (error) {
-    console.error('Error fetching getUserById:', error);
-    handleAuthError();
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching getUserById:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -935,7 +948,7 @@ const getUserById = async () => {
 //     vendorNames.value
 //   } catch (error) {
 //     console.error('Error fetching vendors:', error);
-//     handleAuthError();
+//     handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
 //     // alert('Lakukan login terlebih dulu') 
 //   }
 // };
@@ -1002,8 +1015,13 @@ const submitActualQuantity = async () => {
     fetchSkuItemReceivedData()
   }
   catch (error) {
-    console.error('Gagal mengupdate data:', error)
-    handleAuthError();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal menyimpan data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 }
 
@@ -1021,8 +1039,13 @@ const autoUpdateStatus = async () => {
     })
     console.log('Data berhasil diupdate:', response.data)
   } catch (error) {
-    console.error('Gagal mengupdate data:', error)
-    handleAuthError();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal mengupdate data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 }
 
@@ -1041,25 +1064,28 @@ const completePurchaseInbound = async () => {
       },
     })
     console.log('Data berhasil diupdate:', response.data)
+    handleErrorMessage(`Berhasil Diselesaikan`,`Pembelian masuk berhasil diselesaikan.`,'error');
     // router.go(-1);
-    titleMessage.value = `Berhasil Diselesaikan`;
-    alertMessage.value = `Pembelian masuk berhasil diselesaikan.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
   } catch (error) {
-    console.error('Gagal mengupdate data:', error)
-    handleAuthError();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal mengupdate data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 }
 
 
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  titleMessage.value = `Koneksi Gagal`;
-  alertMessage.value = `Cek koneksi internet Anda.`;
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
+
 
 // Fungsi untuk mencegah input `actual_quantity` melebihi `expected_quantity2`
 const handleMaxQuantity = (event) => {

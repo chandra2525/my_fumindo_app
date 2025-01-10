@@ -264,6 +264,8 @@ import MessageModal from '@/components/ModalAlert.vue';
 import { Modal as BootstrapModal } from 'bootstrap';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const titleMessage = ref('');
 const alertMessage = ref(''); 
@@ -323,9 +325,9 @@ onMounted(async () => {
   // await fetchSkuTypes();
   // await fetchUnits();
   // await fetchVendors();
-  await fetchWarehouses();
   await fetchStockData();
-   optionsConsume.value= ["Iya", "Tidak"];
+  await fetchWarehouses();
+  optionsConsume.value= ["Iya", "Tidak"];
 });
 
 const currentSort = ref({ column: 'stock_id', order: 'DESC' });
@@ -369,7 +371,7 @@ const onConsumeSelect = (selected) => {
 
 // Fungsi untuk mengambil data jenis SKU dari backend
 const fetchStockData = async () => {
-    console.log('SelectedConsumedata:', selectedConsume.value.join(','))
+    console.log('storage token:', token)
   try {
     const response = await axios.get('http://localhost:3000/api/stock', {
       headers: {
@@ -417,9 +419,13 @@ const fetchStockData = async () => {
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching stock data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching stock data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 };
 
@@ -447,9 +453,13 @@ const fetchWarehouses = async () => {
     });
     warehouseNames.value = response.data.rows.map(item => item.warehouse_name);
   } catch (error) {
-    console.error('Error fetching warehouses:', error);
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching warehouses:', error);
+      // handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -471,8 +481,7 @@ const fetchWarehouses = async () => {
 //     skuTypeNames.value = response.data.rows.map(item => item.sku_type_name);
 //   } catch (error) {
 //     console.error('Error fetching skuTypes:', error);
-//     handleAuthError();
-//     // alert('Lakukan login terlebih dulu') 
+//     handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
 //   }
 // };
 
@@ -493,8 +502,7 @@ const fetchWarehouses = async () => {
 //     unitNames.value = response.data.rows.map(item => item.unit_name);
 //   } catch (error) {
 //     console.error('Error fetching units:', error);
-//     handleAuthError();
-//     // alert('Lakukan login terlebih dulu') 
+//     handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
 //   }
 // };
 
@@ -518,8 +526,7 @@ const fetchWarehouses = async () => {
 //     vendorNames.value
 //   } catch (error) {
 //     console.error('Error fetching vendors:', error);
-//     handleAuthError();
-//     // alert('Lakukan login terlebih dulu') 
+//     handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
 //   }
 // };
 
@@ -558,30 +565,30 @@ const exportStockData = async () => {
     // Buat link untuk download
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "data_jenis_sku.xlsx"); // Nama file
+    link.setAttribute("download", "data_stock.xlsx"); // Nama file
     document.body.appendChild(link);
     link.click();
 
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error exporting data:", error);
-    // alert("Gagal mengekspor data. Silakan coba lagi.");
-    titleMessage.value = `Gagal Ekspor`;
-    alertMessage.value = `Gagal mengekspor data. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error exporting data:", error);
+      handleErrorMessage(`Gagal Ekspor`,`Gagal mengekspor data. Silakan coba lagi.`,'error');
+    }
   }
 };
 
 
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  titleMessage.value = `Koneksi Gagal`;
-  alertMessage.value = `Cek koneksi internet Anda.`;
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
-
 
 </script>

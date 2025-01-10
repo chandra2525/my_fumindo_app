@@ -263,7 +263,7 @@
 <style scoped>
   .filter-style {
     /* max-width: 400px; */
-    /* height: 35px; */
+    height: 35px; 
     /* margin-bottom: 1rem; */
   }
 
@@ -306,6 +306,9 @@ import MessageModal from '@/components/ModalAlert.vue';
 import { Modal as BootstrapModal } from 'bootstrap';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const titleMessage = ref('');
 const alertMessage = ref(''); 
@@ -411,17 +414,21 @@ const submitSkuType = async () => {
     // Tutup modal setelah berhasil update
     // isEditModalOpen.value = false
   } catch (error) {
-    console.error('Gagal mengupdate data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal menyimpan data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   } 
   // isEditModalOpen.value = false // Tutup modal setelah submit
 }
 
 // Mengambil data jenis SKU saat komponen dimuat
 onMounted(async () => {
-  await fetchCategories(); 
   await fetchSkuTypeData();
+  await fetchCategories();
 });
 
 const currentSort = ref({ column: 'sku_type_id', order: 'DESC' });
@@ -467,9 +474,13 @@ const fetchSkuTypeData = async () => {
     totalData.value = response.data.sp.rowCount;
     totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching sku_type data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching sku_type data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   }
 };
 
@@ -498,9 +509,13 @@ const fetchCategories = async () => {
     categories.value = response.data.rows;
     categoryNames.value = response.data.rows.map(item => item.path);
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching categories:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -535,12 +550,13 @@ const exportSkuTypeData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error exporting data:", error);
-    // alert("Gagal mengekspor data. Silakan coba lagi.");
-    titleMessage.value = `Gagal Ekspor`;
-    alertMessage.value = `Gagal mengekspor data. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error exporting data:", error);
+      handleErrorMessage(`Gagal Ekspor`,`Gagal mengekspor data. Silakan coba lagi.`,'error');
+    }
   }
 };
 
@@ -549,10 +565,7 @@ const uploadFileSkuTypeData = async () => {
   const file = fileInput.files[0];
 
   if (!file) {
-    titleMessage.value = `Pilih File`;
-    alertMessage.value = 'Silakan pilih file sebelum mengunggah.';
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    handleErrorMessage(`Pilih File`,`Silakan pilih file sebelum mengunggah.`,'error');
     return;
   }
 
@@ -566,18 +579,16 @@ const uploadFileSkuTypeData = async () => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    titleMessage.value = `Berhasil`;
-    alertMessage.value = `Upload berhasil, ${response.data.successCount} data jenis SKU berhasil terupload`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
- 
+    handleErrorMessage(`Berhasil`,`Upload berhasil, ${response.data.successCount} data jenis SKU berhasil terupload`,'error');
     fetchSkuTypeData();
   } catch (error) {
-    console.error('Gagal mengunggah file:', error);
-    titleMessage.value = `Gagal Upload`;
-    alertMessage.value = 'Gagal mengunggah file. Pastikan format file benar.';
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal mengunggah file:', error);
+      handleErrorMessage(`Gagal Upload`,`Gagal mengunggah file. Pastikan format file benar.`,'error');
+    }
   }
 };
 
@@ -603,12 +614,13 @@ const downloadTemplateSkuTypeData = async () => {
     // Hapus elemen link setelah selesai
     link.parentNode.removeChild(link);
   } catch (error) {
-    console.error("Error downloading template:", error);
-    // alert("Gagal mendownload template. Silakan coba lagi.");
-    titleMessage.value = `Gagal Download`;
-    alertMessage.value = `Gagal mendownload template. Silakan coba lagi.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error("Error downloading template:", error);
+      handleErrorMessage(`Gagal Download`,`Gagal mendownload template. Silakan coba lagi.`,'error');
+    }
   }
 }
 
@@ -620,34 +632,28 @@ const confirmDelete = async () => {
         Authorization: `Bearer ${token}`,
       },
     })
-    // alert('Data Jenis SKU berhasil dihapus.') 
-    titleMessage.value = `Berhasil Hapus`;
-    alertMessage.value = `Data Jenis SKU <strong>${selectedSkuType.value.sku_type_name}</strong> berhasil dihapus.`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show();
-
+    handleErrorMessage(`Berhasil Hapus`,`Data Jenis SKU <strong>${selectedSkuType.value.sku_type_name}</strong> berhasil dihapus.`,'error');
     fetchSkuTypeData()
   } catch (error) {
     if (error.response && error.response.status === 409) {
-        titleMessage.value = `Gagal Menghapus`;
-        alertMessage.value = `Data Jenis SKU <strong>${selectedSkuType.value.sku_type_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Jenis SKU <strong>${selectedSkuType.value.sku_type_name}</strong>.`;
-        const modal = new BootstrapModal(document.getElementById('message-alert'));
-        modal.show(); 
-    } 
-    else {
+      handleErrorMessage(`Gagal Menghapus`,`Data Jenis SKU <strong>${selectedSkuType.value.sku_type_name}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Jenis SKU <strong>${selectedSkuType.value.sku_type_name}</strong>.`,'error');
+    }
+    else if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } else {
       console.error('Failed to delete sku type data:', error) 
-      handleAuthError();
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
     }
   }
 }
 
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  titleMessage.value = `Koneksi Gagal`;
-  alertMessage.value = `Cek koneksi internet Anda.`;
+
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
-
 
 </script>

@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards, Res } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { StockService } from './stock.service';  
 import { Stock } from './stock.model';
+import { Response } from 'express';
 
 @Controller('stock')
 @UseGuards(JwtAuthGuard)
@@ -46,6 +47,47 @@ export class StockController {
     );
   }
   
+
+  @Get('export')
+  async exportStock(
+    @Res() res: Response,
+    @Query('warehouse_name') warehouseName?: string,
+    @Query('stock_quantity') stock_quantity?: string,
+    @Query('consumed') consumed?: string,
+    @Query('sku_item_name') sku_item_name?: string,
+    @Query('brand') brand?: string,
+    @Query('length') length?: string,
+    @Query('width') width?: string,
+    @Query('height') height?: string,
+    @Query('weight') weight?: string,
+    // @Query('price') price?: string,
+    @Query('order_by') orderBy?: string,
+    @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
+    @Query('search') search?: string,
+  ) {
+    const warehouseNameArray = warehouseName ? warehouseName.split(',') : []; // Pisahkan string menjadi array
+    const consumedArray = consumed ? consumed.split(',') : []; // Pisahkan string menjadi array
+    const buffer = await this.stockService.exportStock(
+      warehouseNameArray,
+      stock_quantity,
+      consumedArray,
+      sku_item_name,
+      brand,
+      length,
+      width,
+      height,
+      weight,
+      // price, 
+      orderBy,
+      orderDirection,
+      search,
+    );
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=StockExport.xlsx');
+    res.send(buffer);
+  }
+
 
   @Post()
   async addOrUpdateStock(

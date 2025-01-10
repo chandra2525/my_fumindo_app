@@ -259,10 +259,10 @@ const columns = [
 
 // Mengambil data pembelian masuk saat komponen dimuat
 onMounted(async () => {
+  await getPurchaseInboundById();
   await fetchWarehouses();
   await fetchVendors();
   await fetchSkuItemData();
-  await getPurchaseInboundById();
 });
 
 const currentSort = ref({ column: 'sku_item_id', order: 'DESC' });
@@ -328,10 +328,7 @@ const submitPurchaseInbound = async () => {
      editForm.value.expected_inbound_date != ''){
 
     if (temporarySkuItems.value.length == 0){
-      titleMessage.value = `Gagal Ditambahkan`;
-      alertMessage.value = `Item SKU belum dipilih.`;
-      const modal = new BootstrapModal(document.getElementById('message-alert'));
-      modal.show();
+      handleErrorMessage(`Gagal Ditambahkan`,`Item SKU belum dipilih.`,'error');
     } else {
       if (temporarySkuItems.value.every((item) => item.expected_quantity !== 0)) {
         const skuItemIds = temporarySkuItems.value.map(item => item.sku_item_id)
@@ -361,13 +358,15 @@ const submitPurchaseInbound = async () => {
           })
           console.log('Data berhasil disimpan:', response.data)
           router.go(-1);
-          titleMessage.value = `Berhasil Disimpan`;
-          alertMessage.value = `Data pembelian masuk berhasil disimpan.`;
-          const modal = new BootstrapModal(document.getElementById('message-alert'));
-          modal.show();
+          handleErrorMessage(`Berhasil Disimpan`,`Data pembelian masuk berhasil disimpan.`,'error');
         } catch (error) {
-          console.error('Error fetching purchase_inbound data:', error); 
-          handleAuthError();
+          if (error.response && error.response.status === 401) {
+            handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+          } 
+          else {
+            console.error('Error fetching purchase_inbound data:', error); 
+            handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+          }
         }
       }
     }
@@ -423,9 +422,13 @@ const fetchSkuItemData = async () => {
     // totalData.value = response.data.sp.rowCount;
     // totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching sku_item data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching sku_item data:', error)
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   } 
 };
 
@@ -458,9 +461,13 @@ const getPurchaseInboundById = async () => {
     // totalData.value = response.data.sp.rowCount;
     // totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
   } catch (error) {
-    console.error('Error fetching sku_item data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Error fetching sku_item data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
   } 
 };
 
@@ -481,9 +488,13 @@ const fetchWarehouses = async () => {
     warehouses.value = response.data.rows;
     warehouseNames.value = response.data.rows.map(item => item.warehouse_name);
   } catch (error) {
-    console.error('Error fetching warehouses:', error);
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching warehouses:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -507,9 +518,13 @@ const fetchVendors = async () => {
  
     vendorNames.value
   } catch (error) {
-    console.error('Error fetching vendors:', error);
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching vendors:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -548,25 +563,13 @@ const submitTemporaryItemSKU = async () => {
           total_price: 0,
         });
       } else {
-        // alert('Item SKU sudah ada di tabel!');
-        titleMessage.value = `Gagal Menambahkan Item SKU`;
-        alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> sudah ada di tabel!`;
-        const modal = new BootstrapModal(document.getElementById('message-alert'));
-        modal.show(); 
+        handleErrorMessage(`Gagal Menambahkan Item SKU`,`Item SKU <strong>${skuItem.sku_item_name}</strong> sudah ada di tabel!`,'error');
       }
     } else {
-      // alert('Item SKU tidak ditemukan!');
-      titleMessage.value = `Gagal Menambahkan Item SKU`;
-      alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> tidak ditemukan!`;
-      const modal = new BootstrapModal(document.getElementById('message-alert'));
-      modal.show(); 
+      handleErrorMessage(`Gagal Menambahkan Item SKU`,`Item SKU <strong>${skuItem.sku_item_name}</strong> tidak ditemukan!`,'error');
     }
   } else {
-    // alert('Item SKU tidak ditemukan!');
-    titleMessage.value = `Gagal Menambahkan Item SKU`;
-    alertMessage.value = `Item SKU tidak ditemukan!`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show(); 
+    handleErrorMessage(`Gagal Menambahkan Item SKU`,`Item SKU tidak ditemukan!`,'error');
   }
 }
 
@@ -579,10 +582,10 @@ const removeTemporarySkuItem = () => {
 };
 
 
-const handleAuthError = () => {
-  // router.push({ name: 'auth.login' });
-  titleMessage.value = `Koneksi Gagal`;
-  alertMessage.value = `Cek koneksi internet Anda.`;
+const handleErrorMessage = (title, alert, type) => {
+  type == 'session'? router.push({ name: 'auth.login' }) : null;
+  titleMessage.value = title;
+  alertMessage.value = alert;
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
