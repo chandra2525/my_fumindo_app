@@ -17,7 +17,6 @@ export class PurchaseInboundController {
     @Query('status') status?: string,
     @Query('purchase_order_number') purchase_order_number?: string,
     @Query('username') username?: string,
-    @Query('inbound_by_name') inbound_by_name?: string,
     @Query('expected_inbound_date') expected_inbound_date?: string,
     @Query('asn') asn?: string,
     @Query('create_date') create_date?: Date,
@@ -39,7 +38,6 @@ export class PurchaseInboundController {
       statusArray,
       purchase_order_number,
       username,
-      inbound_by_name,
       expected_inbound_date,
       asn,
       create_date,
@@ -69,10 +67,18 @@ export class PurchaseInboundController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() data: any): Promise<{ message: string }> {
-    await this.purchaseInboundService.update(id, data);
-    return { message: data };
+  async update(@Param('id') id: number, @Body() createPurchaseInboundDto: CreatePurchaseInboundDto): Promise<{ message: string }> {
+    // await this.purchaseInboundService.update(id, data);
+    // return { message: data };
+    await this.purchaseInboundService.update(id, createPurchaseInboundDto);
+    return { message: 'Purchase Inbound updated successfully' };
   }
+
+  // @Put(':id')
+  // async update(@Param('id') id: number, @Body() data: any): Promise<{ message: string }> {
+  //   await this.purchaseInboundService.update(id, data);
+  //   return { message: data };
+  // }
 
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<{ message: string }> {

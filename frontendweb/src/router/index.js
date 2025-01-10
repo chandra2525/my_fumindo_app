@@ -259,6 +259,12 @@ const defaultChildRoutes = (prefix) => [
     component: () => import('@/views/tables/ListUnit.vue')
   },
   {
+    path: '/liststock',
+    name: prefix + '.list-stock',
+    meta: { auth: true, name: 'List Stok Item', isBanner: true },
+    component: () => import('@/views/tables/ListStock.vue'),
+  },
+  {
     path: '/listcategory',
     name: prefix + '.list-category-configuration',
     meta: { auth: true, name: 'List Kategori', isBanner: true },
@@ -302,17 +308,24 @@ const defaultChildRoutes = (prefix) => [
     component: () => import('@/views/tables/ListPurchaseInbound.vue'),
   },
   {
-    path: '/addpurchaseinbound',
-    name: 'AddPurchaseInbound',
+    path: '/purchaseinboundadd',
+    name: 'PurchaseInboundAdd',
     meta: { auth: true, name: 'Add Purchase Inbound', isBanner: true },
-    component: () => import('@/views/AddPurchaseInbound.vue'),
+    component: () => import('@/views/PurchaseInboundAdd.vue'),
     props: true,
   },
   {
-    path: '/detailpurchaseinbound/:purchase_inbound_id&:warehouse_id&:warehouse_name&:purchase_order_number&:inventory_type&:vendor_id&:vendor_name&:username&:expected_inbound_date&:actual_inbound_date&:inbound_by&:asn&:status&:create_date',
-    name: 'DetailPurchaseInbound',
+    // path: '/purchaseinboundedit/:purchase_inbound_id&:warehouse_id&:warehouse_name&:purchase_order_number&:inventory_type&:vendor_id&:vendor_name&:username&:expected_inbound_date&:actual_inbound_date&:inbound_by&:asn&:status&:create_date',
+    path: '/purchaseinboundedit/:purchase_inbound_id&:warehouse_id&:purchase_order_number&:inventory_type&:vendor_id&:expected_inbound_date&:asn&:status',
+    name: 'PurchaseInboundEdit',
+    component: () => import('@/views/PurchaseInboundEdit.vue'), // Path ke komponen Edit
+    props: true, // Agar data dari params bisa diterima sebagai props
+  },
+  {
+    path: '/purchaseinbounddetail/:purchase_inbound_id&:warehouse_id&:warehouse_name&:purchase_order_number&:inventory_type&:vendor_id&:vendor_name&:username&:expected_inbound_date&:actual_inbound_date&:inbound_by&:asn&:status&:create_date',
+    name: 'PurchaseInboundDetail',
     meta: { auth: true, name: 'Detail Purchase Inbound', isBanner: true },
-    component: () => import('@/views/tables/DetailPurchaseInbound.vue'),
+    component: () => import('@/views/tables/PurchaseInboundDetail.vue'),
     props: true,
   },
   // {

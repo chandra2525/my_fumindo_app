@@ -42,6 +42,7 @@
       </side-menu>
       <li><hr class="hr-horizontal" /></li>
       <side-menu title="Manajemen Aset" :static-item="true"></side-menu>
+      <side-menu isTag="router-link" title="Stok Item" icon="bag" :route="{ to: 'default.list-stock' }"></side-menu>
       <side-menu title="Konfigurasi" icon="setting" toggle-id="configuration" :caret-icon="true" :route="{ popup: 'false', to: 'configuration' }" @onClick="toggle" :active="currentRoute.includes('configuration')">
         <b-collapse tag="ul" class="sub-nav" id="configuration" accordion="sidebar-menu" :visible="currentRoute.includes('configuration')">
           <side-menu isTag="router-link" title="Kategori" icon="circle" :icon-size="10" icon-type="solid" miniTitle="K" :route="{ to: 'default.list-category-configuration' }"></side-menu>

@@ -4,7 +4,7 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="header-title">
-            <h4 class="card-title">Tambah Pembelian Masuk</h4>
+            <h4 class="card-title">Edit Pembelian Masuk</h4>
           </div>
         </div>
         <div class="card-body">
@@ -14,7 +14,7 @@
             <div class="row mb-3">
               <div class="col-sm-4"> 
                 <label for="input-205" class="form-label">Pilih Gudang<span class="text-primary">*</span></label>
-                <select id="warehouse_id" v-model="addForm.warehouse_id" class="form-select" required>
+                <select id="warehouse_id" v-model="editForm.warehouse_id" class="form-select" required>
                   <option value="" disabled>Silahkan pilih gudang</option>
                   <option v-for="warehouse in warehouses" :key="warehouse.warehouse_id" :value="warehouse.warehouse_id">
                     {{ warehouse.warehouse_name }}
@@ -23,14 +23,14 @@
               </div>
               <div class="col-sm-4">
                 <label for="purchase_order_number" class="form-label">Nomor Pesanan Pembelian<span class="text-primary">*</span></label>
-                <input v-model="addForm.purchase_order_number" maxlength="100" type="text" class="form-control" id="purchase_order_number" required />
+                <input v-model="editForm.purchase_order_number" maxlength="100" type="text" class="form-control" id="purchase_order_number" required />
               </div>
               <div class="col-sm-4">
                 <label for="inventory_type" class="form-label">Jenis Aset<span class="text-primary">*</span></label>
                 <div class="mb-1">
-                  <b-form-radio value="Usage" v-model="addForm.inventory_type" class="d-inline-block">Usage</b-form-radio>
+                  <b-form-radio value="Usage" v-model="editForm.inventory_type" class="d-inline-block">Usage</b-form-radio>
                   <label class="form-label text-white"> . . . . </label>
-                  <b-form-radio value="Storage" v-model="addForm.inventory_type" class="d-inline-block">Storage</b-form-radio>
+                  <b-form-radio value="Storage" v-model="editForm.inventory_type" class="d-inline-block">Storage</b-form-radio>
                 </div>
               </div>
             </div>
@@ -38,7 +38,7 @@
             <div class="row mb-3">
               <div class="col-sm-4"> 
                 <label for="input-205" class="form-label">Pilih Vendor<span class="text-primary">*</span></label>
-                <select id="vendor_id" v-model="addForm.vendor_id" class="form-select" @change="clearSkuItemData" required>
+                <select id="vendor_id" v-model="editForm.vendor_id" class="form-select" @change="clearSkuItemData" required>
                   <option value="" disabled>Silahkan pilih vendor</option>
                   <option v-for="vendor in vendors" :key="vendor.vendor_id" :value="vendor.vendor_id">
                     {{ vendor.vendor_name }}
@@ -47,12 +47,12 @@
               </div>
               <div class="col-sm-4"> 
                 <label for="expected_inbound_date" class="form-label">Tanggal Masuk Diharapkan<span class="text-primary">*</span></label>
-                <!-- <input v-model="addForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" required /> -->
-                <input v-model="addForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" required @click="$event.target.showPicker()" />
+                <!-- <input v-model="editForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" required /> -->
+                <input v-model="editForm.expected_inbound_date" type="date" class="form-control" id="expected_inbound_date" required @click="$event.target.showPicker()" />
               </div>
               <div class="col-sm-4"> 
                 <label for="asn" class="form-label">ASN</label> 
-                <input v-model="addForm.asn" maxlength="100" type="text" class="form-control" id="asn" />
+                <input v-model="editForm.asn" maxlength="100" type="text" class="form-control" id="asn" />
               </div>
             </div>
            
@@ -68,9 +68,8 @@
                   :options="skuItemNames"
                   v-model="selectedSkuItemNames"
                   label="sku_item_name"
-                  @click="fetchSkuItemData"
-                  @update:modelValue="onSkuItemSelect" 
-                  class="filter-style"
+                  @update:modelValue="onSkuItemSelect"
+                  :disabled="!editForm.vendor_id"
                   placeholder="Silahkan pilih item SKU"
                   required
                 ></v-select>
@@ -80,6 +79,7 @@
                 <label for="validationCustomUsername01" class="form-label text-white">I</label>
                 <div class="input-group has-validation">
                   <button
+                    :disabled="!editForm.vendor_id || selectedSkuItemNames?.sku_item_name==undefined"
                     class="btn btn-primary" 
                     @click="submitTemporaryItemSKU"
                     title="Search">
@@ -168,7 +168,7 @@
             
             <!-- Tambahkan field lainnya sesuai dengan struktur data Pembelian Masuk -->
             <!-- <button type="submit" class="btn btn-primary" :data-bs-dismiss="
-              addForm.warehouse_id&&addForm.purchase_order_number&&addForm.inventory_type&&addForm.vendor_id&&addForm.expected_inbound_date ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Pembelian Masuk' }}
+              editForm.warehouse_id&&editForm.purchase_order_number&&editForm.inventory_type&&editForm.vendor_id&&editForm.expected_inbound_date ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Pembelian Masuk' }}
             </button> -->
             <button type="submit" @click="submitPurchaseInbound" class="btn btn-primary">Simpan</button>
           </form>
@@ -179,29 +179,8 @@
 </template>
 
 <style scoped>
-  .filter-style {
-    /* max-width: 400px; */
-    height: 35px;
-    /* margin-bottom: 1rem; */
-  }
-
-  .width-button-style {
-    /* max-width: 400px; */
-    width: 85px;
-    font-size: 13px; /* Kecil */
-    /* margin-bottom: 1rem; */
-  }
-
-  .width-button-style-top {
-    /* width: 105px; */
-    font-size: 13px;
-    /* padding: 10px; */
-  }
-
   .show-entries {
-    /* max-width: 400px; */
     width: 95px;
-    /* margin-bottom: 1rem; */
   }
 
   .pagination-container {
@@ -214,56 +193,50 @@
     display: flex; 
     align-items: center;
   }
+
+  ::v-deep(.vs__dropdown-toggle) {
+    height: 41.5px;
+  }
 </style>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import DataTable from '@/components/DataTableLocal.vue';
 import MessageModal from '@/components/ModalAlert.vue'; 
 import { Modal as BootstrapModal } from 'bootstrap';
-import { useRouter } from 'vue-router';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
-
+ 
 const router = useRouter();
+
+const route = useRoute();
+const editForm = ref({ ...route.params }); // Terima data dari params
 
 const titleMessage = ref('');
 const alertMessage = ref(''); 
-
-// Reactive data untuk menyimpan data pembelian masuk
-// const skuItemData = ref([]);
-const temporarySkuItems = ref([]);
-const skuItemNames = ref([]);
-const warehouseNames = ref([]);
-const vendorNames = ref([]);
-const optionsInventoryType = ref([]);
-const optionsStatus = ref([]);
-
-const selectedSkuItemNames = ref([]);
-// const selectedWarehouses = ref([]);
-// const selectedVendors = ref([]);
-// const selectedInventoryType = ref([]);
-// const selectedStatus = ref([]);
-
-// const filterPurchaseOrderNumber = ref('');
-// const filterUsername = ref('');
-// const filterInboundDate = ref('');
-// const filterAsn = ref('');
-// const filterCreateDate= ref('');
-// const filterSkuItemName = ref('');
-
-// const globalSearch = ref('');
 
 const currentPage = ref(1); // Halaman aktif
 // const totalPages = ref(0); // Total halaman
 const pageSize = ref(10); // Banyaknya data per halaman
 // const totalData = ref(0); // Jumlah total data dari API
 
-// Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
-// Ambil token dari localStorage
+// Ambil data dari localStorage
 const token = localStorage.getItem('access_token');
 const user_id = localStorage.getItem('user_id');
+
+// Daftar option
+const warehouses = ref([]);
+const vendors = ref([]);
+
+const temporarySkuItems = ref([]);
+const skuItemNames = ref([]);
+const warehouseNames = ref([]);
+const vendorNames = ref([]);
+
+const selectedSkuItemNames = ref([]);
 
 const columns = [
   // { title: 'ID', data: 'sku_item_id', sortable: true },
@@ -279,52 +252,25 @@ const columns = [
   { title: 'Harga Item SKU Saat Ini', data: 'price', sortable: true },
   { title: 'Kuantitas Diharapkan', data: 'expected_quantity', sortable: true },
   { title: 'Total Harga', data: 'total_price', sortable: true },
-  { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
+  // { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
   { title: 'Aksi', data: 'delete', sortable: false },
   // { title: 'Expected', data: 'delete', sortable: false },
 ];
 
+// Mengambil data pembelian masuk saat komponen dimuat
+onMounted(async () => {
+  await fetchWarehouses();
+  await fetchVendors();
+  await fetchSkuItemData();
+  await getPurchaseInboundById();
+});
 
+const currentSort = ref({ column: 'sku_item_id', order: 'DESC' });
 
-// const isEditModalOpen = ref(false)
-// const isEditMode = ref(false)
-
-const addForm = ref({
-  purchase_inbound_id: null,
-  warehouse_id: '',
-  purchase_order_number: '',
-  inventory_type: 'Usage',
-  vendor_id: '',
-  expected_inbound_date: '',
-  asn: '',
-  sku_item_id: [],
-  price: [],
-  expected_quantity: [],
-  status: 'Pending',
-})
-
-// Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
-// const openEditModal = (rowData) => {
-//   addForm.value = { ...rowData }
-//   isEditModalOpen.value = true
-// }
-
-// Fungsi untuk reset form saat modal ditutup
-const resetForm = () => {
-  addForm.value = {
-    purchase_inbound_id: null,
-    warehouse_id: '',
-    purchase_order_number: '',
-    inventory_type: 'Usage',
-    vendor_id: '',
-    expected_inbound_date: '',
-    asn: '',
-    sku_item_id: [],
-    price: [],
-    expected_quantity: [],
-    status: 'Pending',
-  }
-}
+const onSkuItemSelect = (selected) => {
+ selectedSkuItemNames.value = selected;
+ console.log('selected : ', selected)
+};
 
 const selectedSkuItem = ref(null) // Menyimpan data pembelian masuk yang dipilih untuk dihapus
 
@@ -347,6 +293,7 @@ const handleUpdateExpectedQuantity = (updatedRow) => {
   }
 };
 
+
 const onUpdatePrice = (updatedRow) => {
   console.log("Total Price Updated:", updatedRow);
   const item = temporarySkuItems.value.find(
@@ -361,28 +308,24 @@ const onUpdatePrice = (updatedRow) => {
   }
 };
 
+// const submitPurchaseInbound = async () => {
+//   try {
+//     const response = await axios.put(
+//       `http://localhost:3000/api/purchase_inbound/${editForm.value.purchase_inbound_id}`, 
+//       editForm.value
+//     );
+//     console.log('Data berhasil diperbarui:', response.data);
+//   } catch (error) {
+//     console.error('Gagal memperbarui data:', error);
+//   }
+// };
 
-// Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
-// const showEditModal = (rowData) => {
-//   selectedSkuItem.value = rowData
-//   addForm.value = { ...rowData } 
-//   isEditMode.value = true
-// }
-
-// Fungsi untuk membuka modal tambah dengan form kosong
-// const showAddModal = () => {
-//   resetForm() // Kosongkan form
-//   isEditMode.value = false
-//   // isEditModalOpen.value = true
-// }
-
-// Fungsi untuk submit tambah/edit
 const submitPurchaseInbound = async () => {
-  if(addForm.value.warehouse_id != '' &&
-     addForm.value.purchase_order_number != '' &&
-     addForm.value.inventory_type != '' &&
-     addForm.value.vendor_id != '' &&
-     addForm.value.expected_inbound_date != ''){
+  if(editForm.value.warehouse_id != '' &&
+     editForm.value.purchase_order_number != '' &&
+     editForm.value.inventory_type != '' &&
+     editForm.value.vendor_id != '' &&
+     editForm.value.expected_inbound_date != ''){
 
     if (temporarySkuItems.value.length == 0){
       titleMessage.value = `Gagal Ditambahkan`;
@@ -395,26 +338,31 @@ const submitPurchaseInbound = async () => {
         const skuItemCurrentPrice = temporarySkuItems.value.map((item) => item.price)
         const skuItemQuantity = temporarySkuItems.value.map((item) => item.expected_quantity)
 
-        addForm.value.sku_item_id = skuItemIds;
-        addForm.value.price = skuItemCurrentPrice;
-        addForm.value.expected_quantity = skuItemQuantity;
-        addForm.value.user_id = Number(user_id)
+
+        // editForm.value.purchase_inbound_id = null;
+        editForm.value.warehouse_id = Number(editForm.value.warehouse_id);
+        editForm.value.vendor_id = Number(editForm.value.vendor_id);
+        
+        editForm.value.sku_item_id = skuItemIds;
+        editForm.value.price = skuItemCurrentPrice;
+        editForm.value.expected_quantity = skuItemQuantity;
+        editForm.value.user_id = Number(user_id)
 
         console.log('skuItemCurrentPrice:', skuItemCurrentPrice)
         console.log('skuItemCurrentPrice:', skuItemQuantity)
-        console.log('addForm.value:', addForm.value)
-        console.log('addForm.value:', addForm.value.price)
+        console.log('editForm.value:', editForm.value)
+        console.log('editForm.value:', editForm.value.price)
 
         try {
-          const response = await axios.post('http://localhost:3000/api/purchase_inbound', addForm.value, {
-            headers: {
+          const response = await axios.put(`http://localhost:3000/api/purchase_inbound/${editForm.value.purchase_inbound_id}`, editForm.value, {
+          headers: {
               Authorization: `Bearer ${token}`,
             },
           })
-          console.log('Data berhasil ditambahkan:', response.data)
+          console.log('Data berhasil disimpan:', response.data)
           router.go(-1);
-          titleMessage.value = `Berhasil Ditambahkan`;
-          alertMessage.value = `Data pembelian masuk berhasil ditambahkan.`;
+          titleMessage.value = `Berhasil Disimpan`;
+          alertMessage.value = `Data pembelian masuk berhasil disimpan.`;
           const modal = new BootstrapModal(document.getElementById('message-alert'));
           modal.show();
         } catch (error) {
@@ -426,62 +374,10 @@ const submitPurchaseInbound = async () => {
   } 
 }
 
-// Mengambil data pembelian masuk saat komponen dimuat
-onMounted(async () => {
-  resetForm()
-  await fetchWarehouses();
-  await fetchVendors();
-  await fetchSkuItemData();
-  optionsInventoryType.value= ["Usage", "Storage"];
-  optionsStatus.value= ["Pending", "Receiving", "Done", "Canceled"];
-});
-
-const currentSort = ref({ column: 'sku_item_id', order: 'DESC' });
-
-// const onSort = ({ column, order }) => {
-//   currentSort.value = { column, order };
-//   fetchSkuItemData(); // Panggil ulang API dengan parameter sorting
-// };
-
-const onSkuItemSelect = (selected) => {
- selectedSkuItemNames.value = selected;
- console.log('selected : ', selected)
-  // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
-};
-
-// const onWarehouseSelect = (selected) => {
-//   selectedWarehouses.value = selected; // Perbarui nilai terpilih
-//   // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
-// };
-
-// const onVendorSelect = (selected) => {
-//   selectedVendors.value = selected; // Perbarui nilai terpilih
-//   // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
-// };
-
-// const onInventoryTypeSelect = (selected) => {
-//   selectedInventoryType.value = selected; // Perbarui nilai terpilih
-//   // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
-// };
-
-// const onStatusSelect = (selected) => {
-//   selectedStatus.value = selected; // Perbarui nilai terpilih
-//   // fetchSkuItemData(); // Panggil fungsi fetch dengan data terpilih
-// };
-
-
-// Daftar  
-const warehouses = ref([]);
-const vendors = ref([]);
-
-const clearSkuItemData = async () => {
-  selectedSkuItemNames.value = [];
-  temporarySkuItems.value = [];
-};
 
 // Fungsi untuk mengambil data jenis SKU dari backend
 const fetchSkuItemData = async () => {
-  console.log('addForm.value.vendor_id:', addForm.value.vendor_id)
+  console.log('editForm.value.vendor_id:', editForm.value.vendor_id)
   try {
     const response = await axios.get('http://localhost:3000/api/sku_item', {
       headers: {
@@ -491,7 +387,7 @@ const fetchSkuItemData = async () => {
         // sku_item_name: selectedSkuItemNames.value,
         // unit_name: selectedUnits.value.join(','),
         // vendor_name: selectedVendors.value.join(','),
-        vendor_id: addForm.value.vendor_id,
+        vendor_id: editForm.value.vendor_id,
         // sku_item_name: filterSkuItemName.value,
         // brand: filterBrand.value,
         // length: filterLength.value,
@@ -534,54 +430,38 @@ const fetchSkuItemData = async () => {
 };
 
 
-const submitTemporaryItemSKU = async () => {
-    console.error('selectedSkuItemNames.value :', selectedSkuItemNames.value)
-  if(selectedSkuItemNames.value.sku_item_name!=undefined){
-    const skuItem = selectedSkuItemNames.value;
-    if (skuItem) {
-      const exists = temporarySkuItems.value.some(
-        (item) => item.sku_item_id === skuItem.sku_item_id
-      );
-      if (!exists) {
-        temporarySkuItems.value.push({
-          ...skuItem,
-          sku_type_name: skuItem.skuType?.sku_type_name || 'N/A',
-          unit_name: skuItem.assetUnit?.unit_name || 'N/A',
-          vendor_name: skuItem.vendor?.vendor_name || 'N/A',
-          expected_quantity: 0,
-          price: skuItem.price || 0,
-          total_price: 0,
-        });
-      } else {
-        // alert('Item SKU sudah ada di tabel!');
-        titleMessage.value = `Gagal Menambahkan Item SKU`;
-        alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> sudah ada di tabel!`;
-        const modal = new BootstrapModal(document.getElementById('message-alert'));
-        modal.show(); 
-      }
-    } else {
-      // alert('Item SKU tidak ditemukan!');
-      titleMessage.value = `Gagal Menambahkan Item SKU`;
-      alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> tidak ditemukan!`;
-      const modal = new BootstrapModal(document.getElementById('message-alert'));
-      modal.show(); 
-    }
-  } else {
-    // alert('Item SKU tidak ditemukan!');
-    titleMessage.value = `Gagal Menambahkan Item SKU`;
-    alertMessage.value = `Item SKU tidak ditemukan!`;
-    const modal = new BootstrapModal(document.getElementById('message-alert'));
-    modal.show(); 
-  }
-}
+const getPurchaseInboundById = async () => {
+  console.log('editForm.value.vendor_id:', editForm.value.vendor_id)
+  try {
+    const response = await axios.get(`http://localhost:3000/api/purchase_inbound/${editForm.value.purchase_inbound_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
+    temporarySkuItems.value = response.data.items.map((purchase_inbound) => ({
+      ...purchase_inbound,
+      price: purchase_inbound.current_price, // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      sku_item_name: purchase_inbound.skuItem?.sku_item_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      sku_type_name: purchase_inbound.skuItem.skuType?.sku_type_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      unit_name: purchase_inbound.skuItem.assetUnit?.unit_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+      vendor_name: purchase_inbound.skuItem.vendor?.vendor_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    }))
 
-// Fungsi untuk mengganti halaman
-const updatePage = (page) => {
-  // if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    // fetchSkuItemData(); // Refresh data untuk halaman baru
-  // }
+    // skuItemNames.value = response.data.rows.map(item => item.sku_item_name);
+    // skuItemData.value = response.data.rows.map((sku_item) => ({
+    //   ...sku_item,
+    //   sku_type_name: sku_item.skuType?.sku_type_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    //   unit_name: sku_item.assetUnit?.unit_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    //   vendor_name: sku_item.vendor?.vendor_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
+    // }))
+    // totalData.value = response.data.sp.rowCount;
+    // totalPages.value = Math.ceil(response.data.sp.rowCount / pageSize.value);
+  } catch (error) {
+    console.error('Error fetching sku_item data:', error)
+    handleAuthError();
+    // alert('Lakukan login terlebih dulu') 
+  } 
 };
 
 
@@ -633,118 +513,63 @@ const fetchVendors = async () => {
   }
 };
 
-// const exportPurchaseInboundData = async () => {
-//   try {
-//     const response = await axios.get("http://localhost:3000/api/purchase_inbound/export", {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//       params: { 
-//         warehouse_name: selectedWarehouses.value.join(','),
-//         purchase_order_number: filterPurchaseOrderNumber.value,
-//         inventory_type: selectedInventoryType.value.join(','),
-//         vendor_name: selectedVendors.value.join(','),
-//         username: filterUsername.value,
-//         expected_inbound_date: filterInboundDate.value,
-//         asn: filterAsn.value,
-//         status: selectedStatus.value.join(','),
-//         create_date: filterCreateDate.value,
-//         search: globalSearch.value,
-//         order_by: currentSort.value.column,
-//         order_direction: currentSort.value.order,
-//        },
-//       responseType: "blob", // Blob untuk file biner
-//     });
+// Fungsi untuk mengganti halaman
+const updatePage = (page) => {
+  // if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    // fetchSkuItemData(); // Refresh data untuk halaman baru
+  // }
+};
 
-//     // Buat URL dari blob
-//     const url = window.URL.createObjectURL(new Blob([response.data]));
+const clearSkuItemData = async () => {
+  skuItemNames.value = [];
+  selectedSkuItemNames.value = [];
+  temporarySkuItems.value = [];
+  fetchSkuItemData();
+};
 
-//     // Buat link untuk download
-//     const link = document.createElement("a");
-//     link.href = url;
-//     link.setAttribute("download", "data_pembelian_masuk.xlsx"); // Nama file
-//     document.body.appendChild(link);
-//     link.click();
 
-//     // Hapus elemen link setelah selesai
-//     link.parentNode.removeChild(link);
-//   } catch (error) {
-//     console.error("Error exporting data:", error);
-//     // alert("Gagal mengekspor data. Silakan coba lagi.");
-//     titleMessage.value = `Gagal Ekspor`;
-//     alertMessage.value = `Gagal mengekspor data. Silakan coba lagi.`;
-//     const modal = new BootstrapModal(document.getElementById('message-alert'));
-//     modal.show();
-//   }
-// };
+const submitTemporaryItemSKU = async () => {
+    console.error('selectedSkuItemNames.value :', selectedSkuItemNames.value)
+  if(selectedSkuItemNames.value.sku_item_name!=undefined){
+    const skuItem = selectedSkuItemNames.value;
+    if (skuItem) {
+      const exists = temporarySkuItems.value.some(
+        (item) => item.sku_item_id === skuItem.sku_item_id
+      );
+      if (!exists) {
+        temporarySkuItems.value.push({
+          ...skuItem,
+          sku_type_name: skuItem.skuType?.sku_type_name || 'N/A',
+          unit_name: skuItem.assetUnit?.unit_name || 'N/A',
+          vendor_name: skuItem.vendor?.vendor_name || 'N/A',
+          expected_quantity: 0,
+          price: skuItem.price || 0,
+          total_price: 0,
+        });
+      } else {
+        // alert('Item SKU sudah ada di tabel!');
+        titleMessage.value = `Gagal Menambahkan Item SKU`;
+        alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> sudah ada di tabel!`;
+        const modal = new BootstrapModal(document.getElementById('message-alert'));
+        modal.show(); 
+      }
+    } else {
+      // alert('Item SKU tidak ditemukan!');
+      titleMessage.value = `Gagal Menambahkan Item SKU`;
+      alertMessage.value = `Item SKU <strong>${skuItem.sku_item_name}</strong> tidak ditemukan!`;
+      const modal = new BootstrapModal(document.getElementById('message-alert'));
+      modal.show(); 
+    }
+  } else {
+    // alert('Item SKU tidak ditemukan!');
+    titleMessage.value = `Gagal Menambahkan Item SKU`;
+    alertMessage.value = `Item SKU tidak ditemukan!`;
+    const modal = new BootstrapModal(document.getElementById('message-alert'));
+    modal.show(); 
+  }
+}
 
-// const uploadFilePurchaseInboundData = async () => {
-//   const fileInput = document.getElementById('upload-file');
-//   const file = fileInput.files[0];
-
-//   if (!file) {
-//     titleMessage.value = `Pilih File`;
-//     alertMessage.value = 'Silakan pilih file sebelum mengunggah.';
-//     const modal = new BootstrapModal(document.getElementById('message-alert'));
-//     modal.show();
-//     return;
-//   }
-
-//   const formData = new FormData();
-//   formData.append('file', file);
-
-//   try {
-//     const response = await axios.post('http://localhost:3000/api/purchase_inbound/mass-upload', formData, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         'Content-Type': 'multipart/form-data',
-//       },
-//     });
-//     titleMessage.value = `Berhasil`;
-//     alertMessage.value = `Upload berhasil, ${response.data.successCount} data pembelian masuk berhasil terupload`;
-//     const modal = new BootstrapModal(document.getElementById('message-alert'));
-//     modal.show();
- 
-//     fetchSkuItemData();
-//   } catch (error) {
-//     console.error('Gagal mengunggah file:', error);
-//     titleMessage.value = `Gagal Upload`;
-//     alertMessage.value = 'Gagal mengunggah file. Pastikan format file benar.';
-//     const modal = new BootstrapModal(document.getElementById('message-alert'));
-//     modal.show();
-//   }
-// };
-
-// const downloadTemplatePurchaseInboundData = async () => { 
-//   try {
-//     const response = await axios.get("http://localhost:3000/api/purchase_inbound/template/", {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//       responseType: "blob", // Blob untuk file biner
-//     });
-
-//     // Buat URL dari blob
-//     const url = window.URL.createObjectURL(new Blob([response.data]));
-
-//     // Buat link untuk download
-//     const link = document.createElement("a");
-//     link.href = url;
-//     link.setAttribute("download", "template_data_pembelian_masuk.xlsx"); // Nama file
-//     document.body.appendChild(link);
-//     link.click();
-
-//     // Hapus elemen link setelah selesai
-//     link.parentNode.removeChild(link);
-//   } catch (error) {
-//     console.error("Error downloading template:", error);
-//     // alert("Gagal mendownload template. Silakan coba lagi.");
-//     titleMessage.value = `Gagal Download`;
-//     alertMessage.value = `Gagal mendownload template. Silakan coba lagi.`;
-//     const modal = new BootstrapModal(document.getElementById('message-alert'));
-//     modal.show();
-//   }
-// }
 
 // Fungsi untuk menghapus data dari tabel sementara
 const removeTemporarySkuItem = () => {
@@ -753,34 +578,6 @@ const removeTemporarySkuItem = () => {
   );
 };
 
-// const confirmDelete = async () => {
-//   try {
-//     console.log('Id deleted:', selectedPurchaseInbound.value.purchase_inbound_id)
-//     await axios.delete(`http://localhost:3000/api/purchase_inbound/${selectedPurchaseInbound.value.purchase_inbound_id}`, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     // alert('Data Pembelian Masuk berhasil dihapus.') 
-//     titleMessage.value = `Berhasil Hapus`;
-//     alertMessage.value = `Data Pembelian Masuk <strong>${selectedPurchaseInbound.value.purchase_order_number}</strong> berhasil dihapus.`;
-//     const modal = new BootstrapModal(document.getElementById('message-alert'));
-//     modal.show();
-
-//     fetchSkuItemData()
-//   } catch (error) {
-//     if (error.response && error.response.status === 409) {
-//         titleMessage.value = `Gagal Menghapus`;
-//         alertMessage.value = `Data Pembelian Masuk <strong>${selectedPurchaseInbound.value.purchase_order_number}</strong> gagal dihapus. ${error.response.data.message}. Anda harus menghapus terlebih dahulu data yang terkait dengan Data Pembelian Masuk <strong>${selectedPurchaseInbound.value.purchase_order_number}</strong>.`;
-//         const modal = new BootstrapModal(document.getElementById('message-alert'));
-//         modal.show(); 
-//     } 
-//     else {
-//       console.error('Failed to delete purchase inbound data:', error) 
-//       handleAuthError();
-//     }
-//   }
-// }
 
 const handleAuthError = () => {
   // router.push({ name: 'auth.login' });
@@ -789,6 +586,7 @@ const handleAuthError = () => {
   const modal = new BootstrapModal(document.getElementById('message-alert'));
   modal.show();
 };
+
 
 watch(
   temporarySkuItems,

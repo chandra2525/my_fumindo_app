@@ -45,7 +45,7 @@
           </template>
           <template v-if="column.data === 'detail edit delete'">
             <button class="btn btn-success btn-sm me-2" @click="$emit('viewDetail', row)">Detail</button>
-            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)" data-bs-toggle="modal" data-bs-target="#form-confirmation">Edit</button>
+            <button class="btn btn-info btn-sm me-2" @click="$emit('edit', row)">Edit</button>
             <button class="btn btn-danger btn-sm delete-btn" @click="$emit('delete', row)" data-bs-toggle="modal" data-bs-target="#delete-confirmation">Hapus</button>
           </template>
           <!-- Input untuk kolom Status -->

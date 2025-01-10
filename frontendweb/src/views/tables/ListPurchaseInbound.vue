@@ -172,7 +172,7 @@
               :currentPage="currentPage"
               :pageSize="pageSize"  
               :idrow="purchase_inbound_id"
-              @edit="showEditModal"
+              @edit="navigateToEdit"
               @delete="showDeleteModal"
               @viewDetail="navigateToDetail"
               @sort="onSort"
@@ -203,7 +203,7 @@
               </nav>
             </div>
             
-            <div class="modal fade" id="form-confirmation" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true" @hide="resetForm">
+            <!-- <div class="modal fade" id="form-confirmation" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropPermissionLabel" aria-hidden="true" @hide="resetForm">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -251,7 +251,6 @@
                         <label for="asn" class="form-label">ASN</label> 
                         <input v-model="editForm.asn" maxlength="6" type="text" class="form-control" id="asn" />
                       </div>
-                      <!-- Tambahkan field lainnya sesuai dengan struktur data Pembelian Masuk -->
                       <button type="submit" class="btn btn-primary" :data-bs-dismiss="
                         editForm.warehouse_id&&editForm.purchase_order_number&&editForm.inventory_type&&editForm.vendor_id&&editForm.expected_inbound_date ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Pembelian Masuk' }}
                       </button>
@@ -259,7 +258,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <!-- Modal Konfirmasi Penghapusan -->
             <div class="modal fade" id="delete-confirmation" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
@@ -421,19 +420,19 @@ const columns = [
 
 
 // const isEditModalOpen = ref(false)
-const isEditMode = ref(false)
+// const isEditMode = ref(false)
 
-const editForm = ref({
-  purchase_inbound_id: null,
-  warehouse_id: '',
-  purchase_order_number: '',
-  inventory_type: 'Usage',
-  vendor_id: '',
-  expected_inbound_date: '',
-  asn: '',
-  status: 'Pending',
-  create_date: '',
-})
+// const editForm = ref({
+//   purchase_inbound_id: null,
+//   warehouse_id: '',
+//   purchase_order_number: '',
+//   inventory_type: 'Usage',
+//   vendor_id: '',
+//   expected_inbound_date: '',
+//   asn: '',
+//   status: 'Pending',
+//   create_date: '',
+// })
 
 // Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
 // const openEditModal = (rowData) => {
@@ -442,19 +441,19 @@ const editForm = ref({
 // }
 
 // Fungsi untuk reset form saat modal ditutup
-const resetForm = () => {
-  editForm.value = {
-    purchase_inbound_id: null,
-    warehouse_id: '',
-    purchase_order_number: '',
-    inventory_type: 'Usage',
-    vendor_id: '',
-    expected_inbound_date: '',
-    asn: '',
-    status: 'Pending',
-    create_date: '',
-  }
-}
+// const resetForm = () => {
+//   editForm.value = {
+//     purchase_inbound_id: null,
+//     warehouse_id: '',
+//     purchase_order_number: '',
+//     inventory_type: 'Usage',
+//     vendor_id: '',
+//     expected_inbound_date: '',
+//     asn: '',
+//     status: 'Pending',
+//     create_date: '',
+//   }
+// }
 
 const selectedPurchaseInbound = ref(null) // Menyimpan data pembelian masuk yang dipilih untuk dihapus
 
@@ -463,19 +462,43 @@ const showDeleteModal = (rowData) => {
   selectedPurchaseInbound.value = rowData
 }
 
+
+const navigateToEdit = (rowData) => {
+  router.push({ 
+    name: 'PurchaseInboundEdit', 
+    params: {
+      purchase_inbound_id: rowData.purchase_inbound_id,
+      warehouse_id: rowData.warehouse_id,
+      warehouse_name: rowData.warehouse_name,
+      purchase_order_number: rowData.purchase_order_number,
+      inventory_type: rowData.inventory_type,
+      vendor_id: rowData.vendor_id,
+      vendor_name: rowData.vendor_name,
+      username: rowData.username,
+      expected_inbound_date: rowData.expected_inbound_date,
+      actual_inbound_date: rowData.actual_inbound_date ?? '-',
+      inbound_by: rowData.inbound_by ?? '-',
+      asn: rowData.asn ?? '-',
+      status: rowData.status,
+      create_date: rowData.create_date2,
+    }
+  });
+};
+
+
 // Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
-const showEditModal = (rowData) => {
-  selectedPurchaseInbound.value = rowData
-  editForm.value = { ...rowData } 
-  isEditMode.value = true
-}
+// const showEditModal = (rowData) => {
+//   selectedPurchaseInbound.value = rowData
+//   editForm.value = { ...rowData } 
+//   isEditMode.value = true
+// }
 
 const navigateToAdd = () => {
-  router.push({ name: 'AddPurchaseInbound' });
+  router.push({ name: 'PurchaseInboundAdd' });
 };
 
 const navigateToDetail = (rowData) => {
-  router.push({ name: 'DetailPurchaseInbound', params: {
+  router.push({ name: 'PurchaseInboundDetail', params: {
     purchase_inbound_id: rowData.purchase_inbound_id,
     warehouse_id: rowData.warehouse_id,
     warehouse_name: rowData.warehouse_name,
@@ -502,38 +525,38 @@ const navigateToDetail = (rowData) => {
 // }
 
 // Fungsi untuk submit tambah/edit
-const submitPurchaseInbound = async () => {
-  console.log('Edit data submitted:', editForm.value)  
-  try {
-    if (isEditMode.value) {
-      // Update data jika dalam mode edit
-      const response = await axios.put(`http://localhost:3000/api/purchase_inbound/${editForm.value.purchase_inbound_id}`, editForm.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Data berhasil diupdate:', response.data)
-      fetchPurchaseInboundData()
-    }else {
-      // Tambahkan data baru jika dalam mode tambah
-      const response = await axios.post('http://localhost:3000/api/purchase_inbound', editForm.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Data berhasil ditambahkan:', response.data)
+// const submitPurchaseInbound = async () => {
+//   console.log('Edit data submitted:', editForm.value)  
+//   try {
+//     if (isEditMode.value) {
+//       // Update data jika dalam mode edit
+//       const response = await axios.put(`http://localhost:3000/api/purchase_inbound/${editForm.value.purchase_inbound_id}`, editForm.value, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       })
+//       console.log('Data berhasil diupdate:', response.data)
+//       fetchPurchaseInboundData()
+//     }else {
+//       // Tambahkan data baru jika dalam mode tambah
+//       const response = await axios.post('http://localhost:3000/api/purchase_inbound', editForm.value, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       })
+//       console.log('Data berhasil ditambahkan:', response.data)
 
-      fetchPurchaseInboundData()
-    }
-    // Tutup modal setelah berhasil update
-    // isEditModalOpen.value = false
-  } catch (error) {
-    console.error('Gagal mengupdate data:', error)
-    handleAuthError();
-    // alert('Lakukan login terlebih dulu') 
-  } 
-  // isEditModalOpen.value = false // Tutup modal setelah submit
-}
+//       fetchPurchaseInboundData()
+//     }
+//     // Tutup modal setelah berhasil update
+//     // isEditModalOpen.value = false
+//   } catch (error) {
+//     console.error('Gagal mengupdate data:', error)
+//     handleAuthError();
+//     // alert('Lakukan login terlebih dulu') 
+//   } 
+//   // isEditModalOpen.value = false // Tutup modal setelah submit
+// }
 
 // Mengambil data pembelian masuk saat komponen dimuat
 onMounted(async () => {

@@ -547,8 +547,8 @@ import MessageModal from '@/components/ModalAlert.vue';
 import { Modal as BootstrapModal } from 'bootstrap';
 // import vSelect from 'vue-select';
 // import 'vue-select/dist/vue-select.css';
-import { useRouter } from 'vue-router';
-const router = useRouter();
+// import { useRouter } from 'vue-router';
+// const router = useRouter();
 
 
 const activeTab = ref(0); // Tab yang aktif (default: tab pertama)
@@ -559,10 +559,18 @@ const tabs = [
  
 const setActiveTab = (index) => {
   activeTab.value = index; // Perbarui tab aktif
+  if(tabs.label == 'Pending SKU'){
+    typeSubmit.value='create';
+  }else{
+    typeSubmit.value='update';
+  }
 };
 
 const props = defineProps({
   purchase_inbound_id: {
+    type: String, required: true,
+  },
+  warehouse_id: {
     type: String, required: true,
   },
   warehouse_name: {
@@ -637,6 +645,9 @@ const actualInboundDate = ref(new Date().toISOString().split('T')[0]);
 const actualInboundItemDate = ref(new Date().toISOString().split('T')[0]);
 const inboundByName = ref(null);
 
+const actualQuantityBefore = ref(0);
+const typeSubmit = ref('create');
+
 // Definisikan kolom untuk DataTable, gunakan komponen Actions untuk kolom tindakan
 // Ambil token dari localStorage
 const token = localStorage.getItem('access_token');
@@ -710,6 +721,14 @@ const showEditModal = (rowData) => {
 
 // Mengambil data pembelian masuk saat komponen dimuat
 onMounted(async () => {
+  const modalReceived = document.getElementById('form-received');
+  // const bootstrapModal = new BootstrapModal(modalReceived);
+
+  // Tambahkan listener untuk event 'shown.bs.modal'
+  modalReceived.addEventListener('shown.bs.modal', () => {
+    getQuantityBefore();
+  });
+  
   statusPurchase.value = props.status;
   if (statusPurchase.value != 'Done') {
     columns.push({ title: 'Aksi', data: 'edit', sortable: false });
@@ -847,6 +866,9 @@ const fetchSkuItemReceivedData = async () => {
     if(totalData2.value == 0){
       statusPurchase.value = 'Pending';
     // }else if(statusPurchase.value == 'Done'){
+    }else if(totalData.value == 0 && statusPurchase.value != 'Done' ){
+      statusPurchase.value = 'Done';
+      completePurchaseInbound()
     }else if(totalData.value == 0){
       statusPurchase.value = 'Done';
     }else if(statusPurchase.value == 'Canceled'){
@@ -918,21 +940,64 @@ const getUserById = async () => {
 //   }
 // };
 
+const getQuantityBefore = async () => {
+  actualQuantityBefore.value = Number(editForm.value.actual_quantity);
+  console.log('Data update:', actualQuantityBefore.value)
+}
+
 
 const submitActualQuantity = async () => {
   console.log('Edit data submitted:', editForm.value)
   try {
     const response = await axios.put(`http://localhost:3000/api/purchase_inbound_item/${editForm.value.purchase_inbound_item_id}`,
-    {
-      actual_quantity: editForm.value.actual_quantity,
-      actual_inbound_item_date: actualInboundItemDate.value,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+      {
+        actual_quantity: editForm.value.actual_quantity,
+        actual_inbound_item_date: editForm.value.actual_quantity == 0 ? null : actualInboundItemDate.value,
       },
-    })
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
     console.log('Data berhasil diupdate:', response.data)
+
+    console.log('Data update terima warehouse_id:', props.warehouse_id)
+    console.log('Data update terima stock_quantity:', editForm.value.actual_quantity)
+    console.log('Data update terima quantity_before: ', actualQuantityBefore.value)
+    console.log('Data update terima type_submit:', typeSubmit.value)
+    const response2 = await axios.post(`http://localhost:3000/api/stock`,
+      {
+        sku_item_id: editForm.value.sku_item_id,
+        warehouse_id: Number(props.warehouse_id),
+        stock_quantity: editForm.value.actual_quantity,
+        quantity_before: actualQuantityBefore.value,
+        type_submit: typeSubmit.value,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    console.log('Data stock berhasil diupdate:', response2.data)
+
+
+    // if(editForm.value.actual_quantity == 0){
+    //   const response3 = await axios.delete(`http://localhost:3000/api/stock`,
+    //     {
+    //       sku_item_id: Number(editForm.value.sku_item_id),
+    //       warehouse_id: Number(props.warehouse_id),
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }
+    //   )
+    //   console.log('Data stock berhasil dihapus:', response3.data)
+    // }
+
     fetchSkuItemPendingData()
     fetchSkuItemReceivedData()
   }
@@ -976,7 +1041,7 @@ const completePurchaseInbound = async () => {
       },
     })
     console.log('Data berhasil diupdate:', response.data)
-    router.go(-1);
+    // router.go(-1);
     titleMessage.value = `Berhasil Diselesaikan`;
     alertMessage.value = `Pembelian masuk berhasil diselesaikan.`;
     const modal = new BootstrapModal(document.getElementById('message-alert'));
