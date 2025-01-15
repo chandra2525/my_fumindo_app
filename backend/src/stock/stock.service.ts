@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Stock } from './stock.model'; 
-import { SkuItem } from '../skuItem/skuItem.model'; 
+import { SkuItem } from '../skuItem/skuItem.model';
+import { Branch } from '../branch/branch.model';
 import { Warehouse } from '../warehouse/warehouse.model';
+import { PurchaseInboundItem } from '../purchaseInboundItem/purchaseInboundItem.model';
 import { Op } from 'sequelize';
 import * as ExcelJS from 'exceljs'; 
 
@@ -11,10 +13,13 @@ export class StockService {
   constructor(
     @InjectModel(Stock)
     private readonly stockModel: typeof Stock,
+    @InjectModel(PurchaseInboundItem)
+    private readonly purchaseInboundItemModel: typeof PurchaseInboundItem,
   ) {}
 
 
   async findAll(
+    branchNames?: string[],
     warehouseNames?: string[],
     stock_quantity?: string,
     consumeds?: string[], 
@@ -45,6 +50,7 @@ export class StockService {
         { '$skuItem.consumed$': { [Op.iLike]: `%${search}%` } },
         { '$skuItem.sku_item_name$': { [Op.iLike]: `%${search}%` } },
         { '$skuItem.brand$': { [Op.iLike]: `%${search}%` } },
+        { '$branch.branch_name$': { [Op.iLike]: `%${search}%` } },
         { '$warehouse.warehouse_name$': { [Op.iLike]: `%${search}%` } },
         // Gunakan pencarian angka eksak untuk kolom ini
         ...(isNaN(Number(search))
@@ -65,6 +71,13 @@ export class StockService {
   
     const { rows, count } = await this.stockModel.findAndCountAll({
       include: [
+        {
+          model: Branch, // Model Branch
+          attributes: ['branch_name'], // Hanya mengambil branch_name
+          where: branchNames?.length
+          ? { branch_name: { [Op.in]: branchNames } } // Filter branch_name jika diberikan
+          : undefined, // Jika tidak ada filter branch_name, jangan tambahkan where
+        },
         {
           model: Warehouse, // Model Warehouse
           attributes: ['warehouse_name'], // Hanya mengambil warehouse_name
@@ -123,7 +136,9 @@ export class StockService {
         },
       ],
       where: whereClause,
-      order: orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
+      order: orderBy === 'branch_name' // Cek jika sorting berdasarkan branch_name
+      ? [[{ model: Branch, as: 'branch' }, 'branch_name', orderDirection]] // Sorting berdasarkan branch_name
+      : orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
       ? [[{ model: Warehouse, as: 'warehouse' }, 'warehouse_name', orderDirection]] // Sorting berdasarkan warehouse_name
       : orderBy === 'consumed' // Cek jika sorting berdasarkan consumed
       ? [[{ model: SkuItem, as: 'skuItem' }, 'consumed', orderDirection]] // Sorting berdasarkan consumed
@@ -158,7 +173,9 @@ export class StockService {
 
 
   async addOrUpdateStock(
+    purchaseInboundId: number = 0,
     skuItemId: number,
+    branchId: number,
     warehouseId: number,
     stockQuantity: number,
     quantityBefore: number,
@@ -178,22 +195,74 @@ export class StockService {
         existingStock.stock_quantity -= quantityBefore;
         existingStock.stock_quantity += stockQuantity;
         await existingStock.save();
-      }else{
+      } else if (typeSubmit == 'delete'){
+        existingStock.stock_quantity -= quantityBefore;
+        await existingStock.save();
+        // Hapus data dari tabel purchase_inbound_item sesuai id
+        await this.purchaseInboundItemModel.destroy({
+          where: [{ purchase_inbound_id: purchaseInboundId }, { sku_item_id: skuItemId }],
+        });
+      } else {
         // Jika ada, tambahkan stock_quantity
         existingStock.stock_quantity += stockQuantity;
         await existingStock.save();
       }
-      return { message: `Stock updated. SKU Item ID ${skuItemId} and Warehouse ID ${warehouseId} now has ${existingStock.stock_quantity} quantity.` };
+      return { message: `Stock updated. SKU Item ID ${skuItemId}, Branch ID ${branchId} and Warehouse ID ${warehouseId} now has ${existingStock.stock_quantity} quantity.` };
     } else {
       // Jika tidak ada, buat record baru
       await this.stockModel.create({
         sku_item_id: skuItemId,
+        branch_id: branchId,
         warehouse_id: warehouseId,
         stock_quantity: stockQuantity,
       });
 
       return { message: `Stock created. SKU Item ID ${skuItemId} and Warehouse ID ${warehouseId} added with ${stockQuantity} quantity.` };
     }
+  }
+
+
+  async updateBatchStock(updateDto: any): Promise<any> {
+    const { purchase_inbound_id, sku_item_id, total_actual_quantity, warehouse_id } = updateDto;
+
+    // Validate input
+    if (
+      !Array.isArray(sku_item_id) ||
+      !Array.isArray(total_actual_quantity) ||
+      sku_item_id.length !== total_actual_quantity.length
+    ) {
+      throw new BadRequestException('Invalid input data');
+    }
+
+    // Loop and update records
+    const updates = [];
+    for (let i = 0; i < sku_item_id.length; i++) {
+      const skuId = sku_item_id[i];
+      const actualQuantity = total_actual_quantity[i];
+
+      const existingStock = await this.stockModel.findOne({
+        where: [{ sku_item_id: skuId }, { warehouse_id: warehouse_id }],
+      });
+
+      // Hapus data dari tabel purchase_inbound_item sesuai id
+      // await this.purchaseInboundItemModel.destroy({
+      //   where: [{ purchase_inbound_id: purchase_inbound_id }, { sku_item_id: skuId }],
+      // });
+      
+      const [updated] = await this.stockModel.update(
+        { stock_quantity: existingStock.stock_quantity - actualQuantity },
+        {
+          where: {
+            sku_item_id: skuId,
+            warehouse_id,
+          },
+        },
+      );
+
+      updates.push({ sku_item_id: skuId, updated });
+    }
+
+    return { message: 'Batch update completed', updates };
   }
 
 
@@ -210,6 +279,7 @@ export class StockService {
 
 
   async exportStock(
+    branchNames?: string[],
     warehouseNames?: string[],
     stock_quantity?: string,
     consumeds?: string[], 
@@ -229,7 +299,8 @@ export class StockService {
     // Header Excel
     const headers = [      
       { header: 'No', key: 'no', width: 5 },
-      { header: 'Dari Gudang', key: 'warehouse_name', width: 32 },
+      { header: 'Cabang', key: 'branch_name', width: 32 },
+      { header: 'Gudang', key: 'warehouse_name', width: 32 },
       { header: 'Nama Item SKU', key: 'sku_item_name', width: 32 },
       { header: 'Jumlah Stok', key: 'stock_quantity', width: 32 },
       { header: 'Merek', key: 'brand', width: 15 },
@@ -276,6 +347,7 @@ export class StockService {
         { '$skuItem.consumed$': { [Op.iLike]: `%${search}%` } },
         { '$skuItem.sku_item_name$': { [Op.iLike]: `%${search}%` } },
         { '$skuItem.brand$': { [Op.iLike]: `%${search}%` } },
+        { '$branch.branch_name$': { [Op.iLike]: `%${search}%` } },
         { '$warehouse.warehouse_name$': { [Op.iLike]: `%${search}%` } },
         // Gunakan pencarian angka eksak untuk kolom ini
         ...(isNaN(Number(search))
@@ -293,6 +365,13 @@ export class StockService {
     // Ambil data SkuItem dari database
     const stocks = await this.stockModel.findAll({
       include: [
+        {
+          model: Branch, // Model Branch
+          attributes: ['branch_name'], // Hanya mengambil branch_name
+          where: branchNames?.length
+          ? { branch_name: { [Op.in]: branchNames } } // Filter branch_name jika diberikan
+          : undefined, // Jika tidak ada filter branch_name, jangan tambahkan where
+        },
         {
           model: Warehouse, // Model Warehouse
           attributes: ['warehouse_name'], // Hanya mengambil warehouse_name
@@ -351,7 +430,9 @@ export class StockService {
         },
       ],
       where: whereClause,
-      order: orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
+      order: orderBy === 'branch_name' // Cek jika sorting berdasarkan branch_name
+      ? [[{ model: Branch, as: 'branch' }, 'branch_name', orderDirection]] // Sorting berdasarkan branch_name
+      : orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
       ? [[{ model: Warehouse, as: 'warehouse' }, 'warehouse_name', orderDirection]] // Sorting berdasarkan warehouse_name
       : orderBy === 'consumed' // Cek jika sorting berdasarkan consumed
       ? [[{ model: SkuItem, as: 'skuItem' }, 'consumed', orderDirection]] // Sorting berdasarkan consumed
@@ -368,13 +449,14 @@ export class StockService {
       : orderBy === 'weight' // Cek jika sorting berdasarkan weight
       ? [[{ model: SkuItem, as: 'skuItem' }, 'weight', orderDirection]] // Sorting berdasarkan weight
       : [[orderBy, orderDirection]], // Sorting default (stock_id)
-      attributes: ['stock_id', 'sku_item_id', 'warehouse_id', 'stock_quantity'], // Kolom yang akan diambil 
+      attributes: ['stock_id', 'sku_item_id', 'branch_id', 'warehouse_id', 'stock_quantity'], // Kolom yang akan diambil 
     });
   
     // Tambahkan data ke worksheet
     stocks.forEach((stocks, index) => {
       worksheet.addRow({
         no: index + 1,
+        branch_name: stocks.branch?.branch_name || '',
         warehouse_name: stocks.warehouse?.warehouse_name || '',
         sku_item_name: stocks.skuItem?.sku_item_name || '',
         stock_quantity: stocks.stock_quantity,

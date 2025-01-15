@@ -8,8 +8,8 @@ import { PurchaseInboundItem } from './purchaseInboundItem.model';
 export class PurchaseInboundItemController {
   constructor(private readonly purchaseInboundItemService: PurchaseInboundItemService) {}
 
-  @Get()
-  async findAll(
+  @Get('pending')
+  async findAllPending(
     @Query('purchase_inbound_id') purchase_inbound_id?: string,
     @Query('consumed') consumeds?: string,
     @Query('sku_item_name') sku_item_name?: string,
@@ -29,7 +29,7 @@ export class PurchaseInboundItemController {
   ) {
     // Pisahkan string menjadi array
     const consumedArray = consumeds ? consumeds.split(',') : []; 
-    return this.purchaseInboundItemService.findAll(
+    return this.purchaseInboundItemService.findAllPending(
       purchase_inbound_id,
       consumedArray,
       sku_item_name,
@@ -50,9 +50,59 @@ export class PurchaseInboundItemController {
   }
   
 
+  @Get('received')
+  async findAllReceived(
+    @Query('purchase_inbound_id') purchase_inbound_id?: string,
+    @Query('consumed') consumeds?: string,
+    @Query('sku_item_name') sku_item_name?: string,
+    @Query('brand') brand?: string,
+    @Query('length') length?: string,
+    @Query('width') width?: string,
+    @Query('height') height?: string,
+    @Query('weight') weight?: string,
+    @Query('price') price?: string,
+    @Query('expected_quantity') expected_quantity?: string,
+    @Query('actual_quantity') actual_quantity?: string,
+    @Query('order_by') orderBy?: string,
+    @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
+    @Query('search') search?: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ) {
+    // Pisahkan string menjadi array
+    const consumedArray = consumeds ? consumeds.split(',') : []; 
+    return this.purchaseInboundItemService.findAllReceived(
+      purchase_inbound_id,
+      consumedArray,
+      sku_item_name,
+      brand,
+      length,
+      width,
+      height,
+      weight,
+      price,
+      expected_quantity,
+      actual_quantity,
+      orderBy,
+      orderDirection,
+      search,
+      page,
+      pageSize,
+    );
+  }
+
+
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<PurchaseInboundItem> {
     return this.purchaseInboundItemService.findOne(id);
+  }
+
+
+  @Post()
+  async create(@Body() data: any): Promise<{ message: string }> {
+    await this.purchaseInboundItemService.create(data);
+    // return { message: 'Staff created successfully' };
+    return { message: data };
   }
 
 

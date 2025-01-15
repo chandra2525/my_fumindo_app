@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UploadedFile, UseInterceptors, Res, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards, UploadedFile, UseInterceptors, Res, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SkuItemService } from './skuItem.service';
 import { SkuItem } from './skuItem.model';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('sku_item')
 @UseGuards(JwtAuthGuard)
@@ -122,18 +124,57 @@ export class SkuItemController {
  
 
   @Post()
-  async create(@Body() data: any): Promise<{ message: string }> {
-    await this.skuItemService.create(data);
-    // return { message: 'Staff created successfully' };
-    return { message: data };
+  @UseInterceptors(
+    FileInterceptor('sku_item_image', {
+      storage: diskStorage({
+        destination: './qr_code_image',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async create(@Body() body, @UploadedFile() file, @Res() res) {
+    const data = { ...body, sku_item_image: file?.filename || null };
+    const newItem = await this.skuItemService.create(data);
+    return res.status(HttpStatus.CREATED).json(newItem);
   }
+
+
+  // @Post()
+  // async create(@Body() data: any): Promise<{ message: string }> {
+  //   await this.skuItemService.create(data);
+  //   // return { message: 'Staff created successfully' };
+  //   return { message: data };
+  // }
 
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() data: any): Promise<{ message: string }> {
-    await this.skuItemService.update(id, data);
-    return { message: data };
+  @UseInterceptors(
+    FileInterceptor('sku_item_image', {
+      storage: diskStorage({
+        destination: './qr_code_image',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async update(@Param('id') id: number, @Body() body, @UploadedFile() file, @Res() res) {
+    const data = { ...body, sku_item_image: file?.filename || null };
+    const updatedItem = await this.skuItemService.update(id, data);
+    return updatedItem
+      ? res.status(HttpStatus.OK).json(updatedItem)
+      : res.status(HttpStatus.NOT_FOUND).json({ message: 'Item not found' });
   }
+  
+  // @Put(':id')
+  // async update(@Param('id') id: number, @Body() data: any): Promise<{ message: string }> {
+  //   await this.skuItemService.update(id, data);
+  //   return { message: data };
+  // }
 
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<{ message: string }> {

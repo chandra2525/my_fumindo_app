@@ -11,7 +11,8 @@ export class StockController {
 
   @Get()
   async findAll(
-    @Query('warehouse_name') warehouseNames?: string,
+    @Query('branch_name') branchName?: string,
+    @Query('warehouse_name') warehouseName?: string,
     @Query('stock_quantity') stock_quantity?: string,
     @Query('consumed') consumeds?: string,
     @Query('sku_item_name') sku_item_name?: string,
@@ -27,10 +28,12 @@ export class StockController {
     @Query('pageSize') pageSize: number = 10,
   ) {
     // Pisahkan string menjadi array
-    const warehouseArray = warehouseNames ? warehouseNames.split(',') : [];
+    const branchNameArray = branchName ? branchName.split(',') : [];
+    const warehouseNameArray = warehouseName ? warehouseName.split(',') : [];
     const consumedArray = consumeds ? consumeds.split(',') : [];
     return this.stockService.findAll(
-      warehouseArray,
+      branchNameArray,
+      warehouseNameArray,
       stock_quantity,
       consumedArray,
       sku_item_name,
@@ -51,6 +54,7 @@ export class StockController {
   @Get('export')
   async exportStock(
     @Res() res: Response,
+    @Query('branch_name') branchName?: string,
     @Query('warehouse_name') warehouseName?: string,
     @Query('stock_quantity') stock_quantity?: string,
     @Query('consumed') consumed?: string,
@@ -65,9 +69,12 @@ export class StockController {
     @Query('order_direction') orderDirection?: 'ASC' | 'DESC',
     @Query('search') search?: string,
   ) {
-    const warehouseNameArray = warehouseName ? warehouseName.split(',') : []; // Pisahkan string menjadi array
-    const consumedArray = consumed ? consumed.split(',') : []; // Pisahkan string menjadi array
+    // Pisahkan string menjadi array
+    const branchNameArray = branchName ? branchName.split(',') : [];
+    const warehouseNameArray = warehouseName ? warehouseName.split(',') : [];
+    const consumedArray = consumed ? consumed.split(',') : [];
     const buffer = await this.stockService.exportStock(
+      branchNameArray,
       warehouseNameArray,
       stock_quantity,
       consumedArray,
@@ -91,13 +98,15 @@ export class StockController {
 
   @Post()
   async addOrUpdateStock(
+    @Body('purchase_inbound_id') purchaseInboundId: number,
     @Body('sku_item_id') skuItemId: number,
+    @Body('branch_id') branchId: number,
     @Body('warehouse_id') warehouseId: number,
     @Body('stock_quantity') stockQuantity: number,
     @Body('quantity_before') quantityBefore: number,
     @Body('type_submit') typeSubmit: string,
   ): Promise<{ message: string }> {
-    return this.stockService.addOrUpdateStock(skuItemId, warehouseId, stockQuantity, quantityBefore, typeSubmit);
+    return this.stockService.addOrUpdateStock(purchaseInboundId, skuItemId, branchId, warehouseId, stockQuantity, quantityBefore, typeSubmit);
   }
 
   @Delete()
@@ -108,4 +117,8 @@ export class StockController {
     return this.stockService.remove(skuItemId, warehouseId);
   }
   
+  @Put('update-batch')
+  async updateBatchStock(@Body() updateDto: any) {
+    return await this.stockService.updateBatchStock(updateDto);
+  }
 }

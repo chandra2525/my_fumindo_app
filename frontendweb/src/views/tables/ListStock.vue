@@ -28,6 +28,16 @@
               ></v-select>
             </div> -->
             <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter cabang</label>
+              <v-select 
+                :options="branchNames" 
+                v-model="selectedBranches" 
+                multiple  
+                @update:modelValue="onBranchSelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+            <div class="col-sm-6">
               <label for="filter" class="form-label">Filter gudang</label>
               <v-select 
                 :options="warehouseNames" 
@@ -37,25 +47,19 @@
                 class="filter-style"
               ></v-select>
             </div>
+          </div>
+
+          <div class="row mb-2">
             <div class="col-sm-6">
                 <label for="validationCustomUsername01" class="form-label">Filter nama item SKU</label>
                 <div class="input-group has-validation">
                   <input type="text" v-model="filterSkuItemName" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
                 </div>
             </div>
-          </div>
-
-          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter jumlah stok</label>
               <div class="input-group has-validation">
                 <input type="number" v-model="filterStockQuantity" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter merek</label>
-              <div class="input-group has-validation">
-                <input type="text" v-model="filterBrand" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
             <!-- <div class="col-sm-6">
@@ -88,35 +92,41 @@
               </div>
             </div> -->
             <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter panjang</label>
-              <div class="input-group has-validation"> 
-                <input type="number" v-model="filterLength" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              <label for="validationCustomUsername01" class="form-label">Filter merek</label>
+              <div class="input-group has-validation">
+                <input type="text" v-model="filterBrand" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
             <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter lebar</label>
-              <div class="input-group has-validation">
-                <input type="number" v-model="filterWidth" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              <label for="validationCustomUsername01" class="form-label">Filter panjang</label>
+              <div class="input-group has-validation"> 
+                <input type="number" v-model="filterLength" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
           </div>
 
           <div class="row mb-2">
             <div class="col-sm-6">
+              <label for="validationCustomUsername01" class="form-label">Filter lebar</label>
+              <div class="input-group has-validation">
+                <input type="number" v-model="filterWidth" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
+            </div>
+            <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter tinggi</label>
               <div class="input-group has-validation">
                 <input type="number" v-model="filterHeight" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
+          </div>
+
+          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter berat</label>
               <div class="input-group has-validation">
                 <input type="number" v-model="filterWeight" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
-          </div>
-
-          <div class="row mb-3">
             <div class="col-sm-6">
               <label for="filter" class="form-label">Filter SKU dapat dikonsumsi</label>
               <v-select 
@@ -127,6 +137,15 @@
                 class="filter-style"
               ></v-select>
             </div>
+            <!-- <div class="col-sm-6">
+              <label for="validationCustomUsername01" class="form-label">Filter harga</label>
+              <div class="input-group has-validation">
+                <input type="text" v-model="filterPrice" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
+              </div>
+            </div> -->
+          </div>
+
+          <div class="row mb-4">
             <div class="col-sm-6">
               <!-- Input Pencarian Global -->
               <div class="search-container">
@@ -141,17 +160,8 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="col-sm-6">
-              <label for="validationCustomUsername01" class="form-label">Filter harga</label>
-              <div class="input-group has-validation">
-                <input type="text" v-model="filterPrice" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
-              </div>
-            </div> -->
-          </div>
-
-          <div class="row mb-4">
              <div class="col-sm-4">
-              <!-- <label for="validationCustomUsername01" class="form-label text-white">I</label> -->
+              <label for="validationCustomUsername01" class="form-label text-white">I</label>
               <div class="input-group has-validation">
                 <button
                   class="btn btn-primary width-button-style filter-style" 
@@ -275,11 +285,13 @@ const stockData = ref([]);
 // const skuTypeNames = ref([]);
 // const unitNames = ref([]);
 // const vendorNames = ref([]);
+const branchNames = ref([]);
 const warehouseNames = ref([]);
 const optionsConsume = ref([]);
 // const selectedSkuTypes = ref([]);
 // const selectedUnits = ref([]);
 // const selectedVendors = ref([]);
+const selectedBranches = ref([]);
 const selectedWarehouses = ref([]);
 const selectedConsume = ref([]);
 const filterSkuItemName = ref('');
@@ -305,7 +317,8 @@ const token = localStorage.getItem('access_token');
 const columns = [
   // { title: 'ID', data: 'stock_id', sortable: true },
   // { title: 'Dari Jenis SKU', data: 'sku_type_name', sortable: true },
-  { title: 'Dari Gudang', data: 'warehouse_name', sortable: true },
+  { title: 'Cabang', data: 'branch_name', sortable: true },
+  { title: 'Gudang', data: 'warehouse_name', sortable: true },
   { title: 'Nama Item SKU', data: 'sku_item_name', sortable: true },
   { title: 'Jumlah Stok', data: 'stock_quantity', sortable: true },
   { title: 'Merek', data: 'brand', sortable: true },
@@ -326,6 +339,7 @@ onMounted(async () => {
   // await fetchUnits();
   // await fetchVendors();
   await fetchStockData();
+  await fetchBranchNames();
   await fetchWarehouses();
   optionsConsume.value= ["Iya", "Tidak"];
 });
@@ -351,6 +365,11 @@ const onSort = ({ column, order }) => {
 //   selectedVendors.value = selected; // Perbarui nilai terpilih
 //   // fetchStockData(); // Panggil fungsi fetch dengan data terpilih
 // };
+
+const onBranchSelect = (selected) => {
+  selectedBranches.value = selected; // Perbarui nilai terpilih
+  // fetchStockData(); // Panggil fungsi fetch dengan data terpilih
+};
 
 const onWarehouseSelect = (selected) => {
   selectedWarehouses.value = selected; // Perbarui nilai terpilih
@@ -381,6 +400,7 @@ const fetchStockData = async () => {
         // sku_type_name: selectedSkuTypes.value.join(','),
         // unit_name: selectedUnits.value.join(','),
         // vendor_name: selectedVendors.value.join(','),
+        branch_name: selectedBranches.value.join(','),
         warehouse_name: selectedWarehouses.value.join(','),
         sku_item_name: filterSkuItemName.value,
         brand: filterBrand.value,
@@ -414,6 +434,7 @@ const fetchStockData = async () => {
       height: stock.skuItem?.height || '0',
       weight: stock.skuItem?.weight || '0',
       consumed: stock.skuItem?.consumed || '0',
+      branch_name: stock.branch?.branch_name || '-',
       warehouse_name: stock.warehouse?.warehouse_name || '-',
     }))
     totalData.value = response.data.sp.rowCount;
@@ -434,6 +455,26 @@ const changePage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
     fetchStockData(); // Refresh data untuk halaman baru
+  }
+};
+
+
+const fetchBranchNames = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/branch/filterBranchName', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    branchNames.value = response.data; // Simpan daftar nama cabang
+  } catch (error) {
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching branch names:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -541,6 +582,7 @@ const exportStockData = async () => {
         // sku_type_name: selectedSkuTypes.value.join(','),
         // unit_name: selectedUnits.value.join(','),
         // vendor_name: selectedVendors.value.join(','),
+        branch_name: selectedBranches.value.join(','),
         warehouse_name: selectedWarehouses.value.join(','),
         sku_item_name: filterSkuItemName.value,
         brand: filterBrand.value,

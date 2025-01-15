@@ -2,9 +2,20 @@
   <div class="row">
     <div class="col-sm-12">
       <div class="card">
-        <div class="card-header d-flex justify-content-between">
+        <div class="card-header">
           <div class="header-title">
-            <h4 class="card-title">Edit Pembelian Masuk</h4>
+            <div class="row mb-2">
+              <div class="col-sm-10">
+                <h4 class="card-title">Edit Pembelian Masuk</h4>
+              </div>
+              <div class="col-sm-2">
+                <h5 v-if="editForm.status === 'Pending'" class="text-warning">{{ editForm.status }}</h5>
+                <h5 v-else-if="editForm.status === 'Receiving'" class="text-info">{{ editForm.status }}</h5>
+                <h5 v-else-if="editForm.status === 'Done'" class="text-success">{{ editForm.status }}</h5>
+                <h5 v-else-if="editForm.status === 'Canceled'" class="text-danger">{{ editForm.status }}</h5>
+                <h5 v-else>{{ editForm.status }}</h5>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card-body">
@@ -14,7 +25,7 @@
             <div class="row mb-3">
               <div class="col-sm-4"> 
                 <label for="input-205" class="form-label">Pilih Gudang<span class="text-primary">*</span></label>
-                <select id="warehouse_id" v-model="editForm.warehouse_id" class="form-select" required>
+                <select id="warehouse_id" v-model="editForm.warehouse_id" class="form-select" :disabled="editForm.status != 'Pending'" required>
                   <option value="" disabled>Silahkan pilih gudang</option>
                   <option v-for="warehouse in warehouses" :key="warehouse.warehouse_id" :value="warehouse.warehouse_id">
                     {{ warehouse.warehouse_name }}
@@ -38,7 +49,7 @@
             <div class="row mb-3">
               <div class="col-sm-4"> 
                 <label for="input-205" class="form-label">Pilih Vendor<span class="text-primary">*</span></label>
-                <select id="vendor_id" v-model="editForm.vendor_id" class="form-select" @change="clearSkuItemData" required>
+                <select id="vendor_id" v-model="editForm.vendor_id" class="form-select" @change="clearSkuItemData" :disabled="editForm.status != 'Pending'" required>
                   <option value="" disabled>Silahkan pilih vendor</option>
                   <option v-for="vendor in vendors" :key="vendor.vendor_id" :value="vendor.vendor_id">
                     {{ vendor.vendor_name }}
@@ -153,7 +164,7 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <p>Apa kamu yakin ingin menghapus data Item SKU <strong>{{ selectedSkuItem?.sku_item_name }}</strong>?</p>
+                      <p>Apa kamu yakin ingin menghapus data Item SKU <strong>{{ selectedSkuItem?.sku_item_name }}</strong>? {{selectedSkuItem?.total_actual_quantity != 0 ? 'Apabila Anda menghapusnya maka pada stok akan dikurangi sebanyak ' + selectedSkuItem?.total_actual_quantity + ' kuantitas' :''}}</p>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -162,6 +173,26 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Modal Konfirmasi Simpan -->
+              <div class="modal fade" id="save-confirmation" tabindex="-1" aria-labelledby="saveConfirmationLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="saveConfirmationLabel">Konfirmasi Simpan</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p>Apa kamu yakin ingin menyimpan pembelian ini? Apabila Anda menyimpan maka semua Item yang diterima sebelumnya akan menjadi 0.</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submitPurchaseInbound">Simpan</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Memanggil Modal  -->
               <MessageModal :message="alertMessage" :title="titleMessage"/>
             </div>
@@ -170,7 +201,8 @@
             <!-- <button type="submit" class="btn btn-primary" :data-bs-dismiss="
               editForm.warehouse_id&&editForm.purchase_order_number&&editForm.inventory_type&&editForm.vendor_id&&editForm.expected_inbound_date ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Pembelian Masuk' }}
             </button> -->
-            <button type="submit" @click="submitPurchaseInbound" class="btn btn-primary">Simpan</button>
+            <!-- <button type="submit" @click="submitPurchaseInbound" class="btn btn-primary">Simpan</button> -->
+            <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#save-confirmation">Simpan</button>
           </form>
         </div>
       </div>
@@ -214,6 +246,12 @@ const router = useRouter();
 
 const route = useRoute();
 const editForm = ref({ ...route.params }); // Terima data dari params
+const sendForm = ref({
+  purchase_inbound_id: 0,
+  sku_item_id: [],
+  total_actual_quantity: [],
+  warehouse_id: 0
+})
 
 const titleMessage = ref('');
 const alertMessage = ref(''); 
@@ -236,10 +274,12 @@ const skuItemNames = ref([]);
 const warehouseNames = ref([]);
 const vendorNames = ref([]);
 
+const totalData = ref(0); // Jumlah total data dari API
 const selectedSkuItemNames = ref([]);
 
 const columns = [
   // { title: 'ID', data: 'sku_item_id', sortable: true },
+  // { title: 'ID', data: 'purchase_inbound_item_id', sortable: true },
   { title: 'Jenis SKU', data: 'sku_type_name', sortable: true },
   { title: 'Nama Item SKU', data: 'sku_item_name', sortable: true },
   // { title: 'Merek', data: 'brand', sortable: true },
@@ -252,6 +292,7 @@ const columns = [
   { title: 'Harga Item SKU Saat Ini', data: 'price', sortable: true },
   { title: 'Kuantitas Diharapkan', data: 'expected_quantity', sortable: true },
   { title: 'Total Harga', data: 'total_price', sortable: true },
+  { title: 'Kuantitas Diterima', data: 'total_actual_quantity', sortable: true },
   // { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
   { title: 'Aksi', data: 'delete', sortable: false },
   // { title: 'Expected', data: 'delete', sortable: false },
@@ -357,6 +398,8 @@ const submitPurchaseInbound = async () => {
             },
           })
           console.log('Data berhasil disimpan:', response.data)
+          updateStockBatch();  
+          autoUpdateStatus(); 
           router.go(-1);
           handleErrorMessage(`Berhasil Disimpan`,`Data pembelian masuk berhasil disimpan.`,'error');
         } catch (error) {
@@ -370,7 +413,36 @@ const submitPurchaseInbound = async () => {
         }
       }
     }
-  } 
+  }
+}
+
+
+const updateStockBatch = async () => {
+  try {
+    //Kirim yang diperlukan untuk update secara masal ke tabel stock mengurangi stock_quantity tersebut where sku_item_id dan warehouse_id
+    const skuItemId = temporarySkuItems.value.map(item => item.sku_item_id)
+    const skuItemTotalActual = temporarySkuItems.value.map((item) => item.total_actual_quantity)
+    sendForm.value.purchase_inbound_id = Number(editForm.value.purchase_inbound_id);
+    sendForm.value.sku_item_id = skuItemId;
+    sendForm.value.total_actual_quantity = skuItemTotalActual;
+    sendForm.value.warehouse_id = Number(editForm.value.warehouse_id);
+    console.log('Data update stock batch:', sendForm.value)
+
+    const response = await axios.put(`http://localhost:3000/api/stock/update-batch`, sendForm.value, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log('Data update stock batch berhasil diupdate:', response.data)
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    // else {
+    //   console.error('Gagal menyimpan data:', error)
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
+  }
 }
 
 
@@ -450,8 +522,6 @@ const getPurchaseInboundById = async () => {
       unit_name: purchase_inbound.skuItem.assetUnit?.unit_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
       vendor_name: purchase_inbound.skuItem.vendor?.vendor_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
     }))
-
-    // skuItemNames.value = response.data.rows.map(item => item.sku_item_name);
     // skuItemData.value = response.data.rows.map((sku_item) => ({
     //   ...sku_item,
     //   sku_type_name: sku_item.skuType?.sku_type_name || 'N/A', // Ambil nama nama atau tampilkan "N/A" jika tidak ada
@@ -575,11 +645,80 @@ const submitTemporaryItemSKU = async () => {
 
 
 // Fungsi untuk menghapus data dari tabel sementara
-const removeTemporarySkuItem = () => {
+const removeTemporarySkuItem = async () => {
+  autoUpdateStock();
   temporarySkuItems.value = temporarySkuItems.value.filter(
     (item) => item.sku_item_id !== selectedSkuItem.value.sku_item_id
   );
+  
+  totalData.value = temporarySkuItems.value.filter(tempo => tempo.total_actual_quantity != 0).length;
+  if(totalData.value == 0){
+    editForm.value.status = 'Pending';
+    autoUpdateStatus();
+  }
 };
+
+
+const autoUpdateStock = async () => {
+  try {
+    console.log('Data update terima purchase_inbound_id:', editForm.value.purchase_inbound_id)
+    console.log('Data update terima sku_item_id:', selectedSkuItem.value.sku_item_id)
+    console.log('Data update terima branch_id:', editForm.value.branch_id)
+    console.log('Data update terima warehouse_id:', editForm.value.warehouse_id)
+    console.log('Data update terima stock_quantity:', 0)
+    console.log('Data update terima quantity_before: ', selectedSkuItem.value.total_actual_quantity)
+    console.log('Data update terima type_submit:', 'update')
+    const response2 = await axios.post(`http://localhost:3000/api/stock`,
+      {
+        purchase_inbound_id: editForm.value.purchase_inbound_id,
+        sku_item_id: selectedSkuItem.value.sku_item_id,
+        branch_id: editForm.value.branch_id,
+        warehouse_id: Number(editForm.value.warehouse_id),
+        stock_quantity: 0,
+        quantity_before: selectedSkuItem.value.total_actual_quantity,
+        type_submit: 'delete',
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    console.log('Data stock berhasil diupdate:', response2.data)
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal menyimpan data:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
+  }
+}
+
+
+const autoUpdateStatus = async () => {
+  try {
+    const response = await axios.put(`http://localhost:3000/api/purchase_inbound/updateStatus/${editForm.value.purchase_inbound_id}`,
+    {
+      status: 'Pending',
+    }, 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log('Data berhasil diupdate:', response.data)
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    } 
+    else {
+      console.error('Gagal mengupdate data status:', error)
+      handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    }
+  }
+}
 
 
 const handleErrorMessage = (title, alert, type) => {

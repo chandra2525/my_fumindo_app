@@ -1,5 +1,6 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { SkuItem } from '../skuItem/skuItem.model';
+import { Branch } from '../branch/branch.model';
 import { Warehouse } from '../warehouse/warehouse.model';
 
 // @Table
@@ -14,7 +15,11 @@ export class Stock  extends Model<Stock > {
   @ForeignKey(() => SkuItem)
   @Column({ type: DataType.INTEGER, allowNull: true })
   sku_item_id: number;
-    
+
+  @ForeignKey(() => Branch)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  branch_id: number;
+
   @ForeignKey(() => Warehouse)
   @Column({ type: DataType.INTEGER, allowNull: true })
   warehouse_id: number;
@@ -24,6 +29,9 @@ export class Stock  extends Model<Stock > {
 
   @BelongsTo(() => SkuItem)
   skuItem: SkuItem;
+
+  @BelongsTo(() => Branch)
+  branch: Branch;
 
   @BelongsTo(() => Warehouse)
   warehouse: Warehouse;

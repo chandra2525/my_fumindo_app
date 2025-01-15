@@ -36,6 +36,16 @@
         <div class="card-body">
           <div class="row mb-2">
             <div class="col-sm-6">
+              <label for="filter" class="form-label">Filter cabang</label>
+              <v-select 
+                :options="branchNames" 
+                v-model="selectedBranches" 
+                multiple  
+                @update:modelValue="onBranchSelect" 
+                class="filter-style"
+              ></v-select>
+            </div>
+            <div class="col-sm-6">
               <label for="filter" class="form-label">Filter gudang</label>
               <v-select 
                 :options="warehouseNames" 
@@ -45,15 +55,15 @@
                 class="filter-style"
               ></v-select>
             </div>
+          </div>
+
+          <div class="row mb-2">
             <div class="col-sm-6">
                 <label for="validationCustomUsername01" class="form-label">Filter nomor pesanan pembelian</label>
                 <div class="input-group has-validation">
                   <input type="text" v-model="filterPurchaseOrderNumber" class="form-control" style="height: 35px" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
                 </div>
             </div> 
-          </div>
-
-          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="filter" class="form-label">Filter jenis aset</label>
               <v-select 
@@ -64,6 +74,9 @@
                 class="filter-style"
               ></v-select>
             </div>
+          </div>
+          
+          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="filter" class="form-label">Filter vendor</label>
               <v-select 
@@ -74,39 +87,36 @@
                 class="filter-style"
               ></v-select>
             </div>
-          </div>
-          
-          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter pembuat</label>
               <div class="input-group has-validation">
                 <input type="text" v-model="filterUsername" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
+          </div>
+
+          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter tanggal masuk</label>
               <div class="input-group has-validation">
                 <input type="text" v-model="filterInboundDate" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
-          </div>
-
-          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter ASN</label>
               <div class="input-group has-validation">
                 <input type="text" v-model="filterAsn" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
+          </div>
+
+          <div class="row mb-2">
             <div class="col-sm-6">
               <label for="validationCustomUsername01" class="form-label">Filter tanggal pembuatan</label>
               <div class="input-group has-validation">
                 <input type="text" v-model="filterCreateDate" class="form-control filter-style" id="validationCustomUsername01" aria-describedby="inputGroupPrepend"/>
               </div>
             </div>
-          </div>
-
-          <div class="row mb-3">
             <div class="col-sm-6">
               <label for="filter" class="form-label">Filter status</label>
               <v-select 
@@ -117,6 +127,9 @@
                 class="filter-style"
               ></v-select>
             </div>
+          </div>
+
+          <div class="row mb-4">
             <div class="col-sm-6">
               <!-- Input Pencarian Global -->
               <div class="search-container">
@@ -131,10 +144,8 @@
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="row mb-4">
-             <div class="col-sm-4">
+            <div class="col-sm-4">
+              <label for="validationCustomUsername01" class="form-label text-white">I</label>
               <div class="input-group has-validation">
                 <button
                   class="btn btn-primary width-button-style filter-style" 
@@ -377,10 +388,12 @@ const alertMessage = ref('');
 
 // Reactive data untuk menyimpan data pembelian masuk
 const purchaseInboundData = ref([]);
+const branchNames = ref([]);
 const warehouseNames = ref([]);
 const vendorNames = ref([]);
 const optionsInventoryType = ref([]);
 const optionsStatus = ref([]);
+const selectedBranches = ref([]);
 const selectedWarehouses = ref([]);
 const selectedVendors = ref([]);
 const selectedInventoryType = ref([]);
@@ -405,10 +418,11 @@ const token = localStorage.getItem('access_token');
 
 const columns = [
   // { title: 'ID', data: 'purchase_inbound_id', sortable: true },
-  { title: 'Dari Gudang', data: 'warehouse_name', sortable: true },
+  { title: 'Cabang', data: 'branch_name', sortable: true },
+  { title: 'Gudang', data: 'warehouse_name', sortable: true },
   { title: 'Nomor Pesanan Pembelian', data: 'purchase_order_number', sortable: true },
   { title: 'Jenis Aset', data: 'inventory_type', sortable: true },
-  { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
+  { title: 'Vendor', data: 'vendor_name', sortable: true },
   { title: 'Pembuat', data: 'username', sortable: true },
   { title: 'Tanggal Masuk', data: 'expected_inbound_date', sortable: true },
   { title: 'ASN', data: 'asn', sortable: true },
@@ -468,6 +482,7 @@ const navigateToEdit = (rowData) => {
     name: 'PurchaseInboundEdit', 
     params: {
       purchase_inbound_id: rowData.purchase_inbound_id,
+      branch_id: rowData.branch_id,
       warehouse_id: rowData.warehouse_id,
       warehouse_name: rowData.warehouse_name,
       purchase_order_number: rowData.purchase_order_number,
@@ -500,6 +515,8 @@ const navigateToAdd = () => {
 const navigateToDetail = (rowData) => {
   router.push({ name: 'PurchaseInboundDetail', params: {
     purchase_inbound_id: rowData.purchase_inbound_id,
+    branch_id: rowData.branch_id,
+    branch_name: rowData.branch_name,
     warehouse_id: rowData.warehouse_id,
     warehouse_name: rowData.warehouse_name,
     // warehouse_name: selectedWarehouses.value,
@@ -561,6 +578,7 @@ const navigateToDetail = (rowData) => {
 // Mengambil data pembelian masuk saat komponen dimuat
 onMounted(async () => {
   await fetchPurchaseInboundData();
+  await fetchBranchNames();
   await fetchWarehouses();
   await fetchVendors();
   optionsInventoryType.value= ["Usage", "Storage"];
@@ -572,6 +590,11 @@ const currentSort = ref({ column: 'purchase_inbound_id', order: 'DESC' });
 const onSort = ({ column, order }) => {
   currentSort.value = { column, order };
   fetchPurchaseInboundData(); // Panggil ulang API dengan parameter sorting
+};
+
+const onBranchSelect = (selected) => {
+  selectedBranches.value = selected; // Perbarui nilai terpilih
+  // fetchPurchaseInboundData(); // Panggil fungsi fetch dengan data terpilih
 };
 
 const onWarehouseSelect = (selected) => {
@@ -608,6 +631,7 @@ const fetchPurchaseInboundData = async () => {
         Authorization: `Bearer ${token}`,
       },
       params: {
+        branch_name: selectedBranches.value.join(','),
         warehouse_name: selectedWarehouses.value.join(','),
         purchase_order_number: filterPurchaseOrderNumber.value,
         inventory_type: selectedInventoryType.value.join(','),
@@ -628,6 +652,8 @@ const fetchPurchaseInboundData = async () => {
     })
     purchaseInboundData.value = response.data.rows.map((purchase_inbound) => ({
       ...purchase_inbound,
+      branch_id: purchase_inbound.warehouse?.branch_id || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
+      branch_name: purchase_inbound.warehouse.branch?.branch_name || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
       warehouse_name: purchase_inbound.warehouse?.warehouse_name || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
       username: purchase_inbound.user?.username || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
       vendor_name: purchase_inbound.vendor?.vendor_name || '-', // Ambil nama nama atau tampilkan "-" jika tidak ada
@@ -652,6 +678,26 @@ const changePage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
     fetchPurchaseInboundData(); // Refresh data untuk halaman baru
+  }
+};
+
+
+const fetchBranchNames = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/branch/filterBranchName', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    branchNames.value = response.data; // Simpan daftar nama cabang
+  } catch (error) {
+    // if (error.response && error.response.status === 401) {
+    //   handleErrorMessage(`Sesi Login Berakhir`,`Untuk keamanan harap login kembali, karena Anda telah melewati 24 jam setelah login terakhir`,'session');
+    // } 
+    // else {
+      console.error('Error fetching branch names:', error);
+    //   handleErrorMessage(`Koneksi Gagal`,`Cek koneksi internet Anda.`,'error');
+    // }
   }
 };
 
@@ -718,7 +764,8 @@ const exportPurchaseInboundData = async () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: { 
+      params: {
+        branch_name: selectedBranches.value.join(','),
         warehouse_name: selectedWarehouses.value.join(','),
         purchase_order_number: filterPurchaseOrderNumber.value,
         inventory_type: selectedInventoryType.value.join(','),

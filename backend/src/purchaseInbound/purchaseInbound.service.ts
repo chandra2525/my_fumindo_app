@@ -9,6 +9,7 @@ import { User } from '../users/users.model';
 import { SkuItem } from '../skuItem/skuItem.model';
 import { AssetUnit } from '../assetUnit/assetUnit.model';
 import { SkuType } from '../skuType/skuType.model';
+import { Branch } from '../branch/branch.model';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 
@@ -23,6 +24,7 @@ export class PurchaseInboundService {
 
 
   async findAll(
+    branchNames?: string[],
     warehouseNames?: string[],
     inventoryTypes?: string[],
     vendorNames?: string[],
@@ -84,6 +86,7 @@ export class PurchaseInboundService {
           ),
           { [Op.iLike]: `%${search}%` }
         ),
+        { '$warehouse.branch.branch_name$': { [Op.iLike]: `%${search}%` } },
         { '$warehouse.warehouse_name$': { [Op.iLike]: `%${search}%` } },
         { '$vendor.vendor_name$': { [Op.iLike]: `%${search}%` } },
         { '$user.username$': { [Op.iLike]: `%${search}%` } },
@@ -98,7 +101,20 @@ export class PurchaseInboundService {
       include: [
         {
           model: Warehouse, // Model Warehouse
-          attributes: ['warehouse_name'], // Hanya mengambil warehouse_name
+          as: 'warehouse',
+          attributes: ['warehouse_name','branch_id'], // Hanya mengambil warehouse_name
+          required: true, // Hanya ambil data jika relasi `warehouse` cocok
+          include: [
+            {
+              model: Branch, // Model Branch
+              as: 'branch', 
+              attributes: ['branch_name'], // Hanya mengambil branch_name
+              required: true, // Hanya ambil data jika relasi `branch` cocok
+              where: branchNames?.length
+              ? { branch_name: { [Op.in]: branchNames } } // Filter branch_name jika diberikan
+              : undefined, // Jika tidak ada filter branch_name, jangan tambahkan where
+            },
+          ],
           where: warehouseNames?.length
           ? { warehouse_name: { [Op.in]: warehouseNames } } // Filter warehouse_name jika diberikan
           : undefined, // Jika tidak ada filter warehouse_name, jangan tambahkan where
@@ -119,7 +135,9 @@ export class PurchaseInboundService {
         },
       ],
       where: whereClause,
-      order: orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
+      order: orderBy === 'branch_name' // Cek jika sorting berdasarkan branch_name
+      ? [[{ model: Warehouse, as: 'warehouse' }, { model: Branch, as: 'branch' }, 'branch_name', orderDirection]] // Sorting berdasarkan branch_name
+      : orderBy === 'warehouse_name' // Cek jika sorting berdasarkan warehouse_name
       ? [[{ model: Warehouse, as: 'warehouse' }, 'warehouse_name', orderDirection]] // Sorting berdasarkan warehouse_name
       : orderBy === 'vendor_name' // Cek jika sorting berdasarkan vendor_name
       ? [[{ model: Vendor, as: 'vendor' }, 'vendor_name', orderDirection]] // Sorting berdasarkan vendor_name
@@ -142,56 +160,71 @@ export class PurchaseInboundService {
     return { rows, sp };
   }
 
-  async findOne(id: number): Promise<PurchaseInbound> {
-    return this.purchaseInboundModel.findByPk(id, {
-      // attributes: [
-      //   'purchase_inbound_id',
-      //   'warehouse_id',
-      //   'vendor_id',
-      //   'user_id',
-      //   'inventory_type',
-      //   'purchase_order_number',
-      // ],
+  async findOne(id: number): Promise<any> {
+    // Query utama untuk PurchaseInbound tanpa agregasi
+    const purchaseInbound = await this.purchaseInboundModel.findByPk(id, {
       include: [
         {
-          model: Warehouse, // Model Warehouse
+          model: Warehouse,
           attributes: ['warehouse_name'], // Hanya mengambil warehouse_name
         },
         {
-          model: Vendor, // Model Vendor
+          model: Vendor,
           attributes: ['vendor_name'], // Hanya mengambil vendor_name
         },
         {
-          model: User, // Model User
+          model: User,
           attributes: ['username'], // Hanya mengambil username
         },
-        {
-        model: PurchaseInboundItem, // Model PurchaseInboundItem
-        attributes: ['purchase_inbound_id', 'sku_item_id', 'current_price', 'expected_quantity'], // Field dari PurchaseInboundItem
-        include: [
-          {
-            model: SkuItem, // Model SkuItem
-            attributes: ['sku_item_name'], // Hanya mengambil sku_item_name
-            include: [
-              {
-                model: SkuType, // Model SkuType
-                attributes: ['sku_type_name'], // Hanya mengambil sku_type_name
-              },
-              {
-                model: AssetUnit, // Model AssetUnit
-                attributes: ['unit_name'], // Hanya mengambil unit_name
-              },
-              {
-                model: Vendor, // Model Vendor
-                attributes: ['vendor_name'], // Hanya mengambil vendor_name
-              },
-            ],
-          },
-        ],
-      },
       ],
     });
+  
+    if (!purchaseInbound) {
+      throw new Error('PurchaseInbound not found');
+    }
+  
+    // Query untuk PurchaseInboundItem dengan agregasi berdasarkan sku_item_id
+    const purchaseInboundItems = await this.purchaseInboundItemModel.findAll({
+      attributes: [
+        'PurchaseInboundItem.sku_item_id',
+        [Sequelize.fn('MIN', Sequelize.col('purchase_inbound_id')), 'purchase_inbound_id'],
+        [Sequelize.fn('MIN', Sequelize.col('PurchaseInboundItem.sku_item_id')), 'sku_item_id'],
+        [Sequelize.fn('MIN', Sequelize.col('current_price')), 'current_price'],
+        [Sequelize.fn('MIN', Sequelize.col('expected_quantity')), 'expected_quantity'],
+        [Sequelize.fn('SUM', Sequelize.col('actual_quantity')), 'total_actual_quantity'],
+      ],
+      where: { purchase_inbound_id: id },
+      // group: ['sku_item_id'],
+      group: ['PurchaseInboundItem.sku_item_id', 'skuItem.sku_item_id', 'skuItem->skuType.sku_type_id', 'skuItem->assetUnit.unit_id', 'skuItem->vendor.vendor_id'],
+      include: [
+        {
+          model: SkuItem,
+          attributes: ['sku_item_name'],
+          include: [
+            {
+              model: SkuType,
+              attributes: ['sku_type_name'],
+            },
+            {
+              model: AssetUnit,
+              attributes: ['unit_name'],
+            },
+            {
+              model: Vendor,
+              attributes: ['vendor_name'],
+            },
+          ],
+        },
+      ],
+    });
+  
+    // Menggabungkan data PurchaseInbound dengan hasil agregasi
+    return {
+      ...purchaseInbound.toJSON(),
+      items: purchaseInboundItems,
+    };
   }
+  
   
   async create(data: CreatePurchaseInboundDto): Promise<{ purchaseInbound: PurchaseInbound; items: PurchaseInboundItem[] }> {
     const { sku_item_id, price, expected_quantity, ...inboundData } = data;

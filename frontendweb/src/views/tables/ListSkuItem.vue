@@ -301,9 +301,9 @@
                         </select>
                       </div>
                       <div class="mb-3"> 
-                        <label for="price" class="form-label">Harga</label>
+                        <label for="price" class="form-label">Harga<span class="text-primary">*</span></label>
                         <div class="input-group">
-                          <input v-model="editForm.price" maxlength="4" type="number" class="form-control" id="price" />
+                          <input v-model="editForm.price" maxlength="4" type="number" class="form-control" id="price" required/>
                           <span class="input-group-text">Rp</span>
                         </div>
                       </div>
@@ -320,6 +320,17 @@
                         <input v-model="editForm.consumed" maxlength="4" type="text" class="form-control" id="consumed" required/>
                       </div> -->
                       <!-- Tambahkan field lainnya sesuai dengan struktur data Item SKU -->
+                      <div class="mb-3">
+                        <label class="form-label" for="sku_item_image">Gambar</label>
+                        <input @change="handleFileUpload" type="file" ref="imagePath" accept="image/*" class="form-control mb-2" id="sku_item_image" />
+                        <img
+                          :src="`http://localhost:3000/qr_code_image/${editForm.sku_item_image}`"
+                          alt="Image"
+                          width="100"
+                          height="100"
+                          v-if="editForm.sku_item_image"
+                        />
+                      </div>
                       <button type="submit" class="btn btn-primary" :data-bs-dismiss="
                         editForm.sku_type_id&&editForm.unit_id&&editForm.vendor_id&&editForm.sku_item_name&&editForm.consumed&&editForm.price ? 'modal' : null">{{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Item SKU' }}
                       </button>
@@ -464,6 +475,8 @@ const filterPrice = ref('');
 // const filterConsumed = ref('');
 const globalSearch = ref('');
 
+const imagePath = ref('');
+
 const currentPage = ref(1); // Halaman aktif
 const totalPages = ref(0); // Total halaman
 const pageSize = ref(10); // Banyaknya data per halaman
@@ -486,6 +499,8 @@ const columns = [
   { title: 'Dari Vendor', data: 'vendor_name', sortable: true },
   { title: 'Harga', data: 'price', sortable: true },
   { title: 'SKU dapat Dikonsumsi', data: 'consumed', sortable: true },
+  { title: 'Gambar', data: 'sku_item_image', sortable: true },
+  { title: 'QR Code', data: 'sku_item_id', sortable: true },
   { title: 'Aksi', data: 'actions', sortable: false },
 ];
 
@@ -507,6 +522,7 @@ const editForm = ref({
   weight: '0',
   price: '0',
   consumed: 'Iya',
+  sku_item_image: null,
 })
 
 // Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
@@ -530,6 +546,7 @@ const resetForm = () => {
     weight: '0',
     price: '0',
     consumed: 'Iya',
+    sku_item_image: null,
   }
 }
 
@@ -542,6 +559,9 @@ const showDeleteModal = (rowData) => {
 
 // Fungsi untuk membuka modal edit dan mengisi form dengan data yang dipilih
 const showEditModal = (rowData) => {
+  if (imagePath.value) {
+    imagePath.value.value = null;
+  }
   selectedSkuItem.value = rowData
   editForm.value = { ...rowData } 
   isEditMode.value = true
@@ -557,13 +577,29 @@ const showAddModal = () => {
 // Fungsi untuk submit tambah/edit
 const submitSkuItem = async () => {
   console.log('Edit data submitted:', editForm.value)
-  
-  console.log('Edit data height:', editForm.value.height)
-  
+
+  const formData = new FormData();
+  formData.append("sku_type_id", editForm.value.sku_type_id);
+  formData.append("unit_id", editForm.value.unit_id);
+  formData.append("vendor_id", editForm.value.vendor_id);
+  formData.append("sku_item_name", editForm.value.sku_item_name);
+  formData.append("brand", editForm.value.brand);
+  formData.append("length", editForm.value.length);
+  formData.append("width", editForm.value.width);
+  formData.append("height", editForm.value.height);
+  formData.append("weight", editForm.value.weight);
+  formData.append("price", editForm.value.price);
+  formData.append("consumed", editForm.value.consumed);
+  if (imagePath.value) {
+    editForm.value.sku_item_image = imagePath.value; 
+    formData.append("sku_item_image", editForm.value.sku_item_image);
+  } 
+  console.log('file image:', editForm.value.sku_item_image)
+
   try {
     if (isEditMode.value) {
       // Update data jika dalam mode edit
-      const response = await axios.put(`http://localhost:3000/api/sku_item/${editForm.value.sku_item_id}`, editForm.value, {
+      const response = await axios.put(`http://localhost:3000/api/sku_item/${editForm.value.sku_item_id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -572,7 +608,7 @@ const submitSkuItem = async () => {
       fetchSkuItemData()
     }else {
       // Tambahkan data baru jika dalam mode tambah
-      const response = await axios.post('http://localhost:3000/api/sku_item', editForm.value, {
+      const response = await axios.post('http://localhost:3000/api/sku_item', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -930,5 +966,10 @@ const validateDecimalInput = async (field) => {
   }
 };
  
+
+const handleFileUpload = (event) => {
+  imagePath.value = event.target.files[0];
+  console.log('file image:', imagePath.value)
+};
 
 </script>

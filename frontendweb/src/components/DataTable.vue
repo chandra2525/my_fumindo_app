@@ -56,7 +56,43 @@
             <div v-else-if="row.status === 'Canceled'" class="text-danger">{{ row.status }}</div>
             <div v-else>{{ row.status }}</div>
           </template>
+
+          <template v-if="column.data === 'sku_item_image'">
+            <img
+              :src="`http://localhost:3000/qr_code_image/${row.sku_item_image}`"
+              alt="Image"
+              width="100"
+              height="100"
+              v-if="row.sku_item_image"
+            />
+          </template>
           
+          <template v-if="column.data === 'sku_item_id'">
+            <div :id="'qr-code-' + row.sku_item_id" style="text-align: center;">
+              <img :src="'https://api.qrserver.com/v1/create-qr-code/?data=' + row.sku_item_id + '&size=100x100'" alt="QR Code" />
+            </div>
+            <br/>
+
+            <div class="d-flex align-items-center list-user-action justify-content-between">
+              <a @click="printQRCode(row.sku_item_id.toString())" class="btn btn-sm btn-icon btn-success mx-1 width-style" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-original-title ="Edit">
+                <span class="btn-inner">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                </span>
+              </a>
+              <a @click="downloadQRCode(row.sku_item_id.toString())" class="btn btn-sm btn-icon btn-success mx-1 width-style" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-original-title ="Delete">
+                <span class="btn-inner">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </template>
+
           <!-- Harga Sekarang dihitung otomatis -->
           <div v-else-if="column.data === 'current_price'">
             {{ row.current_price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}
@@ -95,6 +131,7 @@ import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css'
 import 'datatables.net-bs5/js/dataTables.bootstrap5.min.js'
 import 'datatables.net-bs5'
 import $ from 'jquery'
+import axios from 'axios';
 
 const props = defineProps({
   data: Array,
@@ -213,6 +250,58 @@ onBeforeUnmount(() => {
     dataTable.destroy()
   }
 })
+
+
+const token = localStorage.getItem('access_token');
+
+const downloadQRCode = async (skuItemId) => { 
+  try {
+    const response = await axios.get('http://localhost:3000/api/qr_code/download_image', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        data: skuItemId,
+        size: 200, 
+      },
+    responseType: 'blob', // Ensure the response is in blob format
+    })
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'qrcode.png'); // Set the default file name
+    document.body.appendChild(link);
+    link.click();
+    console.log('QR Code berhasil didownload:', response.data)
+  } catch (error) {
+    console.error('Error fetching sku_item data:', error)
+  }
+};
+
+const printQRCode = async (skuItemId) => { 
+  try {
+    const response = await axios.get('http://localhost:3000/api/qr_code/download_pdf', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        data: skuItemId,
+        // size: 200, 
+      },
+      responseType: 'blob', // Ensure the response is in blob format
+    }) 
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'qrcode.pdf'); // Set the default file name
+    document.body.appendChild(link);
+    link.click();
+    console.log('QR Code berhasil diprint menjadi pdf:', response.data)
+  } catch (error) {
+    console.error('Error fetching sku_item data:', error)
+  }
+};
+
 </script>
 
 <style scoped lang="css">
@@ -220,6 +309,12 @@ onBeforeUnmount(() => {
   display: grid;
   flex-wrap: wrap;
 } */
+.width-style {
+  /* max-width: 400px; */
+  width: 43px;
+  /* margin-bottom: 1rem; */
+}
+
 .sortable {
   cursor: pointer;
 }

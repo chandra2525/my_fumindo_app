@@ -142,7 +142,7 @@ export class SkuItemService {
  
 
   async create(data: any): Promise<void> {
-    const { sku_type_id, unit_id, vendor_id, sku_item_name, brand, length, width, height, weight, price, consumed } = data;
+    const { sku_type_id, unit_id, vendor_id, sku_item_name, brand, length, width, height, weight, price, consumed, sku_item_image } = data;
  
     await this.skuItemModel.create({
       sku_type_id,
@@ -156,32 +156,52 @@ export class SkuItemService {
       weight,
       price,
       consumed,
+      sku_item_image,
     });
   
   }
  
 
-  async update(skuItemId: number, data: any): Promise<void> {
-    const { sku_type_id, unit_id, vendor_id, sku_item_name, brand, length, width, height, weight, price, consumed } = data;
+  async update(skuItemId: number, data: any){
+    const { sku_type_id, unit_id, vendor_id, sku_item_name, brand, length, width, height, weight, price, consumed, sku_item_image } = data;
 
     const skuItem = await this.skuItemModel.findByPk(skuItemId);
     if (!skuItem) {
       throw new NotFoundException('SkuItem not found');
-    }
-    
-    await skuItem.update({ 
-      sku_type_id,
-      unit_id,
-      vendor_id,
-      sku_item_name,
-      brand,
-      length,
-      width,
-      height,
-      weight,
-      price,
-      consumed,
-    });
+    } 
+    console.log('Uploaded File:', sku_item_image); // Log file details
+    return skuItem.update(
+      sku_item_image == null ?
+      { 
+        sku_type_id,
+        unit_id,
+        vendor_id,
+        sku_item_name,
+        brand,
+        length,
+        width,
+        height,
+        weight,
+        price,
+        consumed,
+      }:
+      { 
+        sku_type_id,
+        unit_id,
+        vendor_id,
+        sku_item_name,
+        brand,
+        length,
+        width,
+        height,
+        weight,
+        price,
+        consumed,
+        sku_item_image,
+      }
+    );
+
+    // return skuItem.update(data);
   }
 
 

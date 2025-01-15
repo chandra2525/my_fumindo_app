@@ -11,6 +11,7 @@ export class PurchaseInboundController {
 
   @Get()
   async findAll(
+    @Query('branch_name') branchName?: string,
     @Query('warehouse_name') warehouseName?: string,
     @Query('inventory_type') inventoryType?: string,
     @Query('vendor_name') vendorName?: string,
@@ -27,11 +28,13 @@ export class PurchaseInboundController {
     @Query('pageSize') pageSize: number = 10,
   ) {
     // Pisahkan string menjadi array
+    const branchNameArray = branchName ? branchName.split(',') : []; 
     const warehouseNameArray = warehouseName ? warehouseName.split(',') : []; 
     const inventoryTypeArray = inventoryType ? inventoryType.split(',') : [];
     const vendorNameArray = vendorName ? vendorName.split(',') : [];
     const statusArray = status ? status.split(',') : [];
     return this.purchaseInboundService.findAll(
+      branchNameArray,
       warehouseNameArray,
       inventoryTypeArray,
       vendorNameArray,

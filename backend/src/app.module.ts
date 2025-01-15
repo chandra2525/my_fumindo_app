@@ -22,6 +22,7 @@ import { SkuItemModule } from './skuItem/skuItem.module';
 import { PurchaseInboundModule } from './purchaseInbound/purchaseInbound.module';
 import { PurchaseInboundItemModule } from './purchaseInboundItem/purchaseInboundItem.module';
 import { StockModule } from './stock/stock.module';
+import { QRCodeModule } from './qrCode/qrCode.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -49,6 +50,7 @@ import { databaseConfig } from './config/database.config';
     PurchaseInboundModule,
     PurchaseInboundItemModule,
     StockModule,
+    QRCodeModule,
   ],
 })
 export class AppModule {}

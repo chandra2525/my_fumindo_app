@@ -48,6 +48,9 @@ export class SkuItem extends Model<SkuItem> {
   @Column({ type: DataType.STRING, allowNull: true })
   consumed: string;
 
+  @Column({ type: DataType.STRING, allowNull: true })
+  sku_item_image: string;
+
   @BelongsTo(() => SkuType)
   skuType: SkuType;
 
